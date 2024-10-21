@@ -9,7 +9,6 @@ editor: visual
 
 En este curso, exploraremos cómo aplicar técnicas estadísticas fundamentales para analizar y comprender datos relacionados con el campo de la ecología. Desde la recopilación y limpieza de datos hasta la interpretación de resultados, este curso te proporcionará las habilidades necesarias para llevar a cabo análisis estadísticos efectivos en tu investigación ecológica.
 
-
 # Descripción del Curso:
 
 Este curso proporciona una introducción práctica a las técnicas estadísticas aplicadas en ecología. Desde los fundamentos de R hasta el análisis avanzado de datos ecológicos, exploraremos una variedad de métodos estadísticos clave utilizados en la investigación ecológica.
@@ -20,22 +19,20 @@ Este curso proporciona una introducción práctica a las técnicas estadísticas
 
 [Clase 2: Analisis de Diversidad y Riqueza de especies](Clase2.html)
 
-\[Clase 3: Analisis de Variaza y Prueba Correlacion\]
+[Clase 3: Analisis de Variaza y Prueba Correlacion](Clase3.html)
 
-\[Clase 4: Pruebas no parametricas\]
+[Clase 4: Pruebas no parametricas](Clase4.html)
 
-\[Clase 5: Modelos lineales\]
+[Clase 5: Modelos lineales](Clase5.html)
 
-\[Clase 6: Modelos lineales Generalizados: Poisson\]
+[Clase 6: Modelos lineales Generalizados: Poisson](Clase6.html)
 
-\[Clase 7: Modelos lineales Generalizados: Binomial\]
+[Clase 7: Modelos lineales Generalizados: Binomial](Clase7.html)
 
-\[Clase 8: NMDS, PCA y PERMANOVA\]
+[Clase 8: NMDS, PCA y PERMANOVA](Clase8.html)
 
-\[Clase 9: Anosim, MRPP, SIMPER e Indicador de especies\]
+[Clase 9: Anosim, MRPP, SIMPER e Indicador de especies](Clase9.html)
 
-\[Clase 10: Repaso, Preguntas y respuestas\]
-
-
+[Clase 10: Repaso, Preguntas y respuestas](Clase10.html)
 
 ![HN Biology Investigation Academy](HN%20Cursos%20publicidad/HN%20Biology%20Inv%20large.jpg)
