@@ -1,0 +1,41 @@
+---
+title: "Curso de Estadística aplicada a Ecologia"
+author: "David Murillo"
+format: html
+editor: visual
+---
+
+[<img src="HN Cursos publicidad/HN Biology Inv Circle.jpg" align="right" width="100"/>](https://www.hnbiology.org/)
+
+En este curso, exploraremos cómo aplicar técnicas estadísticas fundamentales para analizar y comprender datos relacionados con el campo de la ecología. Desde la recopilación y limpieza de datos hasta la interpretación de resultados, este curso te proporcionará las habilidades necesarias para llevar a cabo análisis estadísticos efectivos en tu investigación ecológica.
+
+
+# Descripción del Curso:
+
+Este curso proporciona una introducción práctica a las técnicas estadísticas aplicadas en ecología. Desde los fundamentos de R hasta el análisis avanzado de datos ecológicos, exploraremos una variedad de métodos estadísticos clave utilizados en la investigación ecológica.
+
+# Temas que Cubriremos:
+
+[Clase 1: Comandos basicos en R y uso de scripts](Clase1.html)
+
+[Clase 2: Analisis de Diversidad y Riqueza de especies](Clase2.html)
+
+\[Clase 3: Analisis de Variaza y Prueba Correlacion\]
+
+\[Clase 4: Pruebas no parametricas\]
+
+\[Clase 5: Modelos lineales\]
+
+\[Clase 6: Modelos lineales Generalizados: Poisson\]
+
+\[Clase 7: Modelos lineales Generalizados: Binomial\]
+
+\[Clase 8: NMDS, PCA y PERMANOVA\]
+
+\[Clase 9: Anosim, MRPP, SIMPER e Indicador de especies\]
+
+\[Clase 10: Repaso, Preguntas y respuestas\]
+
+
+
+![HN Biology Investigation Academy](HN%20Cursos%20publicidad/HN%20Biology%20Inv%20large.jpg)
