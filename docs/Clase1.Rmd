@@ -186,53 +186,7 @@ knitr::kable(Tabla1)
 
 :::
 
-#### Exploracion de datos
 
-Primero podemos hacer exploración rápido de nuestra primera tabla utilizando el comando `summary()` 
-
-Observe que cuando ejecutamos el comando `summary()` obtenemos la media, cuartiles, y algunos otros detalles de cada variable en nuestra tabla
-
-```{r}
-
-summary(Tabla1)
-```
-
-
-Si nos interesa obtener solo la media podemos utilizar el comando `mean()`, para la desviación estándar usamos `sd()`, y para la mediana `median()`.
-
-```{r}
-mean(Tabla1$Temperatura)
-```
-
-```{r}
-median(Tabla1$Temperatura)
-```
-
-```{r}
-
-sd(Tabla1$Temperatura)
-
-```
-
-
-Si nos interesa una gráfico exploratorio, podemos usar el comando `plot()` para una nube de puntos, `boxplot()` para un gráfico de cajas, y `hist()` para un histograma.
-
-
-```{r}
-plot(Tabla1$Temperatura)
-```
-
-
-```{r}
-boxplot(Tabla1$Temperatura)
-```
-
-
-```{r}
-hist(Tabla1$Temperatura)
-```
-
-:::
 
 #### Cargar base de datos
 
