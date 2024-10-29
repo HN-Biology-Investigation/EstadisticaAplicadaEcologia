@@ -11,8 +11,8 @@ header-includes:
 ---
 
 <div style="display:flex; align-items:center;">
-  <h1 style="margin:0;">Clase 4: Pruebas no parametricas</h1>
-  <img src="imagenes/HNBI_LOGO2.jpg" alt="Texto alternativo de la imagen" style="width:100px; margin-left:20px;">
+  <h1 style="margin:0;">Clase 3: Analisis de Variaza y Prueba Correlacion</h1>
+  <img src="HN Cursos publicidad/HN Biology Inv Circle.jpg" alt="" style="width:100px; margin-left:20px;">
 </div>
 
 Las pruebas no paramétricas son un conjunto de técnicas de prueba estadística que se utilizan para evaluar hipótesis sobre una población cuando no se tienen suficientes datos para suponer una distribución particular de los datos. A diferencia de las pruebas paramétricas, que asumen una distribución particular de los datos (como la distribución normal), las pruebas no paramétricas no requieren ninguna suposición sobre la distribución de los datos.
@@ -42,16 +42,9 @@ La prueba de Wilcoxon es una prueba no paramétrica utilizada para comparar dos 
 
 Primero necesitamos cargar la base de datos, en este caso utlizaremos `delomys.csv`
 
-```{r, echo=FALSE, include=FALSE}
-
-library(here)
-
-Delomys <- read.csv(here("data", "delomys.csv"))
-```
 
 
-```{r, eval=FALSE}
-
+```{r}
 Delomys <- read.csv("data/delomys.csv")
 ```
 
