@@ -184,5 +184,13 @@ ggplot(data= delomys, aes(x =body_length, y= body_mass))+
 
 2)  Investigar para qué se utiliza y cómo se aplica la prueba de Kruskal-Wallis.
 
+3) Realizar la prueba de correlación utilizando la base de datos `Barn owls`
+
+```{r}
+owl <- read.table(file = "https://www.dropbox.com/s/0zpy65cr9ml47b6/owl.txt?dl=1",
+                  header = TRUE, dec= ".", stringsAsFactors = T)
+```
+
+
 Enviar los scripts a `david.murillo@hnbiology.org`
 
