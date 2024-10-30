@@ -18,6 +18,14 @@ header-includes:
 
 ### Contenido{.tabset .tabset-pills}
 
+Parte de la bibliografía utilizada en esta clase: 
+
+[Statistics For Biologists](https://books.google.hn/books/about/Statistics_for_Biologists.html?id=McqWIFQzGioC&redir_esc=y)
+
+[Statistics in R for Biodiversity Conservation](https://www.researchgate.net/publication/353286861_Statistics_in_R_for_Biodiversity_Conservation)
+
+[García-Berthou, 2001](papers/GarciaBerthou2001.pdf)
+
 #### Distribucion Normal
 
 La distribución normal es una distribución de probabilidad continua que se utiliza comúnmente en el análisis de datos. Esta distribución es simétrica y tiene una forma de campana, con un pico en el centro y colas que se extienden hacia los valores extremos.
