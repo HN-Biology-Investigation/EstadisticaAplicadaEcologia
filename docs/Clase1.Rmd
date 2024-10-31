@@ -12,7 +12,7 @@ header-includes:
 
 <div style="display:flex; align-items:center;">
   <h1 style="margin:0;">Clase 1: Comandos Básicos y Exploración de Datos</h1>
-  <img src="imagenes/HNBI_LOGO2.jpg" alt="" style="width:100px; margin-left:20px;">
+  <img src="HN Cursos publicidad/HN Biology Inv Circle.jpg" alt="" style="width:100px; margin-left:20px;">
 </div>
 
 Esta clase está diseñada para enseñarte los comandos básicos en R, incluyendo la creación de variables, tablas y la importación de bases de datos. Además, aprenderás a explorar y analizar tus datos de manera apropiada, siguiendo la metodología de Zuur **et al**. (2010). Con el tiempo, podrás utilizar estas habilidades básicas en R para realizar análisis más complejos y obtener resultados acordes a tu pregunta de investigación.

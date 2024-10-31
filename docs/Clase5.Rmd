@@ -11,8 +11,8 @@ header-includes:
 ---
 
 <div style="display:flex; align-items:center;">
-  <h1 style="margin:0;">Clase 5: Modelos lineales</h1>
-  <img src="imagenes/HNBI_LOGO2.jpg" alt="Texto alternativo de la imagen" style="width:100px; margin-left:20px;">
+  <h1 style="margin:0;">Clase 4: Modelos lineales</h1>
+  <img src="HN Cursos publicidad/HN Biology Inv Circle.jpg" alt="" style="width:100px; margin-left:20px;">
 </div>
 
 Los modelos lineales son un tipo de modelo estadístico utilizado para predecir el valor de una variable de interés (la variable dependiente) a partir de uno o más variables predictivas (las variables independientes). Los modelos lineales se basan en la suposición de que la relación entre la variable dependiente y las variables independientes es lineal.
@@ -22,18 +22,14 @@ Los modelos lineales son un tipo de modelo estadístico utilizado para predecir 
 
 #### Informacion de los datos
 
-```{r, include=FALSE}
-
-library(here)
-creeps <- read.table(here("data", "creeps.txt"), header = T)
-
-```
 
 Para esta clase utilizaremos la base de datos `creeps.txt`, observe que esta base de datos est en formato .txt
 
-```{r, eval=FALSE}
+Esta base de datos proviene de la investigación de doctorado del Dr. McGarigal en el noroeste del Pacífico de EEUU [paper](https://doi.org/10.2307/2937059).
 
-creeps <- read.table("data/creeps.txt"), header = T)
+```{r}
+
+creeps <- read.table("data/creeps.txt", header = T)
 
 ```
 
@@ -390,7 +386,7 @@ vif(fit3)
 ```{r}
 library(sjPlot)
 
-plot_model(fit3, "pre", 
+plot_model(fit3, "pre", terms = c("saw","stream.den"),
            show.data = TRUE,
            grid = TRUE)
 ```
