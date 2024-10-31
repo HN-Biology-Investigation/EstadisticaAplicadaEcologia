@@ -21,13 +21,15 @@ Este curso proporciona una introducción práctica a las técnicas estadísticas
 
 [Clase 3: Analisis de Variaza y Prueba Correlacion](Clase3.html)
 
-[Clase 4: Pruebas no parametricas](Clase4.html)
+[Clase 3: Suplementario - Pruebas no parametricas](Clase4.html)
 
-[Clase 5: Modelos lineales](Clase5.html)
+[Clase 4: Modelos lineales](Clase5.html)
 
-[Clase 6: Modelos lineales Generalizados: Poisson](Clase6.html)
+[Clase 5: Modelos lineales Generalizados: Poisson](Clase6.html)
 
-[Clase 7: Modelos lineales Generalizados: Binomial](Clase7.html)
+[Clase 6: Modelos lineales Generalizados: Binomial](Clase7.html)
+
+[Clase 7: Modelos lineales Mixtos](Clase7.html)
 
 [Clase 8: NMDS, PCA y PERMANOVA](Clase8.html)
 
