@@ -200,5 +200,15 @@ owl <- read.table(file = "https://www.dropbox.com/s/0zpy65cr9ml47b6/owl.txt?dl=1
 ```
 
 
+El conjunto de datos de las Barn owls (Tyto alba) proviene del estudio de [Charter et al. (2018)](https://nsojournals.onlinelibrary.wiley.com/doi/epdf/10.1111/jav.01770), quienes investigaron el comportamiento parasitario de crías de lechuzas en Israel. Se observó que algunas crías de lechuza dejaban su propio nido y se mudaban a un nido vecino, donde luego eran alimentadas por, o robaban comida de, sus nuevos "padres adoptivos". El objetivo de este estudio fue comprender el impacto del cambio de nido en las crías de estos padres adoptivos. El estudio mostró que 12 crías de lechuza abandonaron su nido de origen y se trasladaron a 9 nidos anfitriones de un total de 111 nidos monitoreados. Los datos de estos 9 nidos "parasitados" fueron investigados en mayor profundidad.
+
+Los objetivos del estudio fueron:
+
+Evaluar si había una asociación entre la edad de las crías parasitarias de lechuza y las crías anfitrionas.
+
+Evaluar si había una asociación entre la edad de las crías anfitrionas cuando se detectó a una cría parasitaria de lechuza en el nido anfitrión y el número de crías anfitrionas que lograron emplumar exitosamente desde ese nido.
+
+El dataframe comprende 9 observaciones de 5 variables. Cada fila en el dataframe representa un nido anfitrión de lechuza separado al cual una cría de otro nido se trasladó. La variable hosbox es un código único para identificar el nido anfitrión. El número de días después del primero de enero en que los huevos de la cría parasitaria de lechuza (layday_para) y de la cría anfitriona (layday_host) fueron puestos, la edad del nido (age_para) y el número de crías de lechuza que emplumaron del nido parasitado (fled_host) son todas variables continuas.
+
 Enviar los scripts a `david.murillo@hnbiology.org`
 
