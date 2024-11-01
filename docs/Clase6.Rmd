@@ -25,7 +25,9 @@ La distribución de Poisson es una distribución de probabilidad discreta que se
 
 #### Base de datos
 
-Para la clase utilizaremos una base de datos sobre mejillones, a nuestra tabla la llamaremos `muss` y podemos cargarla con el sigueinte comando
+Para la clase utilizaremos una base de datos sobre mejillones, a nuestra tabla la llamaremos `muss` y podemos cargarla con el sigueinte comando.
+
+[Smith et al. 2000](https://doi.org/10.1098/rspb.2000.1146)
 
 
 ```{r}
@@ -38,9 +40,9 @@ La base de datos `muss` esta compuesta por 5 variables y 95 observaciones, cada 
 
 - depth: Profundidad del agua
 - subs: substrato, es un factor con tres niveles (gravel, mud, sand)
-- unio: abundancia de pintores y mejillones hinchados 
-- duck: abundancia de New Zealand duck mussel o *Anadara novaezelandiae*
-- swan: abundancia de The swan mussel, o *Anadara australis*
+- unio: abundancia de *Unio pictorum* + *U. tumidus* 
+- duck: abundancia de New Zealand duck mussel o *Anodonta anatina*
+- swan: abundancia de The swan mussel, o *Anodonta cygnea*
  
 ```{r}
 str(muss)
@@ -198,5 +200,5 @@ plot(ggpredict(ModelList$mussFit2, terms = "depth[n=100]"))+
 
 #### Ejercicio
 
-Elaborar una tabla de selección de modelos para identificar el modelo o los modelos más adecuados para explicar la abundancia del mejillón de agua dulce de Nueva Zelanda (*Anadara novaezelandiae*). Realizar la validación y graficado del modelo.
+Elaborar una tabla de selección de modelos para identificar el modelo o los modelos más adecuados para explicar la abundancia del mejillón de agua dulce de Nueva Zelanda (*Anodonta anatina*). Realizar la validación y graficado del modelo.
 
