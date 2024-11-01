@@ -39,7 +39,7 @@ La base de datos `muss` esta compuesta por 5 variables y 95 observaciones, cada 
 - depth: Profundidad del agua
 - subs: substrato, es un factor con tres niveles (gravel, mud, sand)
 - unio: abundancia de pintores y mejillones hinchados 
-- duck: abndancia de New Zealand duck mussel o *Anadara novaezelandiae*
+- duck: abundancia de New Zealand duck mussel o *Anadara novaezelandiae*
 - swan: abundancia de The swan mussel, o *Anadara australis*
  
 ```{r}
@@ -196,4 +196,7 @@ plot(ggpredict(ModelList$mussFit2, terms = "depth[n=100]"))+
 ```
 
 
+#### Ejercicio
+
+Elaborar una tabla de selección de modelos para identificar el modelo o los modelos más adecuados para explicar la abundancia del mejillón de agua dulce de Nueva Zelanda (*Anadara novaezelandiae*). Realizar la validación y graficado del modelo.
 
