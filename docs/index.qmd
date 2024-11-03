@@ -29,7 +29,7 @@ Este curso proporciona una introducción práctica a las técnicas estadísticas
 
 [Clase 6: Modelos lineales Generalizados: Bernoulli](Clase7.html)
 
-[Clase 7: Modelos lineales Mixtos](Clase7.html)
+[Clase 7: Modelos lineales Mixtos](ClaseGLMM.html)
 
 [Clase 8: NMDS, PCA y PERMANOVA](Clase8.html)
 
