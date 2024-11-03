@@ -27,7 +27,7 @@ Este curso proporciona una introducción práctica a las técnicas estadísticas
 
 [Clase 5: Modelos lineales Generalizados: Poisson](Clase6.html)
 
-[Clase 6: Modelos lineales Generalizados: Binomial](Clase7.html)
+[Clase 6: Modelos lineales Generalizados: Bernoulli](Clase7.html)
 
 [Clase 7: Modelos lineales Mixtos](Clase7.html)
 

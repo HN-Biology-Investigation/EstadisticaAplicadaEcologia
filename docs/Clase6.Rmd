@@ -21,6 +21,8 @@ Los modelos lineales generalizados se basan en el concepto de un modelo de respu
 
 La distribución de Poisson es una distribución de probabilidad discreta que se utiliza para modelar el número de eventos que ocurren en un intervalo de tiempo o un espacio dado. La distribución de Poisson se caracteriza por un solo parámetro, llamado tasa de eventos o tasa de Poisson, que describe la frecuencia esperada de eventos en el intervalo de tiempo o espacio dado.
 
+Referencia: [GLMs in R for Ecology](https://www.amazon.com/GLMs-Ecology-Second-Carl-Smith-ebook/dp/B0C9BMLNFC)
+
 ### Contenido {.tabset .tabset-pills}
 
 #### Base de datos
