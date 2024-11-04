@@ -30,7 +30,7 @@ Para nuestro ejemplo, utilizaremos una base de datos sobre aves en Honduras. La 
 
 
 ```{r}
-aves <- read.csv("docs/data/AvesHabitatUm.csv")
+aves <- read.csv("data/AvesHabitatUm.csv")
 ```
 
 Empezaremos con una ligera inspección de los datos.
