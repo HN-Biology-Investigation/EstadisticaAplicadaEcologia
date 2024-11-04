@@ -15,175 +15,206 @@ header-includes:
   <img src="HN Cursos publicidad/HN Biology Inv Circle.jpg" alt="" style="width:100px; margin-left:20px;">
 </div>
 
+Literatura recomendada para compreder los GLLM, [Harrison *et al*. 2018](https://doi.org/10.7717/peerj.4794)
 
-Una distribución de Bernoulli es una distribución discreta para trabajar con datos que tienen dos posibles resultados, como éxito o fracaso, y presencia o ausencia. El GLM de Bernoulli se utiliza estrictamente para datos binarios y, a veces, se le llama GLM logístico (o simplemente "regresión logística"). En estudios ecológicos, un GLM de Bernoulli es una herramienta útil para modelar datos de presencia/ausencia.
+En estudios ecológicos y de conservación, a veces se toman mediciones de los mismos individuos o sitios de muestreo en más de una ocasión. Un estudio de este tipo se denomina un `diseño de medidas repetidas`. Estos datos también pueden ser recolectados a intervalos de tiempo específicos, en cuyo caso los datos conforman un `estudio longitudinal`.
+
+Para nuestro ejemplo, utilizaremos una base de datos sobre aves en Honduras. La base de datos contiene información sobre la abundancia de aves recopilada mediante puntos de conteo y de dos a tres réplicas por sitio. Asimismo, incluye variables de la vegetación, como área basal, y datos de paisaje, como el porcentaje de bosque y de café bajo sombra. 
+
+**Los objetivos del estudio fueron evaluar la relación de la abundancia de aves con la estructura de la vegetación y el paisaje.:**
 
 
 ### Contenido{.tabset .tabset-pills}
 
 #### Base de datos
 
-Para esta clase, utilizaremos una base de datos de pez pez sol (*Lepomis gibbosus*). Algunos individuos presentan un punto rojo conspicuo sobre su opérculo, que se ha asociado con el comportamiento de dominancia. [Zieba *et al*. (2018)]( https://doi.org/10.1111/eff.12399) investigó la función de este punto rojo en poblaciones de Lepomis gibbosus colectadas a lo largo de Europa, donde la especie es invasiva.
-
-La base de datos colectada por [Zieba *et al*. (2018)]( https://doi.org/10.1111/eff.12399) incluye individuos con diferentes estrategias de apareamiento (hembra, macho territorial, macho "sneaker"), longitud en mm, peso en gramos, y presencia del punto rojo. El sexo y la estrategia de apareamiento fueron determinados mediante disección de las gónadas. La presencia del punto rojo es la variable respuesta, y las demás variables son covariables.
-
-Para cargar la base de datos utilizaremos el siguiente comando
 
 ```{r}
-pkin <- read.table(file = "https://www.dropbox.com/s/xq2dojah9k0kftu/pumpkinseed.txt?dl=1",
-                   header= TRUE, dec = ".", stringsAsFactors = TRUE)
+aves <- read.csv("docs/data/AvesHabitatUm.csv")
 ```
 
 Empezaremos con una ligera inspección de los datos.
 
 ```{r}
-str(pkin)
+str(aves)
 ```
 
-La base de datos comprende 900 observaciones con 6 variables. Cada fila representa un individuo de pumpkinseed recolectado de diferentes poblaciones.
+Como se puede observar, la base de datos no está depurada ni filtrada, por lo que necesita una ligera limpieza y filtrado de las variables que queremos evaluar. Para esto, utilizaremos el paquete `tidyverse` y nos quedaremos con las siguientes variables:
 
-- pop: Población
-- sex: Sexo
-- tactic: Sistema de apareamiento
-- wt: Peso del pez
-- sl: Longitud
-- spot: Presencia del punto rojo
+- Site
+- Type
+- ALTITUDE
+- pforest.
+- sforest.
+- coffee.
+- Area_Basal
+- Group_cover
+- Subcanopy
+- Especies
+- Replica
+
+#### Limpieza de la base de datos
+
+```{r, warning=FALSE, message=FALSE}
+
+library(tidyverse)
+
+AvesLim <- aves %>% 
+  select(Site, Type, ALTITUDE, pforest., sforest., coffee.,
+         Area_Basal, Group_cover, Subcanopy, Especies, Replica) %>% 
+  filter(Especies %in% c("CARPUS", "SETVIR", "MNIVAR",
+                         "BASRUF", "SETMAG", "MIOOLE",
+                         "VERCHR")) %>% 
+  mutate(Site = as.factor(Site),
+         Type =  as.factor(Type),
+         Especies = as.factor(Especies),
+         Replica = as.factor(Replica)) %>%
+  group_by(Site, Type, ALTITUDE, pforest., sforest., coffee.,
+         Area_Basal, Group_cover, Subcanopy, Especies, Replica) %>% 
+  summarise(Abundancia = n()) %>%
+  group_by(Site, Type, ALTITUDE, pforest., sforest., coffee.,
+         Area_Basal, Group_cover, Subcanopy, Especies, Replica) %>% 
+  pivot_wider(names_from = Especies, values_from = Abundancia,
+              values_fill = 0) %>% 
+  pivot_longer(cols = MNIVAR:MIOOLE, names_to = "Especies",
+               values_to = "Abundance") %>% 
+  ungroup()
+
+str(AvesLim)
+```
+
+La descripción de las variables es la siguiente:
+
+Site: Factor que representa un código único para cada sitio de muestreo.
+Type: Factor de dos niveles que indica si el sitio de muestreo es un bosque (F) o un cultivo de café (C).
+ALTITUDE: Variable continua que indica la elevación en metros sobre el nivel del mar.
+pforest.: Variable numérica que indica el porcentaje de bosque primario alrededor del sitio de muestreo.
+sforest.: Variable numérica que indica el porcentaje de bosque secundario alrededor del sitio de muestreo.
+coffee.: Variable numérica que indica el porcentaje de café bajo sombra alrededor del sitio de muestreo.
+Area_Basal: Indica el área basal.
+Group_cover: Indica la cobertura en el sotobosque.
+Subcanopy: Indica la cobertura en el subdosel.
+Especies: Factor que indica la especie a estudiar.
+Replica: Factor que indica el número de visita al sitio de muestreo.
+Abundance: Variable discreta que indica la abundance de aves.
+
+
+#### Exploracion de los datos{.tabset .tabset-pills}
+
+##### Valores nulos `NAs`
+
+```{r}
+colSums(is.na(AvesLim))
+
+```
+
+
+##### Valores extremos
+
+```{r}
+boxplot(Abundance ~ Type, data= AvesLim)
+```
+
+##### Zeros en la variable respuesta?
+
+```{r}
+sum(AvesLim$Abundance == 0) * 100 /nrow(AvesLim)
+```
+
+##### Multicolialinidad entre variables predictoras
+
+```{r, warning=FALSE, message=FALSE}
+library(GGally)
+
+ggpairs(AvesLim[,2:9])
+
+```
+
+
+```{r}
+library(car)
+
+vif(glm(Abundance ~ Type + ALTITUDE + 
+          pforest. + sforest. + coffee. + 
+          Area_Basal + Group_cover + Subcanopy,
+        family = "poisson", data= AvesLim))
+```
+
 
 #### Modelos candidatos
 
-
-Para construir un GLM con una distribución binomial en R, puedes utilizar la función `glm()` y especificar la familia `binomial` en el argumento `family`.
-
 ```{r}
-ModelosCan <- list("fit1_pkin" = glm(spot ~ pop, family = binomial(link = "logit"), data = pkin),
-"fit2_pkin" = glm(spot ~ sex, family = binomial(link = "logit"), data = pkin),
-"fit3_pkin" = glm(spot ~ tactic, family = binomial(link = "logit"), data = pkin),
-"fit4_pkin" = glm(spot ~ wt, family = binomial(link = "logit"), data = pkin),
-"fit5_pkin" = glm(spot ~ sl, family = binomial(link = "logit"), data = pkin),
-"fit6_pkin" = glm(spot ~ pop + sex + tactic, family = binomial(link = "logit"), data = pkin),
-"fit7_pkin" = glm(spot ~ sex + wt + sl, family = binomial(link = "logit"), data = pkin),
-"fit8_pkin" = glm(spot ~ tactic + wt + sl, family = binomial(link = "logit"), data = pkin),
-"fit9_pkin" = glm(spot ~ pop:sex, family = binomial(link = "logit"), data = pkin),
-"fit10_pkin" = glm(spot ~ pop:tactic, family = binomial(link = "logit"), data = pkin),
-"fit10_pkin" = glm(spot ~ wt*sl, family = binomial(link = "logit"), data = pkin))
+
+AvesLim <- AvesLim %>% 
+  na.omit()
+
+library(lme4)
+
+AvesM1 <- glmer.nb(Abundance ~ sforest. + 
+          Area_Basal + Group_cover + (1|Site) + (1|Especies) + (1|Replica),
+        family = "poisson", data= AvesLim, na.action = na.fail )
+
+vif(AvesM1)
 ```
 
 #### Selección del modelo
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
+library(knitr )
+library(MuMIn)
 library(AICcmodavg)
 
-aictab(ModelosCan)
+kable(dredge(AvesM1))
+```
 
+
+```{r, warning=FALSE, message=FALSE}
+AvesM2 <- glmer.nb(Abundance ~ sforest. + (1|Site) + (1|Especies) + (1|Replica),
+        family = "poisson", data= AvesLim, na.action = na.fail )
 
 ```
 
 #### Validación del modelo
+
 
 Para la validación, utilizaremos el paquete `DHARMa`.
 
 ```{r}
 library(DHARMa)
 
-testResiduals(ModelosCan$fit6_pkin)
+testResiduals(AvesM2)
+testDispersion(AvesM2)
 ```
 
-La distancia de Cook es una medida de la influencia de un punto de datos en un modelo de regresión. Un punto de datos con una distancia de Cook alta puede tener un gran impacto en el modelo y ser un indicador de que el modelo no se ajusta adecuadamente a los datos.
-
-```{r}
-plot(cooks.distance(ModelosCan$fit6_pkin),
-     main="Distancia de Cook", 
-     xlab="Indice del punto de datos", 
-     ylab="Distancia de Cook")
-
-```
 
 
 #### Interpretacion del Modelo
 
 ```{r}
-summary(ModelosCan$fit6_pkin)
+summary(AvesM2)
 ```
+
 
 #### Gráficos{.tabset .tabset-pills}
 
-##### Categóricos
+```{r}
+library(ggeffects)
 
-- **Sex**
-
-:::{.notes}
-
-```{r, fig.align='center'}
-library(ggplot2)
-library(sjPlot)
-
-plot_model(ModelosCan$fit2_pkin, type = "pre", terms = "sex")
-
-library(effects)
-eff <- effect("sex", ModelosCan$fit2_pkin)
-plot(eff)
-
+plot(ggpredict(AvesM2, type = "re", terms = c("sforest."),
+               back_transform = TRUE, ci.lvl = 0.95))
 ```
 
-:::
-
-- **Tactic**
-
-:::{.notes}
-
-```{r, fig.align='center'}
-
-plot_model(ModelosCan$fit3_pkin, type= "pre", terms = "tactic")
-```
-
-:::
-
-- **Población**
-
-:::{.notes}
 
 ```{r}
-plot_model(ModelosCan$fit1_pkin, type = "pre", terms = "pop")
-```
-:::
-
-##### Continuos
+plot(ggpredict(AvesM2, type = "re", terms = c("sforest.", "Especies"),
+               back_transform = TRUE, ci.lvl = FALSE))
 
 
-```{r, fig.align='center'}
-
-wt <- ggplot(data= pkin, aes(x= wt , y= spot)) +
-  stat_smooth(method = "glm", method.args = list(family = "binomial"))+
-  geom_point()+
-  theme_bw()
-
-sl <- ggplot(data= pkin, aes(x= sl , y= spot)) +
-  stat_smooth(method = "glm", method.args = list(family = "binomial"))+
-  geom_point()+
-  theme_bw()
-
-cowplot::plot_grid(wt, sl, nrow = 1, ncol = 2)
 ```
 
-##### Interacción
-
-```{r, fig.align='center'}
-
-wt_sex <- ggplot(data= pkin, aes(x= wt , y= spot, color = sex)) +
-  stat_smooth(method = "glm", method.args = list(family = "binomial"))+
-  geom_point()+
-  theme_bw()
-
-sl_sex <- ggplot(data= pkin, aes(x= sl , y= spot, color = sex)) +
-  stat_smooth(method = "glm", method.args = list(family = "binomial"))+
-  geom_point()+
-  theme_bw()
-
-cowplot::plot_grid(wt_sex, sl_sex, nrow = 1, ncol = 2)
-```
 
 #### Ejercicio
 
-- Con la base de datos `AvesHabitat.csv`, selecciona una especie en particular y ajusta diferentes modelos, al menos 5. Selecciona el más adecuado, realiza la validación y graficar los resultados.
+- Seguir las indicaciones brindadas por David Murillo.
 
 
