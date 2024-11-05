@@ -61,23 +61,22 @@ library(tidyverse)
 
 AvesLim <- aves %>% 
   select(Site, Type, ALTITUDE, pforest., sforest., coffee.,
-         Area_Basal, Group_cover, Subcanopy, Especies, Replica) %>% 
-  filter(Especies %in% c("CARPUS", "SETVIR", "MNIVAR",
-                         "BASRUF", "SETMAG", "MIOOLE",
-                         "VERCHR")) %>% 
+         Area_Basal, Group_cover, Subcanopy, Especies, Replica, Abundancia) %>% 
   mutate(Site = as.factor(Site),
          Type =  as.factor(Type),
          Especies = as.factor(Especies),
          Replica = as.factor(Replica)) %>%
   group_by(Site, Type, ALTITUDE, pforest., sforest., coffee.,
-         Area_Basal, Group_cover, Subcanopy, Especies, Replica) %>% 
-  summarise(Abundancia = n()) %>%
+           Area_Basal, Group_cover, Subcanopy, Especies, Replica) %>% 
+  summarise(Abundancia = max(Abundancia)) %>%
   group_by(Site, Type, ALTITUDE, pforest., sforest., coffee.,
-         Area_Basal, Group_cover, Subcanopy, Especies, Replica) %>% 
+           Area_Basal, Group_cover, Subcanopy, Especies, Replica) %>% 
   pivot_wider(names_from = Especies, values_from = Abundancia,
               values_fill = 0) %>% 
-  pivot_longer(cols = MNIVAR:MIOOLE, names_to = "Especies",
-               values_to = "Abundance") %>% 
+  pivot_longer(cols =  `AMACYC*`:NYCALB , names_to = "Especies",
+               values_to = "Abundancia") %>% 
+  filter(Especies %in% c("CARPUS", "SETMAG", "MNIVAR",
+                         "SETVIR", "SETCIT") ) %>% 
   ungroup()
 
 str(AvesLim)
@@ -96,7 +95,7 @@ Group_cover: Indica la cobertura en el sotobosque.
 Subcanopy: Indica la cobertura en el subdosel.
 Especies: Factor que indica la especie a estudiar.
 Replica: Factor que indica el número de visita al sitio de muestreo.
-Abundance: Variable discreta que indica la abundance de aves.
+Abundancia: Variable discreta que indica la abundance de aves.
 
 
 #### Exploracion de los datos{.tabset .tabset-pills}
@@ -112,13 +111,13 @@ colSums(is.na(AvesLim))
 ##### Valores extremos
 
 ```{r}
-boxplot(Abundance ~ Type, data= AvesLim)
+boxplot(Abundancia ~ Type, data= AvesLim)
 ```
 
 ##### Zeros en la variable respuesta?
 
 ```{r}
-sum(AvesLim$Abundance == 0) * 100 /nrow(AvesLim)
+sum(AvesLim$Abundancia == 0) * 100 /nrow(AvesLim)
 ```
 
 ##### Multicolialinidad entre variables predictoras
@@ -134,7 +133,7 @@ ggpairs(AvesLim[,2:9])
 ```{r}
 library(car)
 
-vif(glm(Abundance ~ Type + ALTITUDE + 
+vif(glm(Abundancia ~ Type + ALTITUDE + 
           pforest. + sforest. + coffee. + 
           Area_Basal + Group_cover + Subcanopy,
         family = "poisson", data= AvesLim))
@@ -150,9 +149,9 @@ AvesLim <- AvesLim %>%
 
 library(lme4)
 
-AvesM1 <- glmer.nb(Abundance ~ sforest. + 
-          Area_Basal + Group_cover + (1|Site) + (1|Especies) + (1|Replica),
-        family = "poisson", data= AvesLim, na.action = na.fail )
+AvesM1 <- glmer.nb(Abundancia ~ sforest. + 
+                     Area_Basal + Group_cover + (1|Site) + (1|Especies) + (1|Replica),
+                   family = "poisson", data= AvesLim, na.action = na.fail )
 
 vif(AvesM1)
 ```
@@ -169,8 +168,8 @@ kable(dredge(AvesM1))
 
 
 ```{r, warning=FALSE, message=FALSE}
-AvesM2 <- glmer.nb(Abundance ~ sforest. + (1|Site) + (1|Especies) + (1|Replica),
-        family = "poisson", data= AvesLim, na.action = na.fail )
+AvesM2 <- glmer.nb(Abundancia ~ sforest. + (1|Site) + (1|Especies) + (1|Replica),
+                   family = "poisson", data= AvesLim, na.action = na.fail )
 
 ```
 
@@ -200,15 +199,14 @@ summary(AvesM2)
 ```{r}
 library(ggeffects)
 
-plot(ggpredict(AvesM2, type = "re", terms = c("sforest."),
-               back_transform = TRUE, ci.lvl = 0.95))
+plot(ggpredict(AvesM2, type = "count", terms = c("sforest."), ci.lvl = 0.95)) +
+  ylim(0,1.5)
 ```
 
 
 ```{r}
 plot(ggpredict(AvesM2, type = "re", terms = c("sforest.", "Especies"),
                back_transform = TRUE, ci.lvl = FALSE))
-
 
 ```
 
