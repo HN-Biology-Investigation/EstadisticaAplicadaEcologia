@@ -19,6 +19,12 @@ header-includes:
 
 El análisis multivariado de similitud es una técnica de análisis multivariado que se utiliza en ecología y otras disciplinas para evaluar la similitud o diferencia entre grupos de muestras o observaciones. Esta técnica se basa en el uso de medidas de similitud o dissimilaridad, como la distancia euclidiana o la distancia de Bray-Curtis, para calcular la similitud o diferencia entre las muestras o observaciones. Dentro de los métodos de análisis multivariado encontramos el análisis de componentes principales (PCA) o el escalado no métrico multidimensional (NMDS).
 
+Referencias:
+
+[Analysis of Ecological Communities](https://www.wildblueberrymedia.net/store/analysis-of-ecological-communities)
+
+[Multivariate Statistics for wildlife and Ecology Research](https://link.springer.com/book/10.1007/978-1-4612-1288-1)
+
 #### Base de datos
 
 Para esta clase utilizaremos la base de datos `bettles.txt`. Estos datos muestran las abundancias de escarabajos en tres tipos de hábitat en el Reino Unido. Hay 6 réplicas para cada hábitat (Wood, Grass, Edge). 
