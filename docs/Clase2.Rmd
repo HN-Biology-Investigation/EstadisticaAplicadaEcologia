@@ -11,7 +11,7 @@ header-includes:
 ---
 
 <div style="display:flex; align-items:center;">
-  <h1 style="margin:0;">Clase 2: Análisis de Diversidad</h1>
+  <h1 style="margin:0;">Clase 2: Análisis de diversidad y riqueza de especies</h1>
   <img src="HN Cursos publicidad/HN Biology Inv Circle.jpg" alt="" style="width:100px; margin-left:20px;">
 </div>
 
