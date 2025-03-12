@@ -15,26 +15,26 @@ Este curso proporciona una introducción práctica a las técnicas estadísticas
 
 # Temas que Cubriremos:
 
-[Clase 1: Comandos Básicos y Exploración de Datos](Clase1.html)
+[Clase 1: Comandos básicos y exploración de datos](Clase1.html)
 
-[Clase 2: Analisis de Diversidad y Riqueza de especies](Clase2.html)
+[Clase 2: Análisis de diversidad y riqueza de especies](Clase2.html)
 
-[Clase 3: Analisis de Varianza y Prueba Correlacion](Clase3.html)
+[Clase 3: Análisis de varianza y prueba de correlación](Clase3.html)
 
-[Clase 3: Suplementario - Pruebas no parametricas](Clase4.html)
+[Clase 3: Suplementario - Pruebas no paramétricas](Clase4.html)
 
 [Clase 4: Modelos lineales](Clase5.html)
 
-[Clase 5: Modelos lineales Generalizados: Poisson](Clase6.html)
+[Clase 5: Modelos lineales generalizados: Poisson](Clase6.html)
 
-[Clase 6: Modelos lineales Generalizados: Bernoulli](Clase7.html)
+[Clase 6: Modelos lineales generalizados: Bernoulli](Clase7.html)
 
-[Clase 7: Modelos lineales Mixtos](ClaseGLMM.html)
+[Clase 7: Modelos lineales mixtos](ClaseGLMM.html)
 
 [Clase 8: NMDS, PCA y PERMANOVA](Clase8.html)
 
-[Clase 9: Anosim, MRPP, SIMPER e Indicador de especies](Clase9.html)
+[Clase 9: ANOSIM, MRPP, SIMPER e indicador de especies](Clase9.html)
 
-[Clase 10: Repaso, Preguntas y respuestas](Clase10.html)
+[Clase 10: Introducción a N-Mixture Models y modelos de ocupación](Clase10.html)
 
 ![HN Biology Investigation Academy](HN%20Cursos%20publicidad/HN%20Biology%20Inv%20large.jpg)
