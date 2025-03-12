@@ -296,6 +296,8 @@ boxplot(depth ~ zone,
 
 Análisis estadístico:
 
+Para este ejercicio, utilizaremos el paquete `outliers`. Los **::** después de outliers indican que usaremos la función `grubbs.test` del paquete `outliers` sin necesidad de cargarlo previamente.
+
 ```{r}
 outliers::grubbs.test(cyanistes$depth, type = 10)
 
