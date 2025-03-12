@@ -16,7 +16,7 @@ header-includes:
 </div>
 
 
-El contenido de esta clase se basara mayoritariamente en el libro `Community Ecology Analytical Methods Using R and Excel` by `Mark Gardener`
+El contenido de esta clase se basara mayoritariamente en el libro [Community Ecology Analytical Methods Using R and Excel` by `Mark Gardener](https://pelagicpublishing.com/products/community-ecology-r-excel-gardener?srsltid=AfmBOooKjGS0ZS49AB4iFpKjAyLjyXTD77JSQ3VXNZqjJe-ierPQOioF)
 
 Los índices de diversidad biológica son medidas cuantitativas que se utilizan para evaluar la diversidad de especies en un área determinada. Estos índices se utilizan comúnmente en la ecología y la conservación para medir la riqueza de especies, la evenness (equidad) de la distribución de especies y la distancia entre especies. Algunos ejemplos comunes de índices de diversidad biológica incluyen:
 
@@ -447,3 +447,39 @@ Diversidad_shannon <- diversity(pqd_wider[,3:34], index = "shannon")
 
 head(Diversidad_shannon)
 ```
+
+:::
+
+#### Análisis de interpolación y extrapolación {.tabset .tabset-pills}
+
+El paquete [iNext](https://doi.org/10.1111/2041-210X.12613) en R se utiliza para realizar análisis de [interpolación y extrapolación](https://doi.org/10.1890/13-0133.1) de diversidad basados en curvas de rarefacción y extrapolación. Los principales índices que estima son:
+
+- Riqueza de especies (q = 0): Representa el número total de especies en la muestra, sin considerar su abundancia relativa.
+
+- Índice de Shannon (q = 1): Considera la equitatividad de las especies y otorga más peso a las especies comunes, utilizando el exponencial del índice de Shannon.
+
+- Índice de Simpson (q = 2): Da mayor importancia a las especies dominantes y menos peso a las especies raras, estimando la probabilidad de que dos individuos seleccionados al azar pertenezcan a la misma especie.
+
+Estos índices permiten evaluar la diversidad de comunidades ecológicas y comparar muestras con diferentes tamaños de muestreo.
+
+Ejercicio
+
+```{r}
+library(iNEXT)
+
+data(bird)
+out2 <- iNEXT(bird, q=0, datatype="abundance")
+
+plot(out2)
+```
+
+```{r}
+data(ant)
+
+t <- round(seq(10, 500, length.out=20))
+
+out3 <- iNEXT(ant$h500m, q=1, datatype="incidence_freq", size=t, se=FALSE)
+
+plot(out3)
+```
+
