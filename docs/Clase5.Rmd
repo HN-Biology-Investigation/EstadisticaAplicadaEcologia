@@ -84,6 +84,8 @@ MulplePlot
 
 #### Modelo lineal simple
 
+Principal referencia utilizada: [GLMs in R for Ecology 2nd edition](https://www.amazon.com/-/es/GLMs-Ecology-Prof-Carl-Smith/dp/B0CCZWCTW1)
+
 Un modelo lineal simple es un modelo matemático que se utiliza para predecir una variable dependiente (también conocida como la variable objetivo o la variable respuesta) a partir de una única variable independiente (también conocida como la variable predictor o la variable explicativa). Este tipo de modelo se basa en la hipótesis de que la relación entre la variable dependiente y la variable independiente es lineal, es decir, que puede ser representada por una línea recta en un gráfico.
 
 La forma general de un modelo lineal simple es:
@@ -266,6 +268,8 @@ plot_model(fit5, "int")
 :::
 
 #### Seleccion de modelo usando AIC
+
+Recomendacion: [A practical guide to selecting models for exploration, inference, and prediction in ecology]( https://doi.org/10.1002/ecy.3336)
 
 La selección del modelo más adecuado para un conjunto de datos es un proceso importante en el análisis de datos. Existen diferentes criterios que se pueden utilizar para seleccionar el modelo más adecuado, dependiendo del objetivo del análisis y del tipo de datos que se tienen. Algunos de los criterios más comunes son:
 
