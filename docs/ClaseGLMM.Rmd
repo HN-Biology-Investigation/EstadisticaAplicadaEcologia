@@ -15,6 +15,8 @@ header-includes:
   <img src="HN Cursos publicidad/HN Biology Inv Circle.jpg" alt="" style="width:100px; margin-left:20px;">
 </div>
 
+[Fitting Linear Mixed-Effects Models Using lme4](10.18637/jss.v067.i01)
+
 Literatura recomendada para compreder los GLLM, [Harrison *et al*. 2018](https://doi.org/10.7717/peerj.4794)
 
 En estudios ecológicos y de conservación, a veces se toman mediciones de los mismos individuos o sitios de muestreo en más de una ocasión. Un estudio de este tipo se denomina un `diseño de medidas repetidas`. Estos datos también pueden ser recolectados a intervalos de tiempo específicos, en cuyo caso los datos conforman un `estudio longitudinal`.
@@ -24,7 +26,30 @@ Para nuestro ejemplo, utilizaremos una base de datos sobre aves en Honduras. La 
 **Los objetivos del estudio fueron evaluar la relación de la abundancia de aves con la estructura de la vegetación y el paisaje.:**
 
 
-### Contenido{.tabset .tabset-pills}
+### Introduccion {.tabset .tabset-pills}
+
+Los modelos de efectos mixtos (también conocidos como modelos mixtos) pueden utilizarse en un ANOVA (solo con factores como variables predictoras) o en un marco de regresión (con variables predictoras continuas y categóricas). La diferencia entre los modelos de efectos fijos y los modelos de efectos mixtos es que los modelos mixtos incluyen uno o más efectos "aleatorios".
+
+Los efectos aleatorios pueden ajustarse para el intercepto (factores), para pendientes variables (efectos aleatorios continuos), o como una interacción entre intercepto y pendientes. Los efectos aleatorios también pueden anidarse dentro de otros efectos aleatorios. Podemos usar efectos aleatorios cuando tenemos muestras que no son independientes, debido a mediciones repetidas del mismo individuo/sitio, cuando las muestras o grupos no son independientes en el espacio, o por otras razones de no-independencia de las muestras.
+
+Efectos fijos:
+
+- Tienen medias independientes entre grupos.
+- Se muestrean en todos los niveles posibles dentro de la población.
+- Tienen parámetros regulares (es decir, hay X-1 parámetros para X grupos/niveles en el modelo).
+- No se puede extrapolar a otros niveles en la población (es decir, si tenemos hábitats A y B en nuestras observaciones, no podemos extrapolar al hábitat C).
+- Ejemplos: hábitat, edad.
+
+Efectos aleatorios:
+
+- Tienen medias dependientes entre grupos. Por lo tanto, puede haber 'pseudorreplicación' entre muestras.
+- Submuestrean la población total.
+- Tienen un 'hiperparámetro', que es la varianza de todos los grupos/niveles combinados. Así, para X niveles en el factor de efecto aleatorio, solo hay una varianza para ese factor. Se asume que la media del efecto aleatorio es 0. La varianza del efecto aleatorio examina la varianza entre niveles, mientras que la varianza residual del modelo (otro ruido o error en el modelo) explica la varianza dentro de los niveles del factor aleatorio.
+- Es posible extrapolar a otros niveles. (Si estamos muestreando sitios 1, 2, 3 y 4, e incluimos sitio como efecto aleatorio, podemos extrapolar al sitio 5).
+- A menudo se consideran una variable/parámetro "nuisance" o molesto, en la que no nos interesa el efecto específico de cada nivel del efecto aleatorio sobre la variable respuesta.
+- Ejemplos: sitio, individuo, fecha (efecto aleatorio de pendiente).
+
+`Debería haber muchas más observaciones que parámetros en el modelo, al menos tres pero preferiblemente más de 10 observaciones por parámetro; de lo contrario, hay riesgo de sobreajuste del modelo (es decir, ajustar el modelo con muy pocas observaciones), lo que hace que el ajuste del modelo refleje las idiosincrasias del conjunto de datos y tenga un bajo rendimiento para predecir nuevas observaciones.`
 
 #### Base de datos
 
@@ -182,9 +207,53 @@ Para la validación, utilizaremos el paquete `DHARMa`.
 library(DHARMa)
 
 testResiduals(AvesM2)
+```
+
+
+```{r}
 testDispersion(AvesM2)
 ```
 
+```{r}
+performance::check_model(AvesM2)
+```
+
+#### Psuedo R-squared
+
+Aunque los modelos mixtos no generan un valor de R² verdadero, podemos obtener algunas medidas de pseudo-R² para examinar el poder explicativo de los efectos fijos y aleatorios en el modelo. Usemos la función r.squaredGLMM del paquete MuMIn:
+
+```{r}
+r.squaredGLMM(AvesM2)
+```
+
+-R²m es el valor de pseudo-R² marginal, que representa la varianza explicada por los efectos fijos en el modelo.
+A menudo, este es el valor principal en el que los investigadores se enfocan, ya que indica qué tan bien los predictores fijos explican lo que ocurre en la variable respuesta.
+
+-El valor R²c es el pseudo-R² condicional, y representa la varianza explicada por el modelo completo (tanto los efectos aleatorios como los efectos fijos).
+
+```{r}
+vars <- insight::get_variance(AvesM2)
+
+(r2_marginal <- vars$var.fixed / (vars$var.fixed + vars$var.random + vars$var.residual))
+
+(r2_conditional <- (vars$var.fixed + vars$var.random) /
++ (vars$var.fixed + vars$var.random + vars$var.residual))
+```
+
+```{r}
+performance::r2_nakagawa(AvesM2)
+```
+Ahora hemos examinado los valores de pseudo-R² que se refieren a la varianza en la variable respuesta explicada por los efectos fijos y la varianza explicada por el modelo completo. Para obtener únicamente la varianza explicada por los efectos aleatorios, usemos la función icc del paquete performance, y verifiquemos nuestros resultados con el paquete insight:
+
+```{r}
+performance::icc(AvesM2)
+```
+
+```{r}
+(icc_adjusted <- vars$var.random / ( vars$var.random + vars$var.residual))
+
+(icc_conditional<- vars$var.random / + (vars$var.fixed + vars$var.random + vars$var.residual))
+```
 
 
 #### Interpretacion del Modelo
@@ -192,6 +261,32 @@ testDispersion(AvesM2)
 ```{r}
 summary(AvesM2)
 ```
+
+
+#### Uso de `ranef`
+
+"Las estimaciones empíricas de Bayes de los efectos aleatorios, también llamadas modas condicionales, son aquellos valores de los efectos aleatorios que son más probables dado los datos y el modelo ajustado."
+
+- "mode" en ranef() = valor más probable del efecto aleatorio para cada nivel del factor de agrupación.
+- No es una media ni una mediana, sino el punto máximo (la moda) de la distribución estimada de ese efecto aleatorio.
+- Es útil para entender cómo se desvía cada grupo respecto a los efectos fijos generales.
+
+```{r}
+Site_ranef <- ranef(AvesM2)
+
+lattice::dotplot(Site_ranef)[["Site"]]
+```
+
+
+```{r}
+lattice::dotplot(Site_ranef)[["Especies"]]
+```
+
+
+```{r}
+lattice::dotplot(Site_ranef)[["Replica"]]
+```
+
 
 
 #### Gráficos{.tabset .tabset-pills}
@@ -209,10 +304,5 @@ plot(ggpredict(AvesM2, type = "re", terms = c("sforest.", "Especies"),
                back_transform = TRUE, ci.lvl = FALSE))
 
 ```
-
-
-#### Ejercicio
-
-- Seguir las indicaciones brindadas por David Murillo.
 
 
