@@ -49,7 +49,6 @@ Efectos aleatorios:
 - A menudo se consideran una variable/parámetro "nuisance" o molesto, en la que no nos interesa el efecto específico de cada nivel del efecto aleatorio sobre la variable respuesta.
 - Ejemplos: sitio, individuo, fecha (efecto aleatorio de pendiente).
 
-`Debería haber muchas más observaciones que parámetros en el modelo, al menos tres pero preferiblemente más de 10 observaciones por parámetro; de lo contrario, hay riesgo de sobreajuste del modelo (es decir, ajustar el modelo con muy pocas observaciones), lo que hace que el ajuste del modelo refleje las idiosincrasias del conjunto de datos y tenga un bajo rendimiento para predecir nuevas observaciones.`
 
 #### Base de datos
 
