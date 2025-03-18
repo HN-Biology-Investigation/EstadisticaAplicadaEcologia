@@ -167,6 +167,12 @@ vif(glm(Abundancia ~ Type + ALTITUDE +
 
 #### Modelos candidatos
 
+Efectos aleatorios:
+
+- (1|Site): Este es un efecto aleatorio para el factor Site. Representa la variabilidad de la abundancia de aves entre diferentes sitios (por ejemplo, diferentes ubicaciones geográficas o diferentes condiciones ambientales).
+- (1|Especies): Este es un efecto aleatorio para el factor Especies, que captura la variabilidad de la abundancia entre especies.
+- (1|Replica): Este es un efecto aleatorio para Replica, que podría estar relacionado con la variabilidad entre réplicas en el diseño experimental, si se han realizado múltiples mediciones en cada sitio.
+
 ```{r}
 
 AvesLim <- AvesLim %>% 
@@ -179,6 +185,16 @@ AvesM1 <- glmer.nb(Abundancia ~ sforest. +
                    family = "poisson", data= AvesLim, na.action = na.fail )
 
 vif(AvesM1)
+```
+
+Para ajustar un modelo con un efecto anidado en el que las réplicas estén anidadas dentro de los sitios, solo necesitas modificar el término del efecto aleatorio de la siguiente manera:
+
+(1|Site/Replica): El término (1|Site/Replica) indica que el modelo incluirá un efecto aleatorio tanto para los sitios como para las réplicas dentro de los sitios. Esto implica que la variabilidad de la abundancia de aves no solo dependerá de los sitios, sino también de las diferencias dentro de cada sitio debidas a las réplicas.
+
+```{r}
+AvesM1_anidado <- glmer.nb(Abundancia ~ sforest. + 
+                             Area_Basal + Group_cover + (1|Site/Replica),
+                           family = "poisson", data = AvesLim, na.action = na.fail)
 ```
 
 #### Selección del modelo
@@ -197,6 +213,10 @@ AvesM2 <- glmer.nb(Abundancia ~ sforest. + (1|Site) + (1|Especies) + (1|Replica)
                    family = "poisson", data= AvesLim, na.action = na.fail )
 
 ```
+
+
+
+
 
 #### Validación del modelo
 
