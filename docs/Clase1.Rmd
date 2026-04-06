@@ -20,7 +20,7 @@ Esta clase está diseñada para enseñarte los comandos básicos en R, incluyend
 
 ### Contenido {.tabset .tabset-pills}
 
-#### Operaciones Basicas
+#### Operaciones básicas
 
 - Adición (suma)
 
@@ -152,7 +152,7 @@ En este ejemplo la `variabley` solo tiene la observación `y`. Si quermos más o
 Seccion <- c("1A", "1B", "3A", "2B", "2A", "3A")
 ```
 
-#### Cracion de tablas
+#### Creación de tablas
 
 Ya que aprendimos como crear variables numéricas y categóricas, ahora podemos crear tablas. Para crear una tabla en R debemos de asegurar que nuestras variables presenten la misma cantidad de observaciones.
 
@@ -160,7 +160,11 @@ Ya que aprendimos como crear variables numéricas y categóricas, ahora podemos 
 
 **Creación de tabla con 10 observaciones**
 
-Primero crearemos nuestras variables
+En este primer paso, crearemos tres variables que representarán nuestros datos. Cada variable contiene diferentes tipos de información:
+
+Temperatura: valores numéricos enteros generados aleatoriamente entre 20 y 35.
+Riqueza: valores numéricos continuos generados a partir de una distribución normal, con media de 5 y desviación estándar de 3.
+Franja: variable categórica que indica grupos o categorías (A, B y C).
 
 ```{r}
 Temperatura <- sample(20:35, 10)
@@ -170,14 +174,18 @@ Riqueza <- rnorm(10, mean = 5, sd= 3)
 Franja <- c("A", "A", "C", "C", "A", "B", "B", "B", "A", "C")
 ```
 
-Ahora utilizando el comando `data.frame()` podemos crear nuestra tabla
+Una vez que hemos creado las variables, el siguiente paso es combinarlas en una sola estructura de datos. Para esto utilizamos la función `data.frame()`, que permite organizar múltiples variables en forma de tabla (filas y columnas).
+
+Cada fila representa una observación, y cada columna corresponde a una variable.
 
 ```{r}
 Tabla1 <- data.frame(Franja, Temperatura, Riqueza)
 ```
 
 
-Observemos nuestra primera tabla
+Exploración de la tabla
+
+Finalmente, podemos visualizar la tabla creada para verificar que los datos se han organizado correctamente. Esto nos permite revisar la estructura, los valores y detectar posibles errores.
 
 ```{r, echo=FALSE}
 
@@ -188,9 +196,11 @@ knitr::kable(Tabla1)
 
 
 
-#### Cargar base de datos
+#### Cargar una base de datos
 
-Para cargar una base de datos de nuestro pc, necesitamos sabe exactamente la ubicación de la base de datos. Por ejemplo para cargar la base de datos `bird.sta` que se encuentra en la carpeta `data`, de nuestro proyecto de R. Podemos usar el comando `read.csv()` ya que esta base de datos está delimitada por coma.
+Para cargar una base de datos desde nuestro computador, es necesario conocer la ubicación exacta del archivo dentro de nuestro sistema. En el caso de trabajar dentro de un proyecto de R, es recomendable organizar los archivos en carpetas (por ejemplo, una carpeta llamada `data`).
+
+Supongamos que tenemos un archivo llamado `bird.sta` almacenado en la carpeta data de nuestro proyecto. Si este archivo está delimitado por comas, podemos utilizar la función `read.csv()` para importarlo a R.
 
 
 :::{.notes}
@@ -206,14 +216,32 @@ Observe que el nombre de la base de datos es `bird.sta`, el formato es `.csv` y 
 
 :::
 
-#### Estadistica descriptiva
+#### Estadística descriptiva
 
-Para los siguientes ejemplos utilizaremos la base de datos `penguins` del paquete `palmerpenguins`
+Referencia: [Statistics With Applications to the Biological and Health Sciences](https://www.cabidigitallibrary.org/doi/full/10.5555/19712702614)
+
+El área de la estadística descriptiva se ocupa de resumir y caracterizar conjuntos de observaciones mediante el uso de herramientas gráficas, tablas y medidas numéricas. A través de estos recursos se pueden identificar distintas propiedades de los datos, como la frecuencia con que aparecen determinados valores, la identificación de un valor típico o representativo, el grado de variabilidad dentro de las observaciones y la relación existente entre dos o más variables.
+
+Es importante señalar que la estadística descriptiva no tiene como objetivo principal derivar conclusiones o implicaciones generales a partir de los datos. Su función es organizar la información y resaltar sus características esenciales, de manera que posteriormente sea posible interpretar los datos y extraer conclusiones en etapas posteriores del análisis.
+
+Sin embargo, las conclusiones a las que se llegue dependerán en gran medida de cómo se seleccionen y utilicen las estadísticas descriptivas. Una elección inadecuada puede conducir a inferencias científicas erróneas. Un ejemplo de esto ocurre cuando se seleccionan únicamente ciertas partes del conjunto de datos y se excluyen aquellas que no coinciden con las ideas preconcebidas del investigador sobre cómo debería comportarse la naturaleza, lo cual puede sesgar la interpretación de los resultados.
 
 
-:::{.notes} 
 
-**Cargar la base de datos penguins**
+*Medidas de posición o de tendencia central*
+
+
+**Media Aritmetica**
+
+La medida de tendencia central más simple y, en muchos sentidos, la más evidente es el promedio de las observaciones dentro de un grupo. Sin embargo, el término *promedio* puede resultar ambiguo, ya que existen diferentes tipos de promedios y no siempre es claro a cuál se está haciendo referencia.
+
+Para evitar esta confusión, en estadística se utiliza el término *media aritmética* para referirse específicamente a la suma de todas las observaciones de un conjunto de datos dividida entre el número total de observaciones. De esta manera se distingue con precisión de otros tipos de promedios. Por ello, cuando en estadística se usa simplemente el término media, generalmente se está haciendo referencia a la media aritmética.
+
+Leer: "[Comparación de la media aritmética y la media geométrica como medidas de tendencia central en poblaciones de nematodos en ganado](https://doi.org/10.1016/S0304-4017(98)00206-4)"
+
+Para los siguientes ejemplos utilizaremos la base de datos `penguins` del paquete [palmerpenguins](https://allisonhorst.github.io/palmerpenguins/articles/intro.html)
+
+1.  Cargar la base de datos penguins
 
 Primero debemos cargar el paquete `palmerpenguins`
 
@@ -227,31 +255,184 @@ Una vez cargada el paquete podemos cargar a la base de datos `penguins`
 data("penguins")
 ```
 
-:::
-
-
-:::{.notes}
-
-Calcular la media de cada columna del data frame
+2.  Calcular la media de cada columna del data frame
 
 ```{r}
 sapply(penguins[, 3:6], mean, na.rm = TRUE)
 ```
 
-Observe que que estamos seleccionando la columna 3 a la 6 (ya que contienen variables numericas), y el nar.rm = TRUE, es para que reconosca que existen NA en nuestra base de datos.
+Observe que que estamos seleccionando la columna 3 a la 6 (ya que contienen variables numericas), y el na.rm = TRUE, es para que reconosca que existen NA en nuestra base de datos.
 
-:::
-
-:::{.notes}
-
-Calcular la media de la masa de los pingüinos para cada especie
+3.  Calcular la media de la masa de los pingüinos para cada especie
 
 ```{r}
 tapply(penguins$body_mass_g, penguins$species, mean, na.rm =TRUE )
 ```
+
 Observe que que estamos seleccionando la columna `body_mass_g` para estimar la media condicionada por la variable `species`, el nar.rm = TRUE, es para que reconosca que existen NA en nuestra base de datos.
 
-:::
+**Mediana**
+
+Otra medida de tendencia central muy utilizada es la mediana, que corresponde al valor que ocupa la posición central cuando las observaciones se ordenan de menor a mayor.
+
+Por ejemplo, para calcular la mediana de los cinco conteos radiológicos mencionados en la sección anterior, primero debemos ordenar las observaciones según su magnitud, obteniendo: 1, 2, 4, 5, 9. La mediana es entonces el valor que ocupa la posición central dentro de este conjunto ordenado de observaciones, es decir, 4.
+
+El procedimiento descrito es adecuado cuando el conjunto de datos tiene un número impar de observaciones, pero evidentemente no puede aplicarse directamente cuando el número de observaciones es par.
+
+Por ejemplo, supongamos el siguiente conjunto de datos: 2, 3, 5, 8
+
+Al haber cuatro observaciones, no existe un único valor central. En este caso, la mediana se obtiene calculando el promedio de los dos valores centrales. Primero identificamos esos valores (3 y 5) y luego calculamos su media. Por lo tanto, la mediana de este conjunto de datos es 4. De esta forma, la mediana siempre divide el conjunto de datos ordenados en dos partes iguales: la mitad de las observaciones quedan por debajo y la otra mitad por encima de este valor.
+
+```{r}
+tapply(penguins$bill_length_mm,
+       penguins$species,
+       median,
+       na.rm = TRUE)
+```
+
+**Moda**
+
+Otra medida común de tendencia central es la moda. La moda es el valor que aparece con mayor frecuencia en un conjunto de observaciones.
+
+Por ejemplo, en la serie de conteos radiológicos 1, 2, 2, 4, 5, 9, la moda sería 2, ya que es el valor que se repite con mayor frecuencia. Conjuntos de observaciones como este se llaman unimodales, porque tienen una sola moda.
+
+Sin embargo, si hubiéramos registrado otra observación con valor 4, entonces tanto el 2 como el 4 aparecerían dos veces en el conjunto resultante de siete observaciones. En ese caso, el conjunto se denominaría bimodal.
+
+El conjunto original de cinco conteos radiológicos (3,7,1,9,5) no tenía moda, ya que cada valor aparecía solo una vez.
+
+Podemos calcular la moda del peso (body_mass_g) de los pingüinos por especie y sexo usando R. Como R base no tiene una función de moda incorporada, primero definimos una función simple que devuelva la moda, y luego la aplicamos a cada grupo.
+
+Función para calcular la moda
+
+```{r}
+moda <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+```
+
+Aplicar la función por especie y sexo usando tapply
+
+```{r}
+tapply(penguins$body_mass_g,
+       list(penguins$species, penguins$sex),
+       moda)
+```
+
+
+*Medidas de variabilidad*
+
+**Rango**
+
+El rango es una medida de variabilidad que indica la diferencia entre el valor máximo y el valor mínimo de un conjunto de datos. Nos da una idea rápida de qué tan dispersos están los datos, aunque no considera cómo se distribuyen los valores intermedios.
+
+Supongamos que tenemos las siguientes alturas de cinco estudiantes (en cm):
+
+160, 165,170,175,180
+
+Valor máximo = 180
+
+Valor mínimo = 160
+
+Rango= 180−160 = 20
+
+Esto significa que las alturas varían en 20 cm entre el estudiante más bajo y el más alto.
+
+**Varianza**
+
+La varianza es una medida de variabilidad o dispersión que indica qué tanto se alejan los valores de un conjunto de datos respecto a su media. Mientras mayor sea la varianza, más dispersos están los datos; mientras menor sea, más cercanos están a la media.
+
+Fórmula para una población:
+
+$$
+\sigma^2 = \frac{\sum_{i=1}^{N} \left(x_i - \mu \right)^2}{N}
+$$
+
+**Desviación estándar**
+
+La desviación estándar es una medida de dispersión que indica qué tanto se alejan los valores de un conjunto de datos respecto a su media. Mientras que la varianza nos da la dispersión en unidades al cuadrado, la desviación estándar devuelve la dispersión en las mismas unidades que los datos originales, lo que facilita su interpretación.
+
+Una desviación estándar pequeña indica que los valores están muy cercanos a la media.
+
+Una desviación estándar grande indica que los valores están muy dispersos alrededor de la media. Por ejmplo una desviación estándar de 3.16 significa que los valores, en promedio, se alejan de la media aproximadamente 3.16 unidades.
+
+Desviación estándar de una población
+
+$$
+\sigma = \sqrt{\frac{\sum_{i=1}^{N} \left(x_i - \mu \right)^2}{N}}
+$$
+
+**Error estándar**
+
+El error estándar es una medida de la precisión con la que la media muestral estima la media poblacional. Mientras que la desviación estándar mide la variabilidad de los datos individuales, el error estándar mide la variabilidad de la media si se repitieran múltiples muestras de la misma población.
+
+Fórmula:
+
+Para una muestra:
+
+$$
+SE = \frac{s}{\sqrt{n}}
+$$
+
+Podemos calcular el error estándar (SE) de la masa corporal (body_mass_g) por especie y sexo usando
+
+Función para calcular el error estándar
+
+```{r}
+SE <- function(x) {
+  x <- na.omit(x)          
+  sd(x) / sqrt(length(x))  
+}
+```
+
+Aplicar por especie y sexo
+
+```{r}
+
+tapply(penguins$body_mass_g,
+       list(penguins$species, penguins$sex),
+       SE)
+```
+
+**Percentiles, cuartiles y rangos percentílicos**
+
+Los percentiles son medidas de posición que dividen un conjunto de datos ordenados en 100 partes iguales. Cada percentil indica el valor por debajo del cual se encuentra un cierto porcentaje de las observaciones. Por ejemplo, el percentil 25 (P25) es el valor que deja el 25% de los datos por debajo y el 75% por encima.
+
+Los cuantiles son generalizaciones de los percentiles. Un cuantil de orden q (donde 0\<q\<1) es el valor que deja una fracción q de los datos por debajo. Por ejemplo:
+
+El cuartil 1 (Q1) es equivalente al percentil 25
+
+La mediana (Q2) es equivalente al percentil 50
+
+El cuartil 3 (Q3) es equivalente al percentil 75
+
+Los rangos percentílicos (percentile ranks) indican el porcentaje de observaciones que se encuentran por debajo de un valor específico dentro del conjunto de datos. Por ejemplo, si un valor de glucosa tiene un rango percentílico del 90%, significa que el 90% de los valores medidos son menores que este valor.
+
+Estas medidas son útiles en biología y ciencias de la salud porque permiten:
+
+-   Comparar valores individuales con respecto a la distribución de la población.
+
+-   Identificar valores extremos o atípicos.
+
+-   Evaluar el crecimiento, la presión arterial, o parámetros clínicos en función de la población de referencia.
+
+En resumen, los percentiles y cuantiles proporcionan una forma de describir la posición relativa de los datos dentro de un conjunto ordenado, mientras que los rangos percentílicos permiten expresar esa posición en términos de porcentaje de la población.
+
+```{r}
+pesos <- na.omit(penguins$body_mass_g)
+
+quantile(pesos, probs = c(0.1, 0.25, 0.5, 0.75, 0.9))
+```
+
+Supongamos que queremos el rango percentílico del pingüino que pesa 4000 g:
+
+```{r}
+mean(pesos < 4000) * 100
+```
+
+Esto devuelve el porcentaje de pingüinos que pesan menos de 4000 g.
+
+
 
 #### Exploración de datos (Zuur et al. 2010)
 
@@ -376,5 +557,19 @@ ggplot(data = cyanistes, aes(x = height, y = depth)) +
 
 La independencia en las observaciones de la variable respuesta se refiere a la suposición de que cada observación en el conjunto de datos es independiente de las demás. Esto significa que el valor de una observación no debe influir en el valor de otra. La independencia es crucial en el análisis estadístico porque garantiza que las inferencias y los resultados sean válidos. Si las observaciones no son independientes, puede haber una correlación no reconocida entre ellas, lo que puede conducir a errores en la estimación de parámetros, aumento de la varianza de los errores y, en última instancia, a conclusiones incorrectas sobre las relaciones entre variables. Por lo tanto, verificar la independencia de las observaciones es un paso esencial en la exploración de datos y en la construcción de modelos estadísticos.
 
+
+#### Asignación 1
+
+Esta asignación tiene como objetivo reforzar los conceptos aprendidos en clase. En primer lugar, deberá instalar el paquete palmerpenguins. Una vez instalado, deberá cargarlo y acceder a la base de datos penguins.
+
+Utilizando esta base de datos, seleccione una variable y calcule su media y desviación estándar. Además, deberá practicar los pasos de exploración de datos descritos por Zuur et al. (2010).
+
+```{r, warning=FALSE, message=FALSE}
+
+library(palmerpenguins)
+data(penguinds)
+
+head(penguins)
+```
 
 
