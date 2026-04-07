@@ -44,6 +44,8 @@ La riqueza de especies puede utilizarse como variable respuesta (dependiente) en
 - Correlacionar la riqueza de especies con alguna variable (numérica)
 
 
+*Cuando contamos directamente el número de especies que detectamos en un muestreo, obtenemos lo que llamamos riqueza de especies ingenua o cruda (naïve species richness). Se le llama "ingenua" porque asume implícitamente que nuestro esfuerzo de muestreo fue suficiente para detectar todas las especies presentes, ignorando aquellas que no capturamos u observamos. Este valor es simplemente el conteo de especies distintas registradas, sin ningún tipo de corrección estadística. El problema con esta aproximación es que, especialmente cuando tenemos pocas réplicas (como solo 3 muestras), es casi seguro que subestimamos la riqueza real, ya que muchas especies raras o de baja detectabilidad quedan fuera de nuestra muestra. Por ello, en ecología se recomienda complementar o reemplazar la riqueza ingenua con estimadores más robustos (como Chao2 o Jackknife) cuando el esfuerzo de muestreo es limitado.*
+
 **Usando vegan para evaluar la riqueza de especies**
 
 :::{.notes}
@@ -128,7 +130,7 @@ Un unico valor de riqueza de especie no es suficiente para una comparacion, por 
 
 :::{.notes}
 
-CComencemos con una comparación visual utilizando un gráfico de caja.
+Comencemos con una comparación visual utilizando un gráfico de caja.
 
 ```{r, }
 Sitio <- data.frame(Sitio = pqd_wider$site,
@@ -221,14 +223,14 @@ ggplot(data= SitioRiqueza, aes(x = Sitio, y= mean)) +
 
 Por ahora, hemos realizado algunos análisis sin tomar en cuenta la cantidad de muestras por sitio. Una forma de solucionar esto es utilizando una curva de acumulación de especies.
 
-*La curva de acumulación de especies es un gráfico que muestra la relación entre el número de especies de una comunidad y el tamaño de la muestra del área en la que se encuentran. Se utiliza comúnmente en la ecología para entender cómo varía la biodiversidad en diferentes áreas y cómo afecta a la estabilidad y funcionamiento de los ecosistemas.*
+- La curva de acumulación de especies es un gráfico que muestra la relación entre el número de especies de una comunidad y el tamaño de la muestra del área en la que se encuentran. Se utiliza comúnmente en la ecología para entender cómo varía la biodiversidad en diferentes áreas y cómo afecta a la estabilidad y funcionamiento de los ecosistemas.
 
-*La curva de acumulación de especies se construye mediante el muestreo sistemático de un área y el registro del número de especies que se encuentran en cada muestra. A medida que se aumenta el tamaño de la muestra, se espera que el número de especies encontradas aumente también, pero a un ritmo decreciente. Esto se debe a que, a medida que se aumenta el tamaño de la muestra, es más probable que se incluyan especies raras y poco comunes, lo que se refleja en un aumento más lento del número de especies a medida que se aumenta el tamaño de la muestra.*
+- La curva de acumulación de especies se construye mediante el muestreo sistemático de un área y el registro del número de especies que se encuentran en cada muestra. A medida que se aumenta el tamaño de la muestra, se espera que el número de especies encontradas aumente también, pero a un ritmo decreciente. Esto se debe a que, a medida que se aumenta el tamaño de la muestra, es más probable que se incluyan especies raras y poco comunes, lo que se refleja en un aumento más lento del número de especies a medida que se aumenta el tamaño de la muestra.
 
-*La curva de acumulación de especies puede ser útil para comparar la biodiversidad de diferentes áreas y para entender cómo la diversidad de especies afecta a la estabilidad y el funcionamiento de los ecosistemas. También puede ser utilizada para predecir el número total de especies en un área determinada y para identificar áreas con alta biodiversidad que pueden ser prioritarias para la conservación.*
+- La curva de acumulación de especies puede ser útil para comparar la biodiversidad de diferentes áreas y para entender cómo la diversidad de especies afecta a la estabilidad y el funcionamiento de los ecosistemas. También puede ser utilizada para predecir el número total de especies en un área determinada y para identificar áreas con alta biodiversidad que pueden ser prioritarias para la conservación.
 
 
-**Curva de acumulacion de especie**
+**Curva de acumulación de especie**
 
 :::{.notes}
 
@@ -482,4 +484,8 @@ out3 <- iNEXT(ant$h500m, q=1, datatype="incidence_freq", size=t, se=FALSE)
 
 plot(out3)
 ```
+
+#### Ejercicio 
+
+Utilice la base de datos `bird.sta` para estimar la riqueza de especies. Compare la riqueza naïve (observada) versus la riqueza estimada mediante un gráfico de caja que muestre los intervalos de confianza al 95% para cada categoría de la variable `basin`. Complemente el análisis con una curva de rarefacción que permita evaluar la integridad del muestreo en función del esfuerzo.
 

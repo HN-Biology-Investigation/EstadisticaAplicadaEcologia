@@ -504,6 +504,11 @@ Un supuesto de algunas pruebas estadísticas es que la variable respuesta sigue 
 shapiro.test(cyanistes$depth)
 ```
 
+```{r}
+ks.test(cyanistes$depth, "pnorm")
+```
+
+
 La homogeneidad de varianzas es otro supuesto importante en muchas pruebas estadísticas. Para visualizar la homogeneidad de varianzas en una variable categórica, se puede utilizar un gráfico de caja. Sin embargo, un gráfico de dispersión es más adecuado para visualizar la homogeneidad en variables numéricas.
 
 ```{r}

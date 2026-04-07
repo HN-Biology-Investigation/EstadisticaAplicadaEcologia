@@ -503,53 +503,53 @@ estructura, los valores y detectar posibles errores.</p>
 <tbody>
 <tr class="odd">
 <td align="left">A</td>
-<td align="right">21</td>
-<td align="right">7.5664898</td>
+<td align="right">31</td>
+<td align="right">7.7560823</td>
 </tr>
 <tr class="even">
 <td align="left">A</td>
-<td align="right">27</td>
-<td align="right">4.5465564</td>
-</tr>
-<tr class="odd">
-<td align="left">C</td>
-<td align="right">32</td>
-<td align="right">1.2697222</td>
-</tr>
-<tr class="even">
-<td align="left">C</td>
-<td align="right">22</td>
-<td align="right">7.6239022</td>
-</tr>
-<tr class="odd">
-<td align="left">A</td>
-<td align="right">24</td>
-<td align="right">3.2299651</td>
-</tr>
-<tr class="even">
-<td align="left">B</td>
-<td align="right">34</td>
-<td align="right">2.6054336</td>
-</tr>
-<tr class="odd">
-<td align="left">B</td>
 <td align="right">35</td>
-<td align="right">4.0597880</td>
+<td align="right">8.2212680</td>
+</tr>
+<tr class="odd">
+<td align="left">C</td>
+<td align="right">28</td>
+<td align="right">-1.3942946</td>
+</tr>
+<tr class="even">
+<td align="left">C</td>
+<td align="right">23</td>
+<td align="right">4.9420117</td>
+</tr>
+<tr class="odd">
+<td align="left">A</td>
+<td align="right">22</td>
+<td align="right">2.5776807</td>
 </tr>
 <tr class="even">
 <td align="left">B</td>
 <td align="right">29</td>
-<td align="right">7.8201099</td>
+<td align="right">6.7241377</td>
+</tr>
+<tr class="odd">
+<td align="left">B</td>
+<td align="right">25</td>
+<td align="right">7.1209861</td>
+</tr>
+<tr class="even">
+<td align="left">B</td>
+<td align="right">30</td>
+<td align="right">4.3449053</td>
 </tr>
 <tr class="odd">
 <td align="left">A</td>
-<td align="right">23</td>
-<td align="right">0.9328471</td>
+<td align="right">27</td>
+<td align="right">0.8214451</td>
 </tr>
 <tr class="even">
 <td align="left">C</td>
-<td align="right">20</td>
-<td align="right">4.8608651</td>
+<td align="right">21</td>
+<td align="right">7.6120933</td>
 </tr>
 </tbody>
 </table>
@@ -886,6 +886,15 @@ se distribuyen normalmente. Si el valor p es menor que 0.05 (p &lt;
 ## 
 ## data:  cyanistes$depth
 ## W = 0.89872, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>ks.test(cyanistes$depth, &quot;pnorm&quot;)</code></pre>
+<pre><code>## Warning in ks.test.default(cyanistes$depth, &quot;pnorm&quot;): ties should not be
+## present for the one-sample Kolmogorov-Smirnov test</code></pre>
+<pre><code>## 
+##  Asymptotic one-sample Kolmogorov-Smirnov test
+## 
+## data:  cyanistes$depth
+## D = 0.56784, p-value &lt; 2.2e-16
+## alternative hypothesis: two-sided</code></pre>
 <p>La homogeneidad de varianzas es otro supuesto importante en muchas
 pruebas estadísticas. Para visualizar la homogeneidad de varianzas en
 una variable categórica, se puede utilizar un gráfico de caja. Sin
