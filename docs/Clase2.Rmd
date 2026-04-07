@@ -30,6 +30,8 @@ Los índices de diversidad biológica son medidas cuantitativas que se utilizan 
 
 - Índice de Jaccard: mide la similitud entre dos conjuntos de especies y se basa en la proporción de especies comunes entre los conjuntos.
 
+Material de lectura: [Estimating total species richness: Fitting rarefaction by asymptotic approximation](https://doi.org/10.1002/ecs2.4363)
+
 ### Contenido{.tabset .tabset-pills}
 
 
@@ -368,6 +370,8 @@ Haremos un grafico rapido
 plot(poolaccum(pqd_wider[,3:34]))
 ```
 
+Al aplicar `specpool()` obtenemos varios estimadores de la riqueza total de especies. S es la riqueza observada o naïve (el número de especies que efectivamente detectaste). Chao es un estimador basado en especies raras (las que aparecen en solo una o dos réplicas); es especialmente útil cuando hay muchas especies poco frecuentes. Jackknife 1 y Jackknife 2 se basan en la frecuencia de especies raras pero con distintos órdenes de corrección; Jackknife 2 suele dar estimaciones más altas que Jackknife 1. Bootstrap es otro estimador que tiende a ser más conservador (valores más bajos).
+
 :::
 
 **Estimaciones basadas en abundancia**
@@ -384,6 +388,8 @@ Riqueza_abundancia <- estimateR(pqd_wider[,3:34])
 Riqueza_abundancia <- data.frame <- t(Riqueza_abundancia)
 
 ```
+
+La función `estimateR` del paquete vegan calcula estimadores de riqueza basados en datos de abundancia (número de individuos por especie), no solo presencia/ausencia. Los resultados incluyen Chao (estimador de Chao1); se.chao es el error estándar asociado a esa estimación, útil para calcular intervalos de confianza. S.ACE (Abundance-based Coverage Estimator): El Estimador de Cobertura Basado en Abundancia (ACE) es un método no paramétrico utilizado para estimar la riqueza total de especies en una comunidad a partir de datos de abundancia, típicamente en ecología. Estima el número de especies no observadas enfocándose en las especies raras para calcular la cobertura de la muestra, lo que lo hace más robusto que la simple riqueza observada. se.ACE es su error estándar.
 
 ```{r, echo=FALSE}
 kable(head(Riqueza_abundancia))
@@ -475,15 +481,6 @@ out2 <- iNEXT(bird, q=0, datatype="abundance")
 plot(out2)
 ```
 
-```{r}
-data(ant)
-
-t <- round(seq(10, 500, length.out=20))
-
-out3 <- iNEXT(ant$h500m, q=1, datatype="incidence_freq", size=t, se=FALSE)
-
-plot(out3)
-```
 
 #### Ejercicio 
 
