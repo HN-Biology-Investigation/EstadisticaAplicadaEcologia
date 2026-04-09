@@ -214,7 +214,6 @@ A diferencia de los no paramétricos (que no asumen nada sobre los datos), los e
 
 [Estimating species richness by a Poisson-compound gamma model](https://doi.org/10.1093/biomet/asq026)
 
-
 2. Estimador TES (Total Expected Species)
 ¿Qué asume? La relación entre especies acumuladas y esfuerzo de muestreo sigue una curva asintótica (como la logística o Weibull).
 
@@ -230,6 +229,7 @@ A diferencia de los no paramétricos (que no asumen nada sobre los datos), los e
 [AN INCIDENCE-BASED RICHNESS ESTIMATOR FOR QUADRATS SAMPLED WITHOUT REPLACEMENT](https://doi.org/10.1890/07-1526.1)
 
 
+La mayoría de las curvas de acumulación (rarefacción, exact, random) son métodos NO PARAMÉTRICOS - simplemente reorganizan los datos para hacer comparaciones justas. En cambio, cuando usamos modelos como Michaelis-Menten o Weibull para extrapolar, son modelos PARAMÉTRICOS - se asume que la naturaleza sigue una ecuación matemática específica. Los primeros son más seguros; los segundos son más robustos para predecir, pero también más riesgosos si se selecciona el modelo equivocado.
 
 ## ¿Cuándo utilizar logaritmo en base 2, 10 o e en el índice de Shannon?
 
