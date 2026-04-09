@@ -9,9 +9,10 @@ Este material suplementario de la clase dos surge a raíz de las diversas pregun
 
 ::: panel-tabset
 
-## 1) ¿Qué análisis de riqueza de especies utilizar en cada caso? 
+## ¿Qué análisis de riqueza de especies utilizar en cada caso? 
 
-aaaaaa
+Existen diferentes tipos de análisis para evaluar la riqueza de especies, y seleccionar el apropiado depende de diversos factores. Para tener una idea más amplia de cuándo utilizar cada índice, puede leer el artículo [Evaluating the performance of species richness estimators: sensitivity to sample grain size](https://doi.org/10.1111/j.1365-2656.2006.01048.x) y esta otra referencia: [Evaluating the sampling bias in pattern of subterranean species richness: combining approaches](https://link.springer.com/article/10.1007/s10531-010-9873-2). 
+En esta sección se presentará en qué casos utilizar los estimadores, acompañado de un ejemplo respectivo.
 
 ::: panel-tabset
 
@@ -54,34 +55,196 @@ Usa un valor para el tamaño de muestra que sea igual (o mayor) al máximo para 
 rarefy(Escarabajos[,1:48], sample = 1092)
 ```
 
+### Estandarizando comunidades mediante rarefacción
+
+La rarefacción se usa para comparar la riqueza de especies entre sitios que tienen diferente número de individuos. Imagina que un sitio tiene 500 individuos y otro solo 50: el primero probablemente tendrá más especies solo porque se muestreó más, no porque sea realmente más diverso. Para hacer una comparación justa, la rarefacción toma al azar el mismo número de individuos de cada sitio (por ejemplo, 50 de cada uno) y cuenta cuántas especies hay en esa submuestra. Así, al estandarizar el esfuerzo de muestreo, se elimina el sesgo y se puede determinar si un sitio es genuinamente más rico en especies o si solo parecía serlo porque se capturaron más individuos.
+
+Podemos usar la rarefacción en nuestros datos comunitarios para ajustar las diferencias en la abundancia de las distintas especies. El comando rrarefy() del paquete vegan realiza los cálculos necesarios para producir un nuevo conjunto de datos comunitarios basado en un remuestreo aleatorio del original.
+
+El comando requiere dos instrucciones: el nombre de tus datos comunitarios y el tamaño de muestra con el que se calculará la nueva comunidad. Generalmente, es probable que quieras estandarizar usando el mismo tamaño de muestra para todos tus sitios, pero es posible especificar un tamaño de muestra diferente para cada uno. En el siguiente ejercicio, podrás practicar la creación de una comunidad rarrefactada utilizando los datos de escarabajos de suelo que hemos estado usando.
+
+```{r}
+range(rowSums(Escarabajos[,1:48]))
+```
+
+Como puedes ver, el valor más bajo es 205, así que este será el tamaño de muestra máximo que puedes utilizar en el comando rrarefy().
+
+```{r}
+NewComm <- rrarefy(Escarabajos[,1:48], sample = 205)
+```
+
+El tamaño de muestra puede especificarse como un valor distinto para cada sitio. Para ello, utiliza rowSums() con el fin de determinar el tamaño máximo de cada sitio en tus datos, y asígnelo como tamaño de muestreo dentro del comando rrarefy(), tal como se muestra a continuación:
+
+```{r}
+New_Comm <- rrarefy(Escarabajos[,1:48], sample = rowSums(Escarabajos[,1:48]))
+```
+
+Si utilizas los resultados de rowSums() como tamaño de muestra, ¡obtendrás la misma comunidad que en los datos originales! Para visualizar los efectos de la rarefacción, puedes emplear un valor más pequeño, como por ejemplo 200.
+
+```{r}
+New_Comm <- rrarefy(Escarabajos[,1:48], sample = 200)
+```
+
+### Curvas de acumulación de especies
+
+Las curvas de acumulación de especies permiten comparar las propiedades de diversidad entre comunidades. La versión más sencilla de esta curva se construye graficando la riqueza de especies contra el número de muestras. No obstante, el enfoque más habitual emplea un método de aleatorización: se submuestrea repetidamente los datos y se calcula la curva promedio de especies por área. Existen diversos métodos para realizar este proceso de aleatorización, y el paquete vegan te permite calcular la curva de acumulación de especies utilizando varios de estos métodos.
+
+```{r, warning=FALSE, message=FALSE}
+par(mfrow = c(2, 2))
+
+plot(specaccum(Escarabajos[,1:48], method = "collector"),
+     main = "collector")
+
+plot(specaccum(Escarabajos[,1:48], method = "exact"),
+     main = "exact")
+
+plot(specaccum(Escarabajos[,1:48], method = "random"),
+     main = "random")
+
+plot(specaccum(Escarabajos[,1:48], method = "rarefaction"), 
+     xvar = "individuals",
+     main = "rarefaction")
+```
+
+*Collector*
+
+¿Para qué sirve? Muestra la acumulación de especies en el orden exacto en que aparecen tus datos (sin aleatorizar).
+
+¿Cuándo usarlo? Es más un diagnóstico del proceso de muestreo que una estimación confiable. Sirve para ver si hubo algún patrón temporal o espacial en la colecta.
+
+Limitación: Como no aleatoriza, es muy sensible al orden de entrada de los datos y no debe usarse para inferencias generales sobre la comunidad.
+
+*Exact*
+
+¿Para qué sirve? Calcula la curva esperada matemáticamente (estimador de Mao Tau), sin necesidad de aleatorizaciones.
+
+¿Cuándo usarlo? Es la opción recomendada por defecto para la mayoría de los análisis ecológicos. Es computacionalmente eficiente y estadísticamente robusta.
+
+Ventaja: Proporciona desviaciones estándar basadas en la teoría de muestreo (muestreo sin reemplazo).
+
+*Random*
+
+¿Para qué sirve? Promedia múltiples órdenes aleatorios de las muestras (permutaciones).
+
+¿Cuándo usarlo? Cuando quieras visualizar la variabilidad alrededor de la curva. Es útil para:
+
+Evaluar si el orden de muestreo afectó los resultados.
+
+Generar intervalos de confianza empíricos mediante bootstrap.
+
+Detalle: La documentación de vegan indica que este método puede usar pesos (weights) para reflejar el esfuerzo de muestreo por sitio.
+
+*Rarefaction*
+
+¿Para qué sirve? Estandariza por número de individuos en lugar de por número de sitios.
+
+¿Cuándo usarlo? Específicamente cuando tus sitios tienen grandes diferencias en abundancia total y quieres hacer comparaciones justas.
+
+Limitación: Requiere datos de abundancia (conteos), no presencia-ausencia. El eje X representa individuos acumulados, no sitios
+
+Leer: [Quantifying biodiversity: procedures and pitfalls in the measurement and comparison of species richness](https://doi.org/10.1046/j.1461-0248.2001.00230.x)
+
+### Ajustar modelos no lineales a curvas de acumulación de especies
+
+Tradicionalmente, se propuso que la relación entre la riqueza de especies y el área era de tipo logarítmico. Sin embargo, se han sugerido diversos modelos para describir la relación especies-área, la mayoría de los cuales son modelos no lineales. Un ejemplo es el modelo de Michaelis-Menten, conocido también por su uso en la cinética enzimática. El paquete vegan permite ajustar múltiples modelos no lineales a las curvas de acumulación de especies mediante la función fitspecaccum().
+
+¿A qué se refieren con "modelos no lineales"?
+Un modelo no lineal es aquel en el que la relación entre las variables no es una línea recta. En lugar de seguir una ecuación del tipo $y=a+bx$, la variable dependiente (riqueza de especies) cambia de forma curvilínea a medida que aumenta la variable independiente (área, número de muestras o individuos).
+
+En el contexto de las curvas de acumulación de especies, los modelos no lineales permiten describir cómo la riqueza aumenta rápidamente al principio (cuando se muestrea poco) y luego se va estabilizando (se acerca a una asíntota) a medida que el esfuerzo de muestreo aumenta.
+
+Comienza creando un modelo de acumulación de especies:
+
+```{r}
+Acum <- specaccum(Escarabajos[,1:48], method = "random")
+```
+
+Ahora utiliza los resultados de la acumulación de especies como base para ajustar un modelo especies-área:
+
+```{r}
+Acum_nlm <- fitspecaccum(Acum, model = "arrhenius")
+```
+
+Usa el comando plot() para ver el modelo:
+
+```{r}
+plot(Acum_nlm)
+```
+
+Clench
+
+```{r}
+Acum <- specaccum(Escarabajos[,1:48], method = "random")
+
+x <- Acum$sites
+y <- Acum$richness
+
+clench <- nls(y ~ (a * x) / (1 + b * x),
+              start = list(a = max(y), b = 0.1))
+
+plot(x, y, pch = 16,
+     xlab = "Sampling effort",
+     ylab = "Species richness")
+```
+
+
+Puedes utilizar una amplia variedad de modelos. Las opciones disponibles son: “arrhenius”, “gleason”, “gitay”, “lomolino”, “asymp”, “gompertz”, “michaelis-menten”, “logis” and “weibull”.
+
+La elección del modelo no lineal adecuado para describir la relación entre el número de especies y el área (o esfuerzo de muestreo) depende fundamentalmente de la forma que se espera que tenga la curva y del objetivo del análisis. 
+
+Leer: [Which function describes the species–area relationship best? A review and empirical evaluation](https://doi.org/10.1111/j.1365-2699.2008.02038.x)
+
 :::
 
-## 2) ¿Cuándo y cómo realizar una curva de Clench (Michaelis-Menten)?
-¿Cuándo utilizarla?
+## Estimadores paramétricos y no paramétricos de riqueza de especies
 
-Cuando se desea modelar la relación entre el esfuerzo de muestreo (ej. número de sitios, trampas, individuos capturados) y la riqueza acumulada de especies.
+¿Qué son y cuál es la diferencia básica?
+Los estimadores de riqueza de especies se dividen en dos grandes grupos: paramétricos y no paramétricos. Los no paramétricos no asumen ninguna forma específica de distribución en los datos; simplemente usan la información de las especies raras (aquellas que aparecen una o dos veces) para estimar cuántas especies no fueron detectadas. Ejemplos comunes son Chao1, ACE, Jackknife y Bootstrap. Los paramétricos, en cambio, asumen que las abundancias de las especies siguen una distribución estadística particular, como la distribución Gamma-Poisson o lognormal, y a partir de ese supuesto estiman la riqueza total. En términos simples, los no paramétricos son como "medir sin suponer nada" y los paramétricos como "calcular asumiendo que los datos se comportan de cierta manera conocida".
 
-Para estimar la asíntota (riqueza total esperada) en inventarios biológicos.
+¿Cuándo usar cada uno?
+Los estimadores no paramétricos son los más recomendados para la mayoría de los estudios ecológicos porque son robustos, no requieren supuestos difíciles de cumplir y funcionan bien incluso con datos limitados. Debes usarlos cuando no conoces la distribución de tus datos (lo que ocurre casi siempre), cuando tu muestreo es pequeño o moderado, o cuando quieres evitar riesgos de malas estimaciones. Los estimadores paramétricos solo deberías considerarlos cuando tienes una buena razón teórica para creer que tus datos siguen una distribución específica, cuando tu muestra es muy grande (cientos o miles de individuos), y siempre como complemento a los no paramétricos, nunca como única opción. 
 
-Cuando la curva de acumulación observada muestra una tendencia a estabilizarse (meseta).
+Ejemplos de estimadores paramétricos de riqueza de especies
+A diferencia de los no paramétricos (que no asumen nada sobre los datos), los estimadores paramétricos suponen que las abundancias o frecuencias de las especies siguen una distribución estadística específica . A continuación te presento los más importantes con ejemplos prácticos:
 
-Es especialmente útil en estudios de comunidades con alta diversidad y muestreo incompleto, como en inventarios de insectos, plantas o peces. 
+1. Modelo Gamma-Poisson (Compuesto Gamma)
+¿Qué asume? Las abundancias de las especies siguen una distribución Gamma, mientras que el número de individuos capturados por especie sigue una Poisson.
+
+¿Para qué sirve? Es especialmente útil en comunidades con alta heterogeneidad en la composición de especies, donde los no paramétricos tienden a subestimar la riqueza real .
+
+[Estimating species richness by a Poisson-compound gamma model](https://doi.org/10.1093/biomet/asq026)
+
+
+2. Estimador TES (Total Expected Species)
+¿Qué asume? La relación entre especies acumuladas y esfuerzo de muestreo sigue una curva asintótica (como la logística o Weibull).
+
+¿Para qué sirve? Extrapola más allá de los datos observados para estimar la riqueza total esperada cuando el muestreo es incompleto
+
+[Estimating total species richness: Fitting rarefaction by asymptotic approximation](https://doi.org/10.1002/ecs2.4363)
+
+3. Estimador binomial truncado (He & Shen 2008)
+¿Qué asume? Para datos de presencia-ausencia (incidencia), asume que la probabilidad de detectar una especie sigue una distribución beta modificada, y el número de cuadrantes con presencia sigue una distribución binomial.
+
+¿Para qué sirve? Específicamente diseñado para muestreo sin reemplazo en cuadrantes (muy común en estudios de plantas)
+
+[AN INCIDENCE-BASED RICHNESS ESTIMATOR FOR QUADRATS SAMPLED WITHOUT REPLACEMENT](https://doi.org/10.1890/07-1526.1)
 
 
 
-## 3) ¿Cuándo utilizar logaritmo en base 2, 10 o e en el índice de Shannon?
+## ¿Cuándo utilizar logaritmo en base 2, 10 o e en el índice de Shannon?
 
-El índice de diversidad de Shannon-Wiener
+El índice de diversidad de Shannon-Wiener se calcula como 
 
-La elección de la base del logaritmo afecta la unidad de medida, pero no cambia las comparaciones relativas entre comunidades ni los patrones ecológicos. La decisión es de conveniencia:
+$$H' = -\sum_{i=1}^{S} p_i \cdot \log(p_i)$$ 
 
-Si publicas en revistas ecológicas generales (Ecology, Journal of Ecology, Oikos), usa logaritmo natural (
-ln
-⁡
-ln).
+donde $p_i$ es la proporción de individuos de la especie $i$ y $S$ es el número total de especies. La elección de la base del logaritmo no afecta las comparaciones relativas entre comunidades ni los patrones ecológicos, pero sí cambia la unidad de medida del índice. Si usas logaritmo natural (base $e$), el resultado se expresa en nats; si usas base $2$, en bits; y si usas base $10$, en decits. La relación entre ellas es simplemente multiplicar por una constante: por ejemplo, $H'_2 = H'e / \ln(2)$ y $H'{10} = H'_e / \ln(10)$.
 
-Si trabajas en un contexto de teoría de la información o necesitas interpretación en bits, usa log base 2.
+¿Cuál usar entonces? Para la mayoría de los estudios ecológicos y publicaciones en revistas como Ecology, Journal of Ecology u Oikos, la opción predeterminada y más común es el logaritmo natural (base $e$). Esta es la que utiliza por defecto el paquete vegan de R con la función diversity(), y facilita cálculos estadísticos posteriores. El logaritmo base $2$ se recomienda solo si trabajas explícitamente en teoría de la información o necesitas interpretar los resultados en bits, por ejemplo al calcular diversidad beta o partición de la diversidad. El logaritmo base $10$ debe evitarse a menos que sea un requisito explícito de una revista o de un estudio previo que necesites replicar, ya que es el menos utilizado en ecología moderna.
 
-Evita base 10 a menos que sea un requisito explícito de una revista o de un trabajo previo que debas replicar.
+¿Qué son bits, nats y decits?
+
+Estas son las unidades de medida del índice de diversidad de Shannon, y corresponden a la base del logaritmo que elijas. En esencia, miden la incertidumbre o la cantidad de información asociada a predecir de qué especie será el próximo individuo que muestrees.
+
+Leer: [Theoretical view of the Shannon index in the evaluation of landscape diversity](http://hdl.handle.net/20.500.11956/167033) o [link](https://karolinum.cz/data/clanek/4021/Geographica_2_2012_final_Dusek.pdf)
 
 :::

@@ -69,6 +69,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="clase2.2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="clase2.2_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -105,12 +134,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <p>Este material suplementario de la clase dos surge a raíz de las diversas preguntas que los estudiantes han planteado sobre el análisis de riqueza de especies. Dado que abordar todas estas consultas en una sola clase resulta muy complicado por la limitación de tiempo, considero que lo más adecuado es ofrecer una respuesta basada en literatura de primera mano, acompañada de sus respectivos ejemplos y códigos en R.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">1) ¿Qué análisis de riqueza de especies utilizar en cada caso?</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">2) ¿Cuándo y cómo realizar una curva de Clench (Michaelis-Menten)?</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">3) ¿Cuándo utilizar logaritmo en base 2, 10 o e en el índice de Shannon?</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">¿Qué análisis de riqueza de especies utilizar en cada caso?</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Estimadores paramétricos y no paramétricos de riqueza de especies</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">¿Cuándo utilizar logaritmo en base 2, 10 o e en el índice de Shannon?</a></li></ul>
 <div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
-<p>aaaaaa</p>
+<p>Existen diferentes tipos de análisis para evaluar la riqueza de especies, y seleccionar el apropiado depende de diversos factores. Para tener una idea más amplia de cuándo utilizar cada índice, puede leer el artículo <a href="https://doi.org/10.1111/j.1365-2656.2006.01048.x">Evaluating the performance of species richness estimators: sensitivity to sample grain size</a> y esta otra referencia: <a href="https://link.springer.com/article/10.1007/s10531-010-9873-2">Evaluating the sampling bias in pattern of subterranean species richness: combining approaches</a>. En esta sección se presentará en qué casos utilizar los estimadores, acompañado de un ejemplo respectivo.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Rarrefacción</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Rarrefacción</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Estandarizando comunidades mediante rarefacción</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Curvas de acumulación de especies</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">Ajustar modelos no lineales a curvas de acumulación de especies</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p>Si tus muestras presentan grandes diferencias en abundancia, las estimaciones de riqueza de especies se verán sesgadas a favor de las muestras más abundantes. La idea detrás de la rarrefacción es estandarizar los tamaños muestrales para poder comparar la riqueza de especies con una abundancia equivalente. Para calcular la rarrefacción, se crean nuevas muestras del mismo tamaño seleccionando aleatoriamente individuos a partir de los datos originales. Luego, se calcula la riqueza de especies para cada nueva muestra y se promedia. De este modo, se obtiene una nueva estimación para todas las muestras originales, basada en un tamaño muestral específico. El tamaño muestral adecuado se elige examinando los datos originales. El método de rarrefacción requiere datos de abundancia en forma de conteos, por lo que no es realmente adecuado para datos de plantas. Esto también implica que no se pueden utilizar datos de presencia-ausencia.</p>
@@ -169,22 +198,153 @@ attr(,"Subsample")
 </div>
 </div>
 </div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<p>La rarefacción se usa para comparar la riqueza de especies entre sitios que tienen diferente número de individuos. Imagina que un sitio tiene 500 individuos y otro solo 50: el primero probablemente tendrá más especies solo porque se muestreó más, no porque sea realmente más diverso. Para hacer una comparación justa, la rarefacción toma al azar el mismo número de individuos de cada sitio (por ejemplo, 50 de cada uno) y cuenta cuántas especies hay en esa submuestra. Así, al estandarizar el esfuerzo de muestreo, se elimina el sesgo y se puede determinar si un sitio es genuinamente más rico en especies o si solo parecía serlo porque se capturaron más individuos.</p>
+<p>Podemos usar la rarefacción en nuestros datos comunitarios para ajustar las diferencias en la abundancia de las distintas especies. El comando rrarefy() del paquete vegan realiza los cálculos necesarios para producir un nuevo conjunto de datos comunitarios basado en un remuestreo aleatorio del original.</p>
+<p>El comando requiere dos instrucciones: el nombre de tus datos comunitarios y el tamaño de muestra con el que se calculará la nueva comunidad. Generalmente, es probable que quieras estandarizar usando el mismo tamaño de muestra para todos tus sitios, pero es posible especificar un tamaño de muestra diferente para cada uno. En el siguiente ejercicio, podrás practicar la creación de una comunidad rarrefactada utilizando los datos de escarabajos de suelo que hemos estado usando.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(<span class="fu">rowSums</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  205 1092</code></pre>
+</div>
+</div>
+<p>Como puedes ver, el valor más bajo es 205, así que este será el tamaño de muestra máximo que puedes utilizar en el comando rrarefy().</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>NewComm <span class="ot">&lt;-</span> <span class="fu">rrarefy</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>], <span class="at">sample =</span> <span class="dv">205</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>El tamaño de muestra puede especificarse como un valor distinto para cada sitio. Para ello, utiliza rowSums() con el fin de determinar el tamaño máximo de cada sitio en tus datos, y asígnelo como tamaño de muestreo dentro del comando rrarefy(), tal como se muestra a continuación:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>New_Comm <span class="ot">&lt;-</span> <span class="fu">rrarefy</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>], <span class="at">sample =</span> <span class="fu">rowSums</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Si utilizas los resultados de rowSums() como tamaño de muestra, ¡obtendrás la misma comunidad que en los datos originales! Para visualizar los efectos de la rarefacción, puedes emplear un valor más pequeño, como por ejemplo 200.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>New_Comm <span class="ot">&lt;-</span> <span class="fu">rrarefy</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>], <span class="at">sample =</span> <span class="dv">200</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<p>Las curvas de acumulación de especies permiten comparar las propiedades de diversidad entre comunidades. La versión más sencilla de esta curva se construye graficando la riqueza de especies contra el número de muestras. No obstante, el enfoque más habitual emplea un método de aleatorización: se submuestrea repetidamente los datos y se calcula la curva promedio de especies por área. Existen diversos métodos para realizar este proceso de aleatorización, y el paquete vegan te permite calcular la curva de acumulación de especies utilizando varios de estos métodos.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">specaccum</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>], <span class="at">method =</span> <span class="st">"collector"</span>),</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"collector"</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">specaccum</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>], <span class="at">method =</span> <span class="st">"exact"</span>),</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"exact"</span>)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">specaccum</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>], <span class="at">method =</span> <span class="st">"random"</span>),</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"random"</span>)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">specaccum</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>], <span class="at">method =</span> <span class="st">"rarefaction"</span>), </span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">xvar =</span> <span class="st">"individuals"</span>,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"rarefaction"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clase2.2_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><em>Collector</em></p>
+<p>¿Para qué sirve? Muestra la acumulación de especies en el orden exacto en que aparecen tus datos (sin aleatorizar).</p>
+<p>¿Cuándo usarlo? Es más un diagnóstico del proceso de muestreo que una estimación confiable. Sirve para ver si hubo algún patrón temporal o espacial en la colecta.</p>
+<p>Limitación: Como no aleatoriza, es muy sensible al orden de entrada de los datos y no debe usarse para inferencias generales sobre la comunidad.</p>
+<p><em>Exact</em></p>
+<p>¿Para qué sirve? Calcula la curva esperada matemáticamente (estimador de Mao Tau), sin necesidad de aleatorizaciones.</p>
+<p>¿Cuándo usarlo? Es la opción recomendada por defecto para la mayoría de los análisis ecológicos. Es computacionalmente eficiente y estadísticamente robusta.</p>
+<p>Ventaja: Proporciona desviaciones estándar basadas en la teoría de muestreo (muestreo sin reemplazo).</p>
+<p><em>Random</em></p>
+<p>¿Para qué sirve? Promedia múltiples órdenes aleatorios de las muestras (permutaciones).</p>
+<p>¿Cuándo usarlo? Cuando quieras visualizar la variabilidad alrededor de la curva. Es útil para:</p>
+<p>Evaluar si el orden de muestreo afectó los resultados.</p>
+<p>Generar intervalos de confianza empíricos mediante bootstrap.</p>
+<p>Detalle: La documentación de vegan indica que este método puede usar pesos (weights) para reflejar el esfuerzo de muestreo por sitio.</p>
+<p><em>Rarefaction</em></p>
+<p>¿Para qué sirve? Estandariza por número de individuos en lugar de por número de sitios.</p>
+<p>¿Cuándo usarlo? Específicamente cuando tus sitios tienen grandes diferencias en abundancia total y quieres hacer comparaciones justas.</p>
+<p>Limitación: Requiere datos de abundancia (conteos), no presencia-ausencia. El eje X representa individuos acumulados, no sitios</p>
+<p>Leer: <a href="https://doi.org/10.1046/j.1461-0248.2001.00230.x">Quantifying biodiversity: procedures and pitfalls in the measurement and comparison of species richness</a></p>
+</div>
+<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
+<p>Tradicionalmente, se propuso que la relación entre la riqueza de especies y el área era de tipo logarítmico. Sin embargo, se han sugerido diversos modelos para describir la relación especies-área, la mayoría de los cuales son modelos no lineales. Un ejemplo es el modelo de Michaelis-Menten, conocido también por su uso en la cinética enzimática. El paquete vegan permite ajustar múltiples modelos no lineales a las curvas de acumulación de especies mediante la función fitspecaccum().</p>
+<p>¿A qué se refieren con “modelos no lineales”? Un modelo no lineal es aquel en el que la relación entre las variables no es una línea recta. En lugar de seguir una ecuación del tipo <span class="math inline">\(y=a+bx\)</span>, la variable dependiente (riqueza de especies) cambia de forma curvilínea a medida que aumenta la variable independiente (área, número de muestras o individuos).</p>
+<p>En el contexto de las curvas de acumulación de especies, los modelos no lineales permiten describir cómo la riqueza aumenta rápidamente al principio (cuando se muestrea poco) y luego se va estabilizando (se acerca a una asíntota) a medida que el esfuerzo de muestreo aumenta.</p>
+<p>Comienza creando un modelo de acumulación de especies:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>Acum <span class="ot">&lt;-</span> <span class="fu">specaccum</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>], <span class="at">method =</span> <span class="st">"random"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Ahora utiliza los resultados de la acumulación de especies como base para ajustar un modelo especies-área:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>Acum_nlm <span class="ot">&lt;-</span> <span class="fu">fitspecaccum</span>(Acum, <span class="at">model =</span> <span class="st">"arrhenius"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Usa el comando plot() para ver el modelo:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Acum_nlm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clase2.2_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Clench</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>Acum <span class="ot">&lt;-</span> <span class="fu">specaccum</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>], <span class="at">method =</span> <span class="st">"random"</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> Acum<span class="sc">$</span>sites</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> Acum<span class="sc">$</span>richness</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>clench <span class="ot">&lt;-</span> <span class="fu">nls</span>(y <span class="sc">~</span> (a <span class="sc">*</span> x) <span class="sc">/</span> (<span class="dv">1</span> <span class="sc">+</span> b <span class="sc">*</span> x),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">start =</span> <span class="fu">list</span>(<span class="at">a =</span> <span class="fu">max</span>(y), <span class="at">b =</span> <span class="fl">0.1</span>))</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(x, y, <span class="at">pch =</span> <span class="dv">16</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Sampling effort"</span>,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">"Species richness"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="clase2.2_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Puedes utilizar una amplia variedad de modelos. Las opciones disponibles son: “arrhenius”, “gleason”, “gitay”, “lomolino”, “asymp”, “gompertz”, “michaelis-menten”, “logis” and “weibull”.</p>
+<p>La elección del modelo no lineal adecuado para describir la relación entre el número de especies y el área (o esfuerzo de muestreo) depende fundamentalmente de la forma que se espera que tenga la curva y del objetivo del análisis.</p>
+<p>Leer: <a href="https://doi.org/10.1111/j.1365-2699.2008.02038.x">Which function describes the species–area relationship best? A review and empirical evaluation</a></p>
+</div>
 </div>
 </div>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
-<p>¿Cuándo utilizarla?</p>
-<p>Cuando se desea modelar la relación entre el esfuerzo de muestreo (ej. número de sitios, trampas, individuos capturados) y la riqueza acumulada de especies.</p>
-<p>Para estimar la asíntota (riqueza total esperada) en inventarios biológicos.</p>
-<p>Cuando la curva de acumulación observada muestra una tendencia a estabilizarse (meseta).</p>
-<p>Es especialmente útil en estudios de comunidades con alta diversidad y muestreo incompleto, como en inventarios de insectos, plantas o peces.</p>
+<p>¿Qué son y cuál es la diferencia básica? Los estimadores de riqueza de especies se dividen en dos grandes grupos: paramétricos y no paramétricos. Los no paramétricos no asumen ninguna forma específica de distribución en los datos; simplemente usan la información de las especies raras (aquellas que aparecen una o dos veces) para estimar cuántas especies no fueron detectadas. Ejemplos comunes son Chao1, ACE, Jackknife y Bootstrap. Los paramétricos, en cambio, asumen que las abundancias de las especies siguen una distribución estadística particular, como la distribución Gamma-Poisson o lognormal, y a partir de ese supuesto estiman la riqueza total. En términos simples, los no paramétricos son como “medir sin suponer nada” y los paramétricos como “calcular asumiendo que los datos se comportan de cierta manera conocida”.</p>
+<p>¿Cuándo usar cada uno? Los estimadores no paramétricos son los más recomendados para la mayoría de los estudios ecológicos porque son robustos, no requieren supuestos difíciles de cumplir y funcionan bien incluso con datos limitados. Debes usarlos cuando no conoces la distribución de tus datos (lo que ocurre casi siempre), cuando tu muestreo es pequeño o moderado, o cuando quieres evitar riesgos de malas estimaciones. Los estimadores paramétricos solo deberías considerarlos cuando tienes una buena razón teórica para creer que tus datos siguen una distribución específica, cuando tu muestra es muy grande (cientos o miles de individuos), y siempre como complemento a los no paramétricos, nunca como única opción.</p>
+<p>Ejemplos de estimadores paramétricos de riqueza de especies A diferencia de los no paramétricos (que no asumen nada sobre los datos), los estimadores paramétricos suponen que las abundancias o frecuencias de las especies siguen una distribución estadística específica . A continuación te presento los más importantes con ejemplos prácticos:</p>
+<ol type="1">
+<li>Modelo Gamma-Poisson (Compuesto Gamma) ¿Qué asume? Las abundancias de las especies siguen una distribución Gamma, mientras que el número de individuos capturados por especie sigue una Poisson.</li>
+</ol>
+<p>¿Para qué sirve? Es especialmente útil en comunidades con alta heterogeneidad en la composición de especies, donde los no paramétricos tienden a subestimar la riqueza real .</p>
+<p><a href="https://doi.org/10.1093/biomet/asq026">Estimating species richness by a Poisson-compound gamma model</a></p>
+<ol start="2" type="1">
+<li>Estimador TES (Total Expected Species) ¿Qué asume? La relación entre especies acumuladas y esfuerzo de muestreo sigue una curva asintótica (como la logística o Weibull).</li>
+</ol>
+<p>¿Para qué sirve? Extrapola más allá de los datos observados para estimar la riqueza total esperada cuando el muestreo es incompleto</p>
+<p><a href="https://doi.org/10.1002/ecs2.4363">Estimating total species richness: Fitting rarefaction by asymptotic approximation</a></p>
+<ol start="3" type="1">
+<li>Estimador binomial truncado (He &amp; Shen 2008) ¿Qué asume? Para datos de presencia-ausencia (incidencia), asume que la probabilidad de detectar una especie sigue una distribución beta modificada, y el número de cuadrantes con presencia sigue una distribución binomial.</li>
+</ol>
+<p>¿Para qué sirve? Específicamente diseñado para muestreo sin reemplazo en cuadrantes (muy común en estudios de plantas)</p>
+<p><a href="https://doi.org/10.1890/07-1526.1">AN INCIDENCE-BASED RICHNESS ESTIMATOR FOR QUADRATS SAMPLED WITHOUT REPLACEMENT</a></p>
 </div>
 <div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
-<p>El índice de diversidad de Shannon-Wiener</p>
-<p>La elección de la base del logaritmo afecta la unidad de medida, pero no cambia las comparaciones relativas entre comunidades ni los patrones ecológicos. La decisión es de conveniencia:</p>
-<p>Si publicas en revistas ecológicas generales (Ecology, Journal of Ecology, Oikos), usa logaritmo natural ( ln ⁡ ln).</p>
-<p>Si trabajas en un contexto de teoría de la información o necesitas interpretación en bits, usa log base 2.</p>
-<p>Evita base 10 a menos que sea un requisito explícito de una revista o de un trabajo previo que debas replicar.</p>
+<p>El índice de diversidad de Shannon-Wiener se calcula como</p>
+<p><span class="math display">\[H' = -\sum_{i=1}^{S} p_i \cdot \log(p_i)\]</span></p>
+<p>donde <span class="math inline">\(p_i\)</span> es la proporción de individuos de la especie <span class="math inline">\(i\)</span> y <span class="math inline">\(S\)</span> es el número total de especies. La elección de la base del logaritmo no afecta las comparaciones relativas entre comunidades ni los patrones ecológicos, pero sí cambia la unidad de medida del índice. Si usas logaritmo natural (base <span class="math inline">\(e\)</span>), el resultado se expresa en nats; si usas base <span class="math inline">\(2\)</span>, en bits; y si usas base <span class="math inline">\(10\)</span>, en decits. La relación entre ellas es simplemente multiplicar por una constante: por ejemplo, <span class="math inline">\(H'_2 = H'e / \ln(2)\)</span> y <span class="math inline">\(H'{10} = H'_e / \ln(10)\)</span>.</p>
+<p>¿Cuál usar entonces? Para la mayoría de los estudios ecológicos y publicaciones en revistas como Ecology, Journal of Ecology u Oikos, la opción predeterminada y más común es el logaritmo natural (base <span class="math inline">\(e\)</span>). Esta es la que utiliza por defecto el paquete vegan de R con la función diversity(), y facilita cálculos estadísticos posteriores. El logaritmo base <span class="math inline">\(2\)</span> se recomienda solo si trabajas explícitamente en teoría de la información o necesitas interpretar los resultados en bits, por ejemplo al calcular diversidad beta o partición de la diversidad. El logaritmo base <span class="math inline">\(10\)</span> debe evitarse a menos que sea un requisito explícito de una revista o de un estudio previo que necesites replicar, ya que es el menos utilizado en ecología moderna.</p>
+<p>¿Qué son bits, nats y decits?</p>
+<p>Estas son las unidades de medida del índice de diversidad de Shannon, y corresponden a la base del logaritmo que elijas. En esencia, miden la incertidumbre o la cantidad de información asociada a predecir de qué especie será el próximo individuo que muestrees.</p>
+<p>Leer: <a href="http://hdl.handle.net/20.500.11956/167033">Theoretical view of the Shannon index in the evaluation of landscape diversity</a> o <a href="https://karolinum.cz/data/clanek/4021/Geographica_2_2012_final_Dusek.pdf">link</a></p>
 </div>
 </div>
 </div>
