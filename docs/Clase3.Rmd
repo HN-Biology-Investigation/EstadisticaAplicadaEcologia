@@ -26,6 +26,10 @@ Parte de la bibliografía utilizada en esta clase:
 
 [García-Berthou, 2001](papers/GarciaBerthou2001.pdf)
 
+[Testing for normality in regression models: mistakes abound (but may not matter](https://doi.org/10.1098/rsos.241904)
+
+[Checking for normality and homogeneity of variance](https://mailman.stat.ethz.ch/pipermail/r-help/2010-January/223547.html)
+
 #### Distribucion Normal
 
 La distribución normal es una distribución de probabilidad continua que se utiliza comúnmente en el análisis de datos. Esta distribución es simétrica y tiene una forma de campana, con un pico en el centro y colas que se extienden hacia los valores extremos.
