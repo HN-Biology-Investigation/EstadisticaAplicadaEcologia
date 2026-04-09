@@ -1,0 +1,56 @@
+---
+title: "Riqueza de especies suplementario"
+author: "David Murillo"
+format: html
+editor: visual
+---
+
+Este material suplementario de la clase dos surge a raíz de las diversas preguntas que los estudiantes han planteado sobre el análisis de riqueza de especies. Dado que abordar todas estas consultas en una sola clase resulta muy complicado por la limitación de tiempo, considero que lo más adecuado es ofrecer una respuesta basada en literatura de primera mano, acompañada de sus respectivos ejemplos y códigos en R.
+
+1) ¿Qué análisis de riqueza de especies utilizar en cada caso?
+La elección del análisis de riqueza depende del objetivo del estudio y de la calidad de los datos:
+
+Comparar riqueza observada entre sitios con igual esfuerzo de muestreo: utilizar la riqueza observada (
+S
+o
+b
+s
+S 
+obs
+​
+ ) o el número de especies por unidad de esfuerzo.
+
+Estimar la riqueza total esperada cuando el muestreo es incompleto: utilizar estimadores no paramétricos como Chao1 (para datos de abundancia) o Chao2 (para datos de presencia/ausencia), así como Jackknife o Bootstrap.
+
+Evaluar la integridad del inventario y predecir la asíntota de la curva de acumulación: utilizar el modelo de Clench (Michaelis-Menten), especialmente cuando se dispone de un gradiente de esfuerzo de muestreo.
+
+Cuando los datos presentan especies raras o poco representadas: se recomienda Chao1 o Chao2, ya que estos estimadores son menos sensibles a las especies raras que otros métodos.
+
+Si se busca una estimación conservadora y estable: se prefiere Jackknife de primer orden.
+
+2) ¿Cuándo y cómo realizar una curva de Clench (Michaelis-Menten)?
+¿Cuándo utilizarla?
+
+Cuando se desea modelar la relación entre el esfuerzo de muestreo (ej. número de sitios, trampas, individuos capturados) y la riqueza acumulada de especies.
+
+Para estimar la asíntota (riqueza total esperada) en inventarios biológicos.
+
+Cuando la curva de acumulación observada muestra una tendencia a estabilizarse (meseta).
+
+Es especialmente útil en estudios de comunidades con alta diversidad y muestreo incompleto, como en inventarios de insectos, plantas o peces. 
+
+3) ¿Cuándo utilizar logaritmo en base 2, 10 o 
+e
+e en el índice de Shannon?
+El índice de diversidad de Shannon-Wiener
+
+La elección de la base del logaritmo afecta la unidad de medida, pero no cambia las comparaciones relativas entre comunidades ni los patrones ecológicos. La decisión es de conveniencia:
+
+Si publicas en revistas ecológicas generales (Ecology, Journal of Ecology, Oikos), usa logaritmo natural (
+ln
+⁡
+ln).
+
+Si trabajas en un contexto de teoría de la información o necesitas interpretación en bits, usa log base 2.
+
+Evita base 10 a menos que sea un requisito explícito de una revista o de un trabajo previo que debas replicar.
