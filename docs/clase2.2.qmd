@@ -7,28 +7,56 @@ editor: visual
 
 Este material suplementario de la clase dos surge a raíz de las diversas preguntas que los estudiantes han planteado sobre el análisis de riqueza de especies. Dado que abordar todas estas consultas en una sola clase resulta muy complicado por la limitación de tiempo, considero que lo más adecuado es ofrecer una respuesta basada en literatura de primera mano, acompañada de sus respectivos ejemplos y códigos en R.
 
-1) ¿Qué análisis de riqueza de especies utilizar en cada caso?
-La elección del análisis de riqueza depende del objetivo del estudio y de la calidad de los datos:
+::: panel-tabset
 
-Comparar riqueza observada entre sitios con igual esfuerzo de muestreo: utilizar la riqueza observada (
-S
-o
-b
-s
-S 
-obs
-​
- ) o el número de especies por unidad de esfuerzo.
+## 1) ¿Qué análisis de riqueza de especies utilizar en cada caso? 
 
-Estimar la riqueza total esperada cuando el muestreo es incompleto: utilizar estimadores no paramétricos como Chao1 (para datos de abundancia) o Chao2 (para datos de presencia/ausencia), así como Jackknife o Bootstrap.
+aaaaaa
 
-Evaluar la integridad del inventario y predecir la asíntota de la curva de acumulación: utilizar el modelo de Clench (Michaelis-Menten), especialmente cuando se dispone de un gradiente de esfuerzo de muestreo.
+::: panel-tabset
 
-Cuando los datos presentan especies raras o poco representadas: se recomienda Chao1 o Chao2, ya que estos estimadores son menos sensibles a las especies raras que otros métodos.
+### Rarrefacción
 
-Si se busca una estimación conservadora y estable: se prefiere Jackknife de primer orden.
+Si tus muestras presentan grandes diferencias en abundancia, las estimaciones de riqueza de especies se verán sesgadas a favor de las muestras más abundantes. La idea detrás de la rarrefacción es estandarizar los tamaños muestrales para poder comparar la riqueza de especies con una abundancia equivalente. Para calcular la rarrefacción, se crean nuevas muestras del mismo tamaño seleccionando aleatoriamente individuos a partir de los datos originales. Luego, se calcula la riqueza de especies para cada nueva muestra y se promedia. De este modo, se obtiene una nueva estimación para todas las muestras originales, basada en un tamaño muestral específico. El tamaño muestral adecuado se elige examinando los datos originales. El método de rarrefacción requiere datos de abundancia en forma de conteos, por lo que no es realmente adecuado para datos de plantas. Esto también implica que no se pueden utilizar datos de presencia-ausencia.
 
-2) ¿Cuándo y cómo realizar una curva de Clench (Michaelis-Menten)?
+La rarrefacción permite estimar la riqueza de especies cuando las muestras contienen distinto número de individuos. Por lo tanto, puedes emplear la rarrefacción para calcular la riqueza de especies antes de compararla usando una variable de agrupación o al correlacionarla con un factor ambiental.
+
+For this exercise we will use the bettles data, the colums are the species abundances and the rows are the sites.
+
+```{r, message=FALSE, warning=FALSE}
+
+Escarabajos <- read.csv("data/bettles.txt", header = TRUE, sep = "")
+```
+
+Para ejecutar la rarrefacción, necesitaremos especificar el tamaño de muestra apropiado. El comando te da una pista, pero observa el número total de individuos por sitio utilizando el comando rowSums() de la siguiente manera:
+
+```{r}
+rowSums(Escarabajos[,1:48])
+```
+
+Simplifica la visualización y obtén el rango de valores de la siguiente manera:
+
+```{r}
+range(rowSums(Escarabajos[,1:48]))
+```
+
+Ahora calcula la riqueza de especies rarrefactada para un tamaño de muestra que sea igual a la abundancia mínima:
+
+```{r}
+library(vegan)
+
+rarefy(Escarabajos[,1:48], sample = 205)
+```
+
+Usa un valor para el tamaño de muestra que sea igual (o mayor) al máximo para obtener la riqueza de especies simple (no rarrefactada):
+
+```{r}
+rarefy(Escarabajos[,1:48], sample = 1092)
+```
+
+:::
+
+## 2) ¿Cuándo y cómo realizar una curva de Clench (Michaelis-Menten)?
 ¿Cuándo utilizarla?
 
 Cuando se desea modelar la relación entre el esfuerzo de muestreo (ej. número de sitios, trampas, individuos capturados) y la riqueza acumulada de especies.
@@ -39,9 +67,10 @@ Cuando la curva de acumulación observada muestra una tendencia a estabilizarse 
 
 Es especialmente útil en estudios de comunidades con alta diversidad y muestreo incompleto, como en inventarios de insectos, plantas o peces. 
 
-3) ¿Cuándo utilizar logaritmo en base 2, 10 o 
-e
-e en el índice de Shannon?
+
+
+## 3) ¿Cuándo utilizar logaritmo en base 2, 10 o e en el índice de Shannon?
+
 El índice de diversidad de Shannon-Wiener
 
 La elección de la base del logaritmo afecta la unidad de medida, pero no cambia las comparaciones relativas entre comunidades ni los patrones ecológicos. La decisión es de conveniencia:
@@ -54,3 +83,5 @@ ln).
 Si trabajas en un contexto de teoría de la información o necesitas interpretación en bits, usa log base 2.
 
 Evita base 10 a menos que sea un requisito explícito de una revista o de un trabajo previo que debas replicar.
+
+:::

@@ -21,6 +21,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -70,28 +104,90 @@ ul.task-list li input[type="checkbox"] {
 
 
 <p>Este material suplementario de la clase dos surge a raíz de las diversas preguntas que los estudiantes han planteado sobre el análisis de riqueza de especies. Dado que abordar todas estas consultas en una sola clase resulta muy complicado por la limitación de tiempo, considero que lo más adecuado es ofrecer una respuesta basada en literatura de primera mano, acompañada de sus respectivos ejemplos y códigos en R.</p>
-<ol type="1">
-<li>¿Qué análisis de riqueza de especies utilizar en cada caso? La elección del análisis de riqueza depende del objetivo del estudio y de la calidad de los datos:</li>
-</ol>
-<p>Comparar riqueza observada entre sitios con igual esfuerzo de muestreo: utilizar la riqueza observada ( S o b s S obs ​ ) o el número de especies por unidad de esfuerzo.</p>
-<p>Estimar la riqueza total esperada cuando el muestreo es incompleto: utilizar estimadores no paramétricos como Chao1 (para datos de abundancia) o Chao2 (para datos de presencia/ausencia), así como Jackknife o Bootstrap.</p>
-<p>Evaluar la integridad del inventario y predecir la asíntota de la curva de acumulación: utilizar el modelo de Clench (Michaelis-Menten), especialmente cuando se dispone de un gradiente de esfuerzo de muestreo.</p>
-<p>Cuando los datos presentan especies raras o poco representadas: se recomienda Chao1 o Chao2, ya que estos estimadores son menos sensibles a las especies raras que otros métodos.</p>
-<p>Si se busca una estimación conservadora y estable: se prefiere Jackknife de primer orden.</p>
-<ol start="2" type="1">
-<li>¿Cuándo y cómo realizar una curva de Clench (Michaelis-Menten)? ¿Cuándo utilizarla?</li>
-</ol>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">1) ¿Qué análisis de riqueza de especies utilizar en cada caso?</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">2) ¿Cuándo y cómo realizar una curva de Clench (Michaelis-Menten)?</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">3) ¿Cuándo utilizar logaritmo en base 2, 10 o e en el índice de Shannon?</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<p>aaaaaa</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Rarrefacción</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<p>Si tus muestras presentan grandes diferencias en abundancia, las estimaciones de riqueza de especies se verán sesgadas a favor de las muestras más abundantes. La idea detrás de la rarrefacción es estandarizar los tamaños muestrales para poder comparar la riqueza de especies con una abundancia equivalente. Para calcular la rarrefacción, se crean nuevas muestras del mismo tamaño seleccionando aleatoriamente individuos a partir de los datos originales. Luego, se calcula la riqueza de especies para cada nueva muestra y se promedia. De este modo, se obtiene una nueva estimación para todas las muestras originales, basada en un tamaño muestral específico. El tamaño muestral adecuado se elige examinando los datos originales. El método de rarrefacción requiere datos de abundancia en forma de conteos, por lo que no es realmente adecuado para datos de plantas. Esto también implica que no se pueden utilizar datos de presencia-ausencia.</p>
+<p>La rarrefacción permite estimar la riqueza de especies cuando las muestras contienen distinto número de individuos. Por lo tanto, puedes emplear la rarrefacción para calcular la riqueza de especies antes de compararla usando una variable de agrupación o al correlacionarla con un factor ambiental.</p>
+<p>For this exercise we will use the bettles data, the colums are the species abundances and the rows are the sites.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Escarabajos <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/bettles.txt"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Para ejecutar la rarrefacción, necesitaremos especificar el tamaño de muestra apropiado. El comando te da una pista, pero observa el número total de individuos por sitio utilizando el comando rowSums() de la siguiente manera:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rowSums</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  E1   E2   E3   E4   E5   E6   G1   G2   G3   G4   G5   G6   W1   W2   W3   W4 
+ 715  734  646  867  971  901  365  287  205  336  359  331 1092  912  802  755 
+  W5   W6 
+ 886  814 </code></pre>
+</div>
+</div>
+<p>Simplifica la visualización y obtén el rango de valores de la siguiente manera:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(<span class="fu">rowSums</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  205 1092</code></pre>
+</div>
+</div>
+<p>Ahora calcula la riqueza de especies rarrefactada para un tamaño de muestra que sea igual a la abundancia mínima:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(vegan)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Loading required package: permute</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rarefy</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>], <span class="at">sample =</span> <span class="dv">205</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       E1        E2        E3        E4        E5        E6        G1        G2 
+10.550670 10.592541 10.465501 15.798135 13.230645 11.905338 21.841143 19.908056 
+       G3        G4        G5        G6        W1        W2        W3        W4 
+18.000000 23.820966 21.657643 21.128553  7.991000  8.746320  8.848066  9.155638 
+       W5        W6 
+ 8.626203  7.631587 
+attr(,"Subsample")
+[1] 205</code></pre>
+</div>
+</div>
+<p>Usa un valor para el tamaño de muestra que sea igual (o mayor) al máximo para obtener la riqueza de especies simple (no rarrefactada):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rarefy</span>(Escarabajos[,<span class="dv">1</span><span class="sc">:</span><span class="dv">48</span>], <span class="at">sample =</span> <span class="dv">1092</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in rarefy(Escarabajos[, 1:48], sample = 1092): requested 'sample' was
+larger than smallest site maximum (205)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>E1 E2 E3 E4 E5 E6 G1 G2 G3 G4 G5 G6 W1 W2 W3 W4 W5 W6 
+17 14 15 25 21 17 28 22 18 28 26 24 12 11 11 12 12 10 
+attr(,"Subsample")
+[1] 1092</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<p>¿Cuándo utilizarla?</p>
 <p>Cuando se desea modelar la relación entre el esfuerzo de muestreo (ej. número de sitios, trampas, individuos capturados) y la riqueza acumulada de especies.</p>
 <p>Para estimar la asíntota (riqueza total esperada) en inventarios biológicos.</p>
 <p>Cuando la curva de acumulación observada muestra una tendencia a estabilizarse (meseta).</p>
 <p>Es especialmente útil en estudios de comunidades con alta diversidad y muestreo incompleto, como en inventarios de insectos, plantas o peces.</p>
-<ol start="3" type="1">
-<li>¿Cuándo utilizar logaritmo en base 2, 10 o e e en el índice de Shannon? El índice de diversidad de Shannon-Wiener</li>
-</ol>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<p>El índice de diversidad de Shannon-Wiener</p>
 <p>La elección de la base del logaritmo afecta la unidad de medida, pero no cambia las comparaciones relativas entre comunidades ni los patrones ecológicos. La decisión es de conveniencia:</p>
 <p>Si publicas en revistas ecológicas generales (Ecology, Journal of Ecology, Oikos), usa logaritmo natural ( ln ⁡ ln).</p>
 <p>Si trabajas en un contexto de teoría de la información o necesitas interpretación en bits, usa log base 2.</p>
 <p>Evita base 10 a menos que sea un requisito explícito de una revista o de un trabajo previo que debas replicar.</p>
+</div>
+</div>
+</div>
 
 </main>
 <!-- /main column -->
