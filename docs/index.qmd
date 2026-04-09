@@ -19,6 +19,8 @@ Este curso proporciona una introducción práctica a las técnicas estadísticas
 
 [Clase 2: Análisis de diversidad y riqueza de especies](Clase2.html)
 
+[Clase 2: Suplementario riqueza de especies](clase2.2.html)
+
 [Clase 3: Análisis de varianza y prueba de correlación](Clase3.html)
 
 [Clase 3: Suplementario - Pruebas no paramétricas](Clase4.html)
