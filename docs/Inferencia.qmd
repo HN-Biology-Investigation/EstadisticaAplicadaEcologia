@@ -1,0 +1,1048 @@
+---
+title: "Inferencia estadística"
+author: "David Murillo"
+format: html
+editor: visual
+---
+
+### Estimación de parámetros
+
+*El propósito principal de la inferencia estadística*
+
+La inferencia estadística tiene como objetivo estimar los valores de los parámetros (desconocidos) en un modelo estadístico. Todo modelo estadístico es una construcción teórica formulada como una ecuación matemática que podría generar los datos observados para alguna combinación de sus parámetros y de los valores de las variables explicativas. Estimar los valores de los parámetros del modelo permite utilizar el modelo estadístico como un mecanismo generador de datos, cuyas predicciones pueden compararse con la evidencia disponible.
+
+El objetivo de la estadística rara vez es llegar a conclusiones o hacer afirmaciones sobre los datos específicos que se tienen a mano. Más bien, estos se consideran un pequeño subconjunto obtenido de una colección mucho más amplia de valores potenciales de las variables de respuesta y explicativas que podrían haberse registrado para el mismo proceso hipotético generador de datos. La población estadística se define como el conjunto completo de valores de la variable de respuesta que podrían incluirse en una muestra. La información contenida en una muestra (desde el punto de vista de la inferencia estadística, las estimaciones de los parámetros) no es más que un medio transitorio para alcanzar el objetivo mayor de obtener conclusiones confiables sobre la población estadística. En otras palabras, la estimación estadística trata típicamente sobre el proceso que se piensa generó los datos observados o, de manera equivalente, sobre “todos” los conjuntos de datos que dicho proceso podría haber producido.
+
+Referencias principales de la clase:
+
+-   [Statistical Modeling with R: CHAPTER 3 Estimating Parameters: The main purpose of statistical inference](https://doi.org/10.1093/oso/9780192859013.003.0003)
+
+-   [Applied Statistical Modelling for Ecologists: Chapter 2 - Introduction to statistical inference](https://doi.org/10.1016/B978-0-443-13715-0.00023-6)
+
+## Métodos de estimación de parámetros
+
+:::::: panel-tabset
+### Mínimos cuadrados
+
+*Una teoría de los errores y la distribución normal*
+
+El primer enfoque para la estimación de parámetros puede encontrarse en el artículo de Bayes (1763). Fue desarrollado de manera independiente y sustancial por Laplace (1814) hasta convertirse en lo que hoy llamamos métodos bayesianos. Tanto Bayes como Laplace utilizaron la probabilidad inversa, mediante el ahora estándar teorema de Bayes, para estimar los parámetros de un modelo estadístico a partir de los datos. El método Bayes-Laplace fue el único método disponible de inferencia estadística hasta que Gauss desarrolló el método de mínimos cuadrados en 1809, en conexión con la distribución normal. Así, generó una teoría de los errores al ajustar curvas y superficies a mediciones en geodesia y astronomía. En 1814, Laplace demostró el primer teorema central del límite, según el cual la composición aditiva de variables aleatorias independientes e idénticamente distribuidas sigue una distribución normal. De esta manera, justificó el uso del método de mínimos cuadrados para tamaños de muestra grandes. El siglo XIX presenció la creciente recopilación de grandes conjuntos de datos en las ciencias sociales y naturales, lo que llevó al desarrollo de métodos analíticos como la regresión lineal y la correlación. El método de mínimos cuadrados desempeñó un papel importante en el análisis de esos grandes conjuntos de datos de variables cuantitativas que podían asumirse como normalmente distribuidas.
+
+El método de mínimos cuadrados es un método de estimación de parámetros en modelos lineales en el que la variable de respuesta sigue una distribución normal con varianza constante (esto se conoce como homocedasticidad). Sin embargo, muchas variables de respuesta no siguen una distribución normal, ni pueden transformarse para cumplirla. Por lo tanto, el método de mínimos cuadrados solo puede utilizarse en un conjunto relativamente limitado de circunstancias.
+
+La estimación por mínimos cuadrados (Least Squares: OLS) busca encontrar los parámetros de un modelo que minimicen la suma de los errores al cuadrado entre los valores observados y los valores predichos por el modelo.
+
+Modelo lineal simple:
+
+$$y_i = \beta_0 + \beta_1 x_1 + \varepsilon_i$$ Donde:
+
+$y_i$: valor observado de la variable respuesta en la observación *i*\
+$x_i$: valor de la variable explicativa en la observación *i*\
+$\beta_0$: intercepto del modelo\
+$\beta_1$: coeficiente de regresión (pendiente)\
+$\varepsilon_i$: término de error aleatorio asociado a la observación *i* $\varepsilon_i$: representa la variabilidad en $y_i$ que no es explicada por el modelo.
+
+¿Qué hace mínimos cuadrados?
+
+[Mathematical Derivation of Linear Regression Coefficients](https://myz303.com/linear_regression_en.html)
+
+[Statistical derivation of linear regression](https://doi.org/10.1117/12.2628017)
+
+Busca los valores $\beta_0$ y $\beta_1$ que minimicen la suma de los errores al cuadrado (SSE, por sus siglas en inglés):
+
+$$\sum_{i=1}^{n} (y_i - \hat{y}_i)^2$$
+
+$y_i$: valor observado de a variable respuesta
+
+$\hat{y}_i$: valor estimado o predicho por el modelo
+
+Solución (modelo lineal simple)
+
+Pendiente:
+
+$$\beta_1 = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2}$$ Intercepto:
+
+$$\beta_0 = \bar{y} - \beta_1\bar{x}$$
+
+$\bar{x}$: Media muestral de la variable *x*
+
+$\bar{y}$: Media muestral de la variable *y*
+
+#### Ejercicio
+
+Es momento de aplicar el método de mínimos cuadrados utilizando una base de datos recopilada por el Dr. McGarigal durante su doctorado en el noroeste del Pacífico. Esta base de datos contiene información sobre la abundancia de Certhia americana (trepador americano) y diversas variables predictoras.
+
+-   abund: abundancia de Certhia americana
+-   elevation: elevación promedio del sitio
+-   road.dens: densidad de carreteras en el sitio
+-   stream.den: densidad de arroyos en el sitio
+-   mps.CS: tamaño medio de parche en el sitio, donde el tamaño del parche se define por la composición y estructura de la vegetación
+-   mps.S: tamaño medio de parche en el sitio, donde el tamaño del parche se define únicamente por la estructura de la vegetación
+-   contagion: medida de la agregación (o “agrupamiento”) del mosaico de parches, donde los parches se definieron a partir de mps.S
+-   conifer: porcentaje del paisaje compuesto por bosque de coníferas
+-   saw: porcentaje del paisaje compuesto por rodales de madera madura (fase tardía de sucesión)
+-   pole: porcentaje del paisaje compuesto por rodales en etapa intermedia de sucesión
+-   sapling: porcentaje del paisaje compuesto por rodales jóvenes (fase temprana de sucesión)
+
+```{r}
+CerthiaAmericana <- read.delim("data/creeps.txt")
+# Datos
+x <- CerthiaAmericana$conifer
+y <- CerthiaAmericana$abund
+
+# Promedios
+x_media <- mean(x)
+y_media <- mean(y)
+
+# Pendiente (beta1)
+beta1 <- sum((x - x_media) * (y - y_media)) / sum((x - x_media)^2)
+
+# Intercepto (beta0)
+beta0 <- y_media - beta1 * x_media
+
+# Valores predichos
+y_hat <- beta0 + beta1 * x
+
+# Residuales
+residuals <- y - y_hat
+
+# SSE (suma de cuadrados del error)
+SSE <- sum(residuals^2)
+
+# Mostrar resultados
+beta0
+beta1
+SSE
+```
+
+Una vez que hemos calculado correctamente el intercepto y la pendiente, procederemos a validar nuestros resultados comparándolos con los obtenidos mediante un modelo lineal.
+
+El modelo lineal, específicamente la regresión lineal, utiliza el método de mínimos cuadrados para estimar los parámetros del modelo (la pendiente y el intercepto).
+
+```{r}
+modelo <- lm(y ~ x)
+summary(modelo)
+```
+
+### Máxima verosimilitud
+
+Este es un método general para la estimación de parámetros en modelos estadísticos, creado de manera independiente por R. A. Fisher entre 1912 y 1922. El método de máxima verosimilitud puede estimar los valores de los parámetros del modelo para cualquier distribución de probabilidad utilizada para describir una variable de respuesta. La máxima verosimilitud se convirtió en una herramienta esencial de propósito general en la inferencia estadística frecuentista, ya que permite evaluar la significancia estadística, calcular intervalos de confianza, realizar la evaluación y comparación de modelos, y hacer predicciones. Es importante destacar que los estimadores de máxima verosimilitud para una variable de respuesta normal coinciden con los correspondientes estimadores de mínimos cuadrados.
+
+Los estimadores de máxima verosimilitud de los parámetros de un modelo se obtienen al maximizar la función de verosimilitud con respecto a sus parámetros. Esto produce los valores de los parámetros que tienen mayor probabilidad de haber generado los datos observados, dado la Función de masa de probabilidad (PMF) o Función de densidad de probabilidad (PDF) utilizada para modelar la variable de respuesta. Por lo tanto, la función de verosimilitud ni surge de la nada ni su definición requiere inspiración divina. Más bien, está definida por la función de densidad de probabilidad o de masa de probabilidad de la variable de respuesta en el modelo estadístico.
+
+Entonces, ¿cómo podemos obtener los valores de los parámetros que maximizan esa función? En algunos casos, los estimadores de máxima verosimilitud de los parámetros del modelo pueden obtenerse calculando analíticamente la derivada de la función de verosimilitud con respecto a sus parámetros, y luego igualándola a cero para determinar su máximo. Cuando hacemos esto, obtenemos fórmulas simples que nos permiten obtener directamente los estimadores de máxima verosimilitud a partir de los datos. En otros casos, maximizar la función de verosimilitud se logra mediante métodos numéricos, muchos de los cuales han sido implementados en R.
+
+Nota: *En el análisis de datos ecológicos, es fundamental seleccionar la distribución de probabilidad adecuada según la naturaleza de la variable de respuesta. Por ejemplo, los conteos de aves suelen modelarse mediante una función de masa de probabilidad (PMF) bajo una distribución de Poisson, implementada en R con dpois(). De manera similar, los datos de presencia/ausencia se describen mediante una PMF con distribución binomial, utilizando dbinom(). En contraste, las variables continuas, como medidas de biomasa o peso, se modelan mediante una función de densidad de probabilidad (PDF) bajo una distribución normal, implementada en R con dnorm().*
+
+::: panel-tabset
+#### Probabilidad
+
+La probabilidad y la inferencia estadística mantienen una relación de simetría conceptual. Por un lado, la probabilidad parte de un proceso estocástico conocido y se pregunta qué tipo de datos es probable que genere. Es decir, asume un mecanismo generador de datos y explora sus posibles resultados. Por otro lado, la inferencia estadística recorre el camino inverso: parte de un conjunto de datos observados y formula preguntas sobre el proceso estocástico que pudo haberlos producido. Esta inversión de perspectiva es fundamental para comprender el papel de la probabilidad en la estadística. La máxima verosimilitud, como veremos más adelante, constituye precisamente un puente entre ambas aproximaciones, al buscar aquellos valores de los parámetros de un modelo que hacen más probable la observación de los datos que realmente se han obtenido.
+
+2.  El experimento aleatorio y el espacio muestral
+
+Un concepto central en probabilidad es el de experimento aleatorio, entendido como cualquier proceso que conduce a la observación o medición de un fenómeno cuyo resultado no puede predecirse con certeza. Cada observación particular realizada en dicho experimento recibe el nombre de resultado, mientras que el conjunto de todos los resultados posibles se denomina espacio muestral. En ecología, por ejemplo, cuando se selecciona un individuo de una población y se mide su masa corporal, el espacio muestral corresponde al rango de valores posibles que dicha masa puede tomar, como ocurre con los halcones peregrinos, cuyas masas corporales pueden oscilar entre 400 y 1600 gramos. De manera similar, cuando se registra el morfo de color de una serpiente, el espacio muestral se reduce a dos categorías —negro o gris—, mientras que si se cuenta el número de ectoparásitos en una libélula, el espacio muestral está constituido por todos los números enteros no negativos. En todos estos casos, el elemento común es la presencia de un mecanismo aleatorio que hace que los resultados varíen entre una observación y otra.
+
+3.  Eventos y la cuantificación del azar
+
+Con frecuencia, el interés no se centra en cada resultado individual del experimento aleatorio, sino en ciertos resúmenes o eventos, entendidos como subconjuntos del espacio muestral. Por ejemplo, puede resultar más relevante clasificar a los halcones peregrinos en "pesados" o "livianos" utilizando un umbral de 800 gramos, que considerar cada valor exacto de masa corporal. Del mismo modo, en un estudio de presencia de una especie en múltiples sitios, puede ser más útil concentrarse en el número total de sitios ocupados que en la lista detallada de cada sitio. Para describir matemáticamente la incertidumbre asociada a estos eventos, se emplea la probabilidad, que se define a partir de tres axiomas fundamentales: primero, la probabilidad de cualquier evento es un número comprendido entre 0 y 1, donde 0 indica un evento imposible y 1 un evento cierto; segundo, la probabilidad de todo el espacio muestral es igual a 1; y tercero, la probabilidad de la unión de eventos mutuamente excluyentes es igual a la suma de sus probabilidades individuales. A estos axiomas se suma con frecuencia la regla de la multiplicación, que establece que la probabilidad de que ocurran dos eventos de forma conjunta es igual al producto de la probabilidad de uno de ellos por la probabilidad del segundo condicionada a que el primero haya ocurrido.
+
+4.  Variabilidad muestral y el puente hacia la máxima verosimilitud
+
+Una consecuencia directa de la naturaleza aleatoria de los experimentos es que los resultados observados varían inevitablemente cuando el experimento se repite, ya sea porque se seleccionan distintos individuos, porque distintos investigadores realizan las mediciones o debido a errores de medición inherentes. Esta variabilidad, conocida como variabilidad muestral, constituye la fuente principal de incertidumbre que los modelos estadísticos deben abordar. La probabilidad proporciona el lenguaje formal para describir esta variabilidad, permitiendo calcular, bajo un conjunto de supuestos, qué tan plausible es observar una determinada muestra. La máxima verosimilitud aprovecha esta capacidad de la probabilidad, pero invierte su uso: en lugar de calcular la probabilidad de los datos dados unos parámetros conocidos, busca aquellos valores de los parámetros que hacen máxima dicha probabilidad. De este modo, la probabilidad no solo describe el azar, sino que se convierte en la herramienta fundamental para aprender sobre los mecanismos subyacentes a partir de los datos observados.
+
+**Variables aleatorias**
+
+Una variable aleatoria es simplemente una forma de convertir los resultados de un experimento (como medir el peso de un halcón o contar cuántas plantas hay en un lugar) en números que podemos analizar. Lo importante es entender que hay dos formas de verla: la variable en sí misma, que es el proceso o la idea de lo que estamos midiendo, y el valor concreto que obtenemos cuando hacemos una medición real. Por ejemplo, cuando decimos "vamos a medir el peso de un halcón", esa es la variable aleatoria; cuando ya lo pesamos y obtenemos 850 gramos, ese es el valor observado. En estadística, solemos usar mayúsculas para la variable ($Y$) y minúsculas para el valor observado ($y$).
+
+Pensar de esta manera es muy útil porque nos permite entender que los datos que recolectamos no son fijos, sino que son el resultado de un proceso que tiene algo de azar. Cuando construimos un modelo estadístico para estimar parámetros (por ejemplo, usando máxima verosimilitud), lo que hacemos es describir cómo ese proceso aleatorio genera los datos. Así, en lugar de ver los datos como simples números, los vemos como "realizaciones" de variables aleatorias, lo cual nos ayuda a hacer inferencias más sólidas y a cuantificar nuestra incertidumbre.
+
+Podemos distinguir dos clases de variables aleatorias: las de valor discreto y las continuas. En cierta medida, esta distinción coincide con las escalas de medición nominal, ordinal y métrica o de intervalo (Zar, 1998): las dos primeras producen variables aleatorias de valor discreto, mientras que las dos últimas producen variables aleatorias continuas.
+
+Ejemplos de variables aleatorias discretas incluyen descripciones, etiquetas o nombres de clases, como el sexo; el color del cabello, pelaje o plumaje; estratos geográficos como "Población A", "Población B" y "Población C"; o la identidad del técnico de campo que realiza un conteo de aves por punto. En estas etiquetas de clase no existe un sentido de orden. En contraste, el otro caso típico de variable aleatoria discreta es un conteo, que sí tiene un orden natural. Ejemplos de conteos incluyen el número de polluelos en un nido, el número de serpientes observadas por visita a un sitio, o el número de ballenas que migran frente a un punto de la costa durante un intervalo de tiempo.
+
+Las variables aleatorias continuas pueden tomar cualquier valor dentro de algún rango, al menos hasta la precisión de la medición. Las mediciones de longitud, distancia, área, duración o masa son ejemplos típicos de una variable aleatoria continua. Algunas mediciones pueden ser discretas o continuas, dependiendo del tipo específico. Por ejemplo, la ubicación de un animal en un estudio de movimiento puede ser continua, cuando se registran sus coordenadas exactas en un momento dado, o discreta, cuando solo se anota la identidad de la celda de cuadrícula en la que se encuentra el animal. En general, se puede pasar de variables aleatorias continuas a discretas mediante la "categorización" o agrupación de los resultados de la primera. Hay que tener en cuenta que la precisión de la medición siempre es finita. Por lo tanto, estrictamente hablando, toda variable aleatoria continua se mide en un número finito de clases discretas, pero en la práctica esto generalmente puede ignorarse al modelar variables aleatorias continuas.
+
+Muchos tipos de variables aleatorias tienen límites naturales. Por ejemplo, un conteo no puede ser negativo, como tampoco pueden serlo la mayoría de las mediciones, pero una variable aleatoria formada como la diferencia entre dos conteos o mediciones sí puede serlo. El rango de una variable aleatoria también se denomina su soporte y puede ser una consideración importante al elegir un modelo de probabilidad adecuado para un conjunto de datos.
+
+**Descripción de variables aleatorias mediante distribuciones de probabilidad**
+
+Un modelo estadístico emplea distribuciones de probabilidad para describir el comportamiento de las variables aleatorias. Una distribución puede entenderse como una representación que establece, para cada valor posible que puede arrojar una medición, su grado de probabilidad de ocurrencia. La probabilidad total asociada a todos los resultados posibles suma 1, y la distribución se encarga de repartir ese valor unitario entre los distintos resultados del espacio muestral. Por ejemplo, al lanzar un dado equilibrado, la distribución asigna una probabilidad de 1/6 a cada una de las seis caras. De este modo, una distribución de probabilidad proporciona, para cada valor que una variable aleatoria puede tomar, una medida cuantitativa de su plausibilidad dentro del proceso estocástico que se está modelando.
+
+Utilizamos una función de masa de probabilidad (PMF, por sus siglas en inglés) para variables aleatorias discretas y una función de densidad de probabilidad (PDF, por sus siglas en inglés) para variables aleatorias continuas. Hay que tener en cuenta que en la práctica a menudo utilizamos los términos "PDF" o "densidad" indistintamente para referirnos tanto a una PMF como a una PDF, y el contexto determina cuál se quiere decir. Comenzaremos describiendo una PMF.
+
+Una PMF $f(Y)$ asigna la probabilidad a cada valor observable posible $y$ de una variable aleatoria discreta $Y$:
+
+$$f(Y) = P(Y = y)$$
+
+El valor de una función de masa de probabilidad (PMF) se encuentra siempre entre 0 y 1, dado que es una probabilidad, y la suma de la PMF sobre todos los valores posibles es igual a 1. En efecto, estas son las características que definen una PMF.
+
+Algunas variables aleatorias son binarias y tienen solo dos valores posibles; por ejemplo, un proceso de supervivencia y su variable aleatoria asociada $Y$ solo puede producir un individuo que esté muerto o vivo. Por lo tanto, si se define $y=1$ como un animal que está vivo y $y=0$ como uno que está muerto, entonces es suficiente definir la probabilidad $P(y=1)=\phi$, es decir, la probabilidad de supervivencia, para describir completamente la variable aleatoria binaria (Royle & Dorazio, 2008). Dado que el espacio muestral del experimento aleatorio subyacente contiene solo dos valores, y puesto que la probabilidad de todo el espacio muestral es igual a 1, se sabe que $P(y=0)=1-\phi$. Para describir una variable aleatoria discreta con más de dos resultados posibles, como el color de cabello, donde existen $n$ eventos mutuamente excluyentes en un conjunto finito, solo se necesitan $n-1$ probabilidades libres, ya que la probabilidad de un evento siempre puede expresarse como 1 menos la suma de las probabilidades de todos los demás. Las distribuciones binomial, multinomial o categórica son ejemplos de este tipo de PMF (Royle & Dorazio, 2008: capítulo 2; Schaub & Kéry, 2022: capítulo 2).
+
+Una función de densidad de probabilidad (PDF) proporciona la densidad de probabilidad $f(Y)$ para cada valor observable posible de una variable aleatoria continua $Y$. Esta densidad es un valor no negativo que representa el límite del área de un rectángulo con altura $f(Y)$ y base $(y-\delta, y+\delta)$, cuando la semianchura $\delta$ del rectángulo tiende a 0. Una PDF tiene la característica peculiar de que la probabilidad (pero no la densidad) de cualquier valor particular de $Y$ es 0, y que la densidad puede ser mayor que 1 para algunos valores de $Y$. Para obtener la probabilidad de un rango de valores de $Y$, por ejemplo para $(y_1, y_2)$ dada la densidad $f(Y)$, es necesario integrar $f$ entre $y_1$ y $y_2$, es decir:
+
+$$P(y_1 < Y < y_2) = \int_{y_1}^{y_2} f(Y) , dY$$ La integral sobre todo el soporte de una PDF es nuevamente igual a 1 por definición.
+
+En estadística, existe un gran número de procesos estocásticos que ocurren con tal frecuencia que sus distribuciones de probabilidad asociadas han recibido nombres propios. Estas distribuciones estadísticas con nombre incluyen la Bernoulli, binomial, Poisson, uniforme y la normal (o gaussiana). Constituyen los componentes básicos típicos de los modelos estadísticos; por lo tanto, es importante lograr una buena comprensión de ellas. Todas las distribuciones están gobernadas por un pequeño número de constantes, denominadas parámetros, que determinan la forma específica de una distribución. Por ejemplo, una distribución de Poisson es un modelo estocástico típico para conteos sin límite superior. La PMF de una variable aleatoria de Poisson es la siguiente (recordando que el signo de exclamación representa la función factorial):
+
+$$f(y \mid \lambda) = P(Y = y \mid \lambda) = \frac{\lambda^y e^{-\lambda}}{y!}$$ Una PMF proporciona la probabilidad de observar cualquier valor posible de la variable aleatoria $Y$ en función de uno o varios parámetros. Para una PMF de Poisson, $\lambda$ (lambda) es el único parámetro, y representa tanto la media como la varianza de $Y$. En las expresiones para $f$ y $P$ se observa $\lambda$ a la derecha de una barra de condición ($\mid$). Esto significa que los valores de estas funciones dependen del valor específico elegido para $\lambda$. Esta forma explícita de expresar una distribución estadística puede no resultar intuitiva para muchos ecólogos en una primera lectura. Sin embargo, es extremadamente valioso aprender a comprender qué son las funciones de distribución y cómo se utilizan. Se recomienda explorarlas introduciendo algunos valores y observando los resultados, así como generar abundantes gráficos; es decir, adoptar el enfoque experimental hacia la estadística. Debe notarse que $\lambda$ en la PMF de Poisson es solo un nombre convencional, y podría denotarse la media de Poisson con cualquier otra letra griega o romana, o incluso escribirse como una palabra, tal como se hace en los motores de ajuste de modelos. En contraste, $e$ es una "letra de sistema" matemática; es el número de Euler, 2.7183.
+
+Así, la PMF de Poisson permite calcular la probabilidad de observar cualquiera de los resultados posibles de un experimento aleatorio para el cual se define una variable aleatoria que puede ser adecuadamente aproximada por el modelo de una distribución de Poisson. Esto supone que $\lambda$ es conocido. ¿Qué ocurre si por ahora se asume $\lambda = 2$? Entonces, se puede obtener, por ejemplo, la probabilidad de un conteo de 1, que es:
+
+$$\frac{2^1 e^{-2}}{1!} \approx 0.27$$
+
+¿Y la probabilidad de un conteo de cero? Se evalúa la PMF para $Y = 0$ y se obtiene:
+
+$$\frac{2^0 e^{-2}}{0!} \approx 0.14$$
+
+Además, se puede utilizar este modelo de probabilidad para determinar que la probabilidad de un conteo de 2 o de 3 es:
+
+$$\frac{2^2 e^{-2}}{2!} + \frac{2^3 e^{-2}}{3!} \approx 0.27 + 0.18 = 0.45$$
+
+(que estas probabilidades puedan sumarse se deriva directamente de los axiomas de probabilidad). La definición de la PMF de Poisson es la ecuación mencionada, pero con frecuencia se utilizará una notación abreviada. Así, se verá una variable aleatoria de Poisson escrita en diversas formas, incluyendo estas (y recordando el comentario sobre la denominación algo arbitraria del parámetro de Poisson mencionado anteriormente).
+
+$y \sim f(Y \mid \lambda)$
+
+$y \sim f_Y(Y \mid \lambda)$
+
+$y \sim \text{Poisson}(\lambda)$ or $y \sim \text{Pois}(\lambda)$
+
+$y \sim \text{Poisson}(Y \mid \lambda)$ or $y \sim \text{Pois}(Y \mid \lambda)$
+
+**Funciones de densidad y masa en R: dpois, dbinom, dnorm**
+
+En el lenguaje de programación estadística R, las funciones que comienzan con la letra d (de density) corresponden a las funciones de masa de probabilidad (para variables discretas) o de densidad de probabilidad (para variables continuas) de las distribuciones más comúnmente utilizadas. Estas funciones permiten obtener, para un valor dado de una variable aleatoria, la probabilidad (o la densidad) asociada según una distribución específica y sus parámetros.
+
+La función dpois calcula la probabilidad de observar un valor específico $y$ bajo una distribución de Poisson con parámetro $\lambda$. Es decir, evalúa:
+
+$$\text{dpois}(y, \lambda) = \frac{\lambda^y e^{-\lambda}}{y!}$$
+
+De manera análoga, dbinom evalúa la función de masa de probabilidad de una distribución binomial. Dados $n$ ensayos independientes y una probabilidad de éxito $p$, dbinom devuelve la probabilidad de observar exactamente $y$ éxitos:
+
+$$\text{dbinom}(y, n, p) = \binom{n}{y} p^y (1-p)^{n-y}$$
+
+Por su parte, dnorm evalúa la función de densidad de probabilidad de una distribución normal (o gaussiana) con media $\mu$ y desviación estándar $\sigma$. Para un valor $y$, la densidad está dada por:
+
+$$\text{dnorm}(y, \mu, \sigma) = \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{(y-\mu)^2}{2\sigma^2}}$$
+
+Estas funciones son fundamentales en la construcción de modelos estadísticos, ya que permiten calcular la contribución de cada observación a la verosimilitud. En el marco de la estimación por máxima verosimilitud, la función de verosimilitud se construye como el producto (o la suma de logaritmos) de las evaluaciones individuales de estas funciones para cada dato observado, dadas las distribuciones supuestas en el modelo. Así, dpois, dbinom y dnorm no son meros cálculos aislados, sino los componentes esenciales que conectan la teoría de la probabilidad con la práctica del ajuste de modelos estadísticos.
+
+-   
+
+    1.  dpois: distribución de Poisson
+
+Contexto: Supóngase que se estudia el número de aves migratorias que llegan a un humedal por día. Con base en registros históricos, se sabe que la tasa promedio es de $\lambda = 3$ aves por día. Si se asume que el proceso sigue una distribución de Poisson, se desea calcular la probabilidad de observar exactamente 2 aves en un día determinado.
+
+Explicación: La función dpois evalúa la función de masa de probabilidad de Poisson para un valor dado de $y$ y un parámetro $\lambda$. En este caso, $y = 2$ y $\lambda = 3$.
+
+```{r}
+# Parámetro lambda: tasa promedio de aves por día
+lambda <- 3
+
+# Valor observado (número de aves)
+y <- 2
+
+# Calcular la probabilidad de observar exactamente 2 aves
+prob <- dpois(y, lambda)
+
+# Mostrar el resultado
+print(prob)
+```
+
+Interpretación: El valor devuelto por dpois(2, 3) es aproximadamente $0.224$. Esto significa que, bajo el modelo supuesto, existe una probabilidad del $22.4%$ de observar exactamente dos aves en un día. Este cálculo es la contribución de una observación individual a la verosimilitud si se estuviera estimando $\lambda$ a partir de datos.
+
+-   
+
+    2.  dbinom: distribución binomial
+
+Contexto: En un estudio de supervivencia de plantas, se trasplantan $n = 10$ individuos de una especie en una parcela experimental. Con base en estudios previos, se estima que la probabilidad de supervivencia de cada planta es $p = 0.7$, independientemente de las demás. Se desea calcular la probabilidad de que exactamente 8 plantas sobrevivan.
+
+Explicación: La función dbinom evalúa la función de masa de probabilidad binomial para un número de éxitos $y$, dado un número de ensayos $n$ y una probabilidad de éxito $p$.
+
+```{r}
+# Número de ensayos (plantas trasplantadas)
+n <- 10
+
+# Probabilidad de éxito (supervivencia)
+p <- 0.7
+
+# Número de éxitos observado
+y <- 8
+
+# Calcular la probabilidad de que exactamente 8 sobrevivan
+prob <- dbinom(y, n, p)
+
+# Mostrar el resultado
+print(prob)
+```
+
+Interpretación: El resultado de dbinom(8, 10, 0.7) es aproximadamente $0.233$. Esto indica que, si el modelo binomial es correcto, hay un $23.3%$ de probabilidad de observar exactamente 8 plantas vivas de las 10 trasplantadas. En un análisis de máxima verosimilitud, esta función se utiliza para evaluar la probabilidad de los datos observados dado un valor de $p$.
+
+-   
+
+    3.  dnorm: distribución normal
+
+Contexto: En un estudio de morfometría de una especie de roedor, se ha determinado que la longitud corporal sigue una distribución normal con media $\mu = 12$ cm y desviación estándar $\sigma = 1.5$ cm. Se desea obtener la densidad de probabilidad (no la probabilidad) para un individuo que mide exactamente $y = 13.2$ cm.
+
+Explicación: La función dnorm evalúa la función de densidad de probabilidad normal para un valor $y$, dados los parámetros de media $\mu$ y desviación estándar $\sigma$. En variables continuas, el valor de la densidad no es una probabilidad, sino una altura que, al integrarse en un intervalo, produce una probabilidad.
+
+```{r}
+# Media de la distribución
+mu <- 12
+
+# Desviación estándar
+sigma <- 1.5
+
+# Valor observado (longitud en cm)
+y <- 13.2
+
+# Calcular la densidad en ese punto
+densidad <- dnorm(y, mean = mu, sd = sigma)
+
+# Mostrar el resultado
+print(densidad)
+```
+
+Interpretación: El valor devuelto por dnorm(13.2, 12, 1.5) es aproximadamente $0.146$. Este número representa la densidad de probabilidad en ese punto. Si se deseara la probabilidad de que un individuo mida entre dos valores, por ejemplo entre 13 y 14 cm, se utilizaría pnorm(14, 12, 1.5) - pnorm(13, 12, 1.5). En máxima verosimilitud, la densidad evaluada en cada observación contribuye al valor de la función de verosimilitud.
+
+#### La función de verosimilitud
+
+La función de verosimilitud es un concepto clave para la inferencia estadística. Es un ingrediente principal tanto de la escuela clásica como de la escuela bayesiana del aprendizaje a partir de datos. La función de verosimilitud representa la conexión formal entre lo que se observa (los datos) y lo que no se observa (las incógnitas), y especialmente los parámetros que se desean estimar.
+
+"la función de verosimilitud es la función de densidad (conjunta) evaluada en los datos observados, y considerada como una función de $\theta$...". Es decir,
+
+$$L(\theta) \equiv L(\theta; y) = f(y; \theta)$$
+
+¿En qué se diferencia la verosimilitud de una densidad de probabilidad?
+
+La confusión suele surgir porque la verosimilitud se escribe igual que una densidad de probabilidad, pero se lee al revés. En una densidad de probabilidad, los parámetros $\theta$ son conocidos y se pregunta: ¿qué tan probable es observar un valor $y$? En cambio, en la verosimilitud, los datos $y$ ya fueron observados y se pregunta: ¿qué tan "creíbles" son los distintos valores de $\theta$?
+
+Esta inversión tiene una consecuencia importante: la función de verosimilitud no es una distribución de probabilidad. A diferencia de una densidad de probabilidad, el área bajo la curva de verosimilitud no suma 1. La verosimilitud es solo una medida de respaldo relativo, no una probabilidad en el sentido estricto.
+
+¿Por qué se usa el logaritmo de la verosimilitud?
+
+Cuando los datos son independientes (i.i.d.: independientes e idénticamente distribuidos), la verosimilitud conjunta es el producto de las densidades individuales:
+
+$$L(\theta) = \prod_{i=1}^{n} f(y_i \mid \theta)$$
+
+Cada $f(y_i \mid \theta)$ es un número entre 0 y 1, por lo que al multiplicar muchos de ellos el resultado se vuelve extremadamente pequeño, especialmente con muestras grandes. Esto hace que los cálculos numéricos sean difíciles. Por eso se usa el logaritmo natural, que convierte el producto en una suma:
+
+$$\log L(\theta) = l(\theta) = \sum_{i=1}^{n} \log f(y_i \mid \theta)$$
+
+El valor de la log-verosimilitud es más manejable numéricamente y, además, maximizar la verosimilitud es equivalente a maximizar su logaritmo.
+
+¿Qué pasa cuando el modelo incluye covariables?
+
+En la mayoría de los modelos reales, el parámetro $\theta$ no es constante, sino que depende de covariables. Por ejemplo, en un modelo lineal la media $\mu$ se expresa como $\beta_0 + \beta_1 x$. En estos casos, simplemente se reemplaza $\theta$ por una función de las covariables y se estiman los nuevos parámetros (como $\beta_0$ y $\beta_1$).
+
+¿Para qué sirve la verosimilitud?
+
+La función de verosimilitud (o su logaritmo: LL) contiene casi toda la información sobre los parámetros que está presente en los datos. Por eso es el punto de partida tanto de la inferencia frecuentista (que maximiza la verosimilitud) como de la inferencia bayesiana (que combina la verosimilitud con una distribución previa para obtener una posterior). En ambos enfoques, la verosimilitud es el mecanismo mediante el cual los datos actualizan el conocimiento sobre los parámetros de interés.
+
+#### Ejercicio
+
+En este ejercicio se utilizará la base de datos de $Certhia$ $americana$ para ilustrar el principio de máxima verosimilitud. Primero se mostrará cómo evaluar la verosimilitud de diferentes valores de un parámetro en una distribución simple, y luego se extenderá el concepto a un modelo lineal con dos parámetros.
+
+```{r}
+y <- CerthiaAmericana$abund
+x <- CerthiaAmericana$conifer
+```
+
+La variable $y$ representa la abundancia observada de $Certhia$ $americana$, y $x$ corresponde al porcentaje de bosque de coníferas en cada sitio.
+
+**Distribución empírica de los datos**
+
+El siguiente gráfico muestra la densidad empírica de la variable $y$ mediante geom_density(). Esta curva es una estimación no paramétrica que permite observar la forma de la distribución de los datos sin imponer un modelo específico.
+
+```{r}
+library(ggplot2)
+
+ggplot(data = CerthiaAmericana, aes(x= abund))+
+  geom_density()+
+  theme_classic()
+```
+
+**Distribución normal con parámetros fijos**
+
+Para introducir el concepto de verosimilitud, se define una distribución normal con media $\mu = 0.39$ y desviación estándar $\sigma = 0.22$. La función dnorm() calcula la densidad para cada valor de $y$ bajo este modelo.
+
+```{r}
+x_vals <- seq(min(y), max(y), length = 100)
+densidad <- dnorm(x_vals, mean = 0.39, sd = 0.22)
+
+plot(x_vals, densidad, type = "l", lwd = 2,
+     xlab = "abund", ylab = "Densidad",
+     main = "Densidad normal con media 0.39 y sd 0.22")
+```
+
+La curva obtenida es una campana gaussiana que representa qué valores de $y$ son más probables según el modelo propuesto.
+
+**Evaluación de la verosimilitud para distintos valores de la media**
+
+El método de máxima verosimilitud consiste en encontrar los valores de los parámetros que maximizan la probabilidad de observar los datos. En este caso, se fija $\sigma = 0.22$ y se evalúa la log-verosimilitud para tres valores diferentes de $\mu$: 0.4, 0.01 y 1.
+
+Para cada valor de $\mu$, se calcula:
+
+$$\log L(\mu \mid y) = \sum_{i=1}^{n} \log f(y_i \mid \mu, \sigma)$$
+
+donde $f(y_i \mid \mu, \sigma)$ es la densidad normal evaluada en cada observación.
+
+```{r}
+sum(dnorm(y, mean = 0.4, sd = 0.22, log = TRUE))
+sum(dnorm(y, mean = 0.01, sd = 0.22, log = TRUE))
+sum(dnorm(y, mean = 1, sd = 0.22, log = TRUE))
+```
+
+El resultado con el valor más alto (menos negativo) indica qué valor de $\mu$ hace más probable la observación de los datos. En este ejemplo, $\mu = 0.4$ produce la mayor log-verosimilitud, por lo que es el valor más plausible bajo el modelo asumido.
+
+**Extensión a un modelo lineal: búsqueda del intercepto y la pendiente**
+
+Ahora se busca modelar la relación entre $y$ (abundancia) y $x$ (porcentaje de coníferas) mediante un modelo lineal de la forma:
+
+$$\mu_i = \beta_0 + \beta_1 x_i$$
+
+$$y_i \sim \text{Normal}(\mu_i, \sigma)$$
+
+La desviación estándar $\sigma$ se fija como la desviación estándar de $y$, aunque en una implementación completa también se estimaría. Se explora una grilla de posibles valores para $\beta_0$ y $\beta_1$ y se calcula la log-verosimilitud para cada combinación:
+
+```{r}
+
+set.seed(1234)
+
+beta0_vals <- seq(0.1, 0.8, length.out = 100)  
+beta1_vals <- seq(-0.001, 0.001, length.out = 10)  
+sigma <- sd(y)
+
+results <- data.frame()
+
+for (b0 in beta0_vals) {
+  for (b1 in beta1_vals) {
+    
+    mu <- b0 + b1 * x
+    
+    logLik <- sum(dnorm(y, mean = mu, sd = sigma, log = TRUE))
+    
+    results <- rbind(results, data.frame(beta0 = b0,
+                                         beta1 = b1,
+                                         logLik = logLik))
+  }
+}
+```
+
+Se identifica la combinación que maximiza la log-verosimilitud:
+
+```{r}
+results[which.max(results$logLik), ]
+```
+
+Interpretación de los resultados
+
+La combinación con el mayor valor de log-verosimilitud corresponde a $\beta_0 = 0.411$ y $\beta_1 = -0.00033$. Esto significa que, bajo el modelo normal supuesto, estos parámetros hacen más probable la observación de los datos. El intercepto $\beta_0$ representa la abundancia esperada cuando el porcentaje de coníferas es cero. La pendiente $\beta_1$ negativa sugiere una relación inversa entre la cobertura de coníferas y la abundancia de la especie, aunque su magnitud es muy pequeña.
+:::
+
+### Inferencia bayesiana
+
+Conceptualmente, el inicio de cualquier análisis bayesiano es exactamente el mismo que en un análisis frecuentista con máxima verosimilitud: un modelo estadístico paramétrico. Esto significa que los datos que se desean analizar son vistos como el resultado de un proceso estocástico, y se describe este proceso generador de datos de una manera adecuada para los objetivos del análisis, ya sea descripción, predicción o comprensión mecanicista (*Una descripción mecanicista se refiere a explicar un fenómeno en términos de los procesos o mecanismos subyacentes que lo generan, no solo describir patrones o hacer predicciones. Ejemplo: La cobertura forestal influye en la disponibilidad de alimento y refugio, lo que causa cambios en la abundancia*). Se utiliza la probabilidad para describir el proceso generador de datos.
+
+Conceptualmente, el inicio de un análisis bayesiano es muy similar al de un análisis frecuentista basado en máxima verosimilitud: ambos parten de un modelo estadístico paramétrico. Esto implica que los datos se consideran como el resultado de un proceso estocástico, el cual se describe mediante una distribución de probabilidad definida por un conjunto reducido de parámetros desconocidos. En este contexto, cada variable aleatoria del modelo está completamente caracterizada por su distribución, excepto por los valores de estos parámetros.
+
+A partir de este modelo, es posible realizar distintas tareas, como estimar valores desconocidos (por ejemplo, covariables faltantes) o predecir observaciones futuras. Además, al combinar el modelo con los datos observados, se pueden estimar los parámetros y cuantificar la incertidumbre asociada a dichas estimaciones.
+
+La diferencia fundamental entre la inferencia bayesiana y la frecuentista surge precisamente en esta etapa: aunque ambos enfoques comparten la formulación del modelo, difieren en la manera en que estiman los parámetros y representan la incertidumbre.
+
+**La probabilidad como medida general de incertidumbre o de conocimiento imperfecto**
+
+Los bayesianos dividen el mundo entre cosas que son conocidas y cosas que son al menos parcialmente desconocidas y, por lo tanto, inciertas. La característica definitoria de la inferencia bayesiana es el uso de la probabilidad como una medida del conocimiento sobre esas cosas inciertas. En la inferencia bayesiana, al igual que en la inferencia por máxima verosimilitud, se utiliza la probabilidad como medida de variabilidad en un proceso estocástico; es decir, se utilizan distribuciones de probabilidad para caracterizar variables aleatorias y construir los modelos estadísticos. Pero, además, la probabilidad se utiliza de manera más general para cuantificar la cantidad de conocimiento sobre cualquier cosa que no se conoce perfectamente.
+
+En estadística es útil distinguir dos fuentes principales de incertidumbre: la incertidumbre estocástica, que proviene de la variabilidad inherente a los procesos aleatorios, y la incertidumbre epistémica, que surge de la falta de conocimiento sobre el sistema o sus parámetros. En el enfoque bayesiano, ambas formas de incertidumbre se representan y cuantifican mediante probabilidades. Con frecuencia, la probabilidad en el contexto bayesiano se interpreta como un “grado de creencia”. Sin embargo, esta expresión puede resultar confusa, ya que la palabra “creencia” sugiere subjetividad. En realidad, una forma más adecuada de entenderla es como una medida del conocimiento disponible o de la incertidumbre sobre una cantidad de interés, dada la información que se tiene.
+
+Bajo esta visión, la probabilidad se vuelve personal, ya que lo que es bien conocido por una persona puede ser parcial o totalmente desconocido para otra. Por ejemplo, como biólogo conservacionista, uno puede preguntarse si la víbora áspid (*Vipera aspis*) aún ocurre en un sitio donde se sabía que estaba presente hace 30 años. Esto es incierto, por lo que, como bayesiano, se utilizaría una distribución de probabilidad para cuantificar el conocimiento incompleto sobre la presencia o ausencia actual de la víbora. Pero imagínese a otro biólogo que recientemente ha visto una víbora áspid en ese sitio; para él ya no hay incertidumbre. Que la probabilidad de un evento, cuando se utiliza como medida de conocimiento, pueda ser diferente para una persona que para otra, no significa que tal uso de la probabilidad no sea científico.
+
+El mundo está lleno de cosas que no se conocen con certeza. De hecho, si se piensa bien, hay muy pocas cosas que se sepan con certeza. Entre las cosas desconocidas se incluyen:
+
+-   En conservación, si la víbora áspid aún ocurre en un sitio donde se sabía que estaba presente anteriormente.
+
+-   En un análisis de supervivencia, el destino y la masa corporal de un individuo durante una ocasión en que no es observado o capturado.
+
+-   En un ejercicio de modelado de distribución de especies, la presencia/ausencia o abundancia de una especie de estudio en un sitio no muestreado.
+
+-   En otra aplicación de modelado de distribución de especies, el número de celdas de cuadrícula ocupadas por una especie de estudio en una región.
+
+-   Y en un análisis de viabilidad poblacional, el destino (existente vs. extinto) y el tamaño de una población en algún momento en el futuro.
+
+En el contexto del modelado, el valor de un parámetro es un ejemplo destacado de algo sobre lo que se tiene incertidumbre. En los modelos estadísticos se afirma ser, al mismo tiempo, omnisciente (Se refiere a alguien o algo que tiene conocimiento completo y total de todo, sin limitaciones) y completamente ignorante: se sabe exactamente el tipo de proceso generador de datos, por ejemplo, se afirma que los conteos de abejarucos (*Merops* sp) fueron producidos exactamente por un proceso aleatorio conocido como distribución de Poisson. Pero se finge ignorancia completa sobre el valor de las constantes desconocidas en este proceso, es decir, sobre el parámetro $\lambda$ o, más específicamente, sobre $\alpha$ y $\beta$ que reemplazan a $\lambda$ en el modelo lineal generalizado de Poisson.
+
+**Tratar los parámetros como variables aleatorias**
+
+Cuando se realiza un análisis bayesiano, se utiliza la probabilidad como una medida del conocimiento sobre cualquier cosa que no se conoce con certeza, colocando una distribución de probabilidad sobre ella. Por lo tanto, se aborda la incertidumbre sobre las cosas desconocidas de la misma manera que se aborda la variabilidad de las cosas observables, como los datos. Como consecuencia, se tratan los parámetros y otras cantidades desconocidas como si fueran variables aleatorias. Esto no significa que a priori el valor de un parámetro no pueda ser una constante también para un bayesiano. De hecho, la mayoría de los parámetros en un análisis bayesiano son fundamentalmente idénticos a los parámetros en un análisis frecuentista: son simplemente constantes desconocidas y se tiene "incertidumbre epistémica" sobre sus valores. Es solo debido al uso de la probabilidad como medida de incertidumbre que se tratan como variables aleatorias, pero sus valores verdaderos son realmente fijos.
+
+En el contexto de los ejemplos anteriores, esto significa:
+
+-   En el ejemplo de la víbora áspid, si se denota como $A$ el evento de que todavía haya serpientes en el sitio 30 años después del último avistamiento conocido, entonces se puede escribir $p(A)$ como la probabilidad de que aún viva al menos una serpiente allí.
+
+-   En el análisis de supervivencia, para un individuo $i$ que no es detectado durante la ocasión $t$, se colocará una distribución de probabilidad tanto sobre su destino (binario: muerto o vivo) como sobre su masa corporal (continua), por ejemplo, $p(z_{i,t}=1)$ y $p(x_{i,t})$ donde $z$ es el estado vivo y $x$ es la masa.
+
+-   En los dos ejemplos de modelado de distribución de especies, se colocan distribuciones de probabilidad sobre la presencia/ausencia desconocida o sobre la abundancia de la especie modelada en un sitio no muestreado, y sobre el número desconocido de celdas de cuadrícula ocupadas en la región.
+
+-   De manera similar, en un análisis de viabilidad poblacional se coloca una distribución de probabilidad sobre el destino o el tamaño de la población de estudio en cada paso de tiempo hasta el horizonte de predicción.
+
+**Distribuciones de probabilidad como expresión del conocimiento**
+
+En el contexto del segundo ejemplo de modelado de distribución de especies, se resume el uso de la probabilidad como una medida general de incertidumbre. Una densidad de probabilidad permite describir tanto la falta total de conocimiento (una línea horizontal plana) como la certeza absoluta (una línea vertical), así como cualquier situación intermedia. A medida que se aprende, la distribución de probabilidad para el valor de algún parámetro se vuelve cada vez más concentrada o "puntiaguda". Por lo tanto, la amplitud o estrechez de la distribución de probabilidad cuantifica la cantidad de conocimiento que se tiene sobre un parámetro. Nuevamente, este uso de la probabilidad como medida de incertidumbre es la característica definitoria de la inferencia bayesiana.
+
+Curiosamente, esto coincide con la forma en que los humanos tienden a expresar la incertidumbre, cuando se dicen cosas como "estoy 99% seguro de que esta noche va a llover" o "estoy 100% seguro de que esto o aquello va a suceder". La única diferencia es que los bayesianos realizan cálculos con tales evaluaciones de probabilidad.
+
+#### La distribución posterior
+
+En un problema de inferencia con un conjunto de datos $y$ y un modelo con parámetro(s) desconocido(s) $\theta$, un bayesiano sostendría que lo más sensato es estimar $\theta$ basándose en la información contenida en los datos utilizando la expresión de probabilidad condicional $p(\theta \mid y)$. Es decir, se busca la probabilidad de lo que es desconocido (el valor del parámetro $\theta$) dado lo que es conocido (los datos $y$). Por lo tanto, aunque los datos sean considerados como el resultado de un proceso aleatorio, una vez que han sido observados son perfectamente conocidos y ya no existe incertidumbre sobre ellos. Entonces, ¿cómo se debe calcular esta probabilidad condicional de los parámetros dados los datos?
+
+Aquí es donde interviene la regla de Bayes, que para dos eventos $A$ y $B$ puede escribirse como:
+
+$$p(A \mid B) = \frac{p(B \mid A) , p(A)}{p(B)}$$
+
+La regla de Bayes (que por razones estéticas se prefiere escribir sin apóstrofe) establece que la probabilidad de $A$, dado que $B$ es verdadero (o ha sido observado), es el producto de la probabilidad de que $B$ sea verdadero, dado que $A$ es verdadero, multiplicado por la probabilidad de que $A$ sea verdadero, dividido por la probabilidad de que $B$ sea verdadero. Esto es equivalente a $p(A \mid B) = p(A, B) / p(B)$, es decir, la probabilidad conjunta de $A$ y $B$ (o de que tanto $A$ como $B$ sean verdaderos), dividida por la probabilidad de $B$.
+
+La regla de Bayes es un hecho matemático que puede derivarse fácilmente de la definición de probabilidad condicional, la cual a su vez se obtiene reorganizando la regla de la multiplicación. No hay nada intrínsecamente bayesiano en ella y la regla tiene muchas aplicaciones no bayesianas. Estas incluyen la evaluación de la probabilidad de padecer alguna enfermedad cuando se recibe un resultado positivo en una prueba, y la estimación de los valores realizados de efectos aleatorios en un análisis no bayesiano, como el tamaño poblacional específico de un sitio en un modelo de mezcla $N$ (*N-Mixture* models) y la presencia o ausencia en un sitio donde una especie no fue detectada en un modelo de ocupación.
+
+El ministro y matemático inglés Thomas Bayes (1702–1761) y otros como Pierre-Simon Laplace (1749–1827) utilizaron lo que más tarde se conocería como la regla de Bayes para hacer inferencias sobre cosas no observables, como los parámetros en modelos estadísticos. En este contexto, la regla de Bayes puede escribirse de la siguiente manera:
+
+$$p(\theta \mid y) = \frac{p(y \mid \theta) , p(\theta)}{p(y)} = \frac{p(y, \theta)}{p(y)}$$ Los cuatro componentes de la regla de Bayes en el contexto de la inferencia estadística bayesiana son los siguientes:
+
+-   la distribución posterior $p(\theta \mid y)$ es la probabilidad (o densidad de probabilidad) de los parámetros dados los datos y la distribución previa,
+
+-   la verosimilitud $p(y \mid \theta)$ es la probabilidad (o densidad de probabilidad) de los datos (es decir, una función de masa de probabilidad o una función de densidad de probabilidad) vista como una función de los parámetros,
+
+-   la distribución previa $p(\theta)$,
+
+-   la distribución marginal de los datos $p(y) = \int p(y \mid \theta) , p(\theta) , d\theta$ es la integral del numerador sobre el o los parámetros $\theta$, es decir, lo que se obtiene al promediar el numerador sobre todos los valores posibles del parámetro $\theta$, ponderados por su plausibilidad dada en $p(\theta)$.
+
+Hay que tener en cuenta que la distribución posterior también viene dada por el cociente entre la distribución conjunta de los datos y los parámetros, y la distribución marginal de los datos.
+
+Se puede observar que el sello distintivo de la inferencia bayesiana —el uso de la probabilidad como medida del conocimiento incierto— aparece en dos lugares de la regla de Bayes: en la distribución previa y en la distribución posterior. Gracias a esto, es posible hacer expresiones probabilísticas formales sobre valores específicos de los parámetros en un modelo. Por ejemplo, en un análisis de viabilidad poblacional se podría afirmar legítimamente algo como "hay un 95% de certeza de que la tasa de disminución de la población es superior al 20% anual". Este tipo de expresiones son imposibles en las formas no bayesianas de aprendizaje a partir de datos, o al menos no pueden obtenerse de manera tan directa.
+
+Los pasos formales que subyacen a todo análisis bayesiano son los siguientes:
+
+-   Se utiliza la probabilidad como una medida de incertidumbre sobre cantidades desconocidas, como el parámetro $\theta$.
+
+-   Se trata toda inferencia estadística (por ejemplo, estimación de parámetros, pruebas de hipótesis, imputación de valores faltantes o predicciones) como un cálculo de probabilidad mediante la aplicación de la regla de Bayes.
+
+-   Se comienza expresando el conocimiento inicial, o previo, sobre el parámetro $\theta$ mediante una distribución de probabilidad, que es la distribución previa $p(\theta)$. Es importante que no se utilice información de los datos para formar la previa; hacerlo sería usar los datos dos veces y constituiría una trampa.
+
+-   Luego, se utiliza la regla de Bayes para actualizar el conocimiento previo con la información contenida en los datos y plasmada en la función de verosimilitud $p(y \mid \theta)$.
+
+-   El resultado es otra distribución de probabilidad, la distribución posterior $p(\theta \mid y)$, que representa el nuevo estado de conocimiento sobre $\theta$.
+
+-   Todos estos pasos pueden repetirse, y la regla de Bayes constituye una forma natural de actualizar el conocimiento de manera secuencial.
+
+Se puede observar que la verosimilitud es una pieza central también de la inferencia bayesiana, ya que es la verosimilitud (a través de los datos $y$) la que transforma el conocimiento previo en conocimiento posterior sobre el parámetro $\theta$. Sin embargo, para realizar inferencia directa por máxima verosimilitud, se utiliza únicamente la función de verosimilitud junto con los datos y se optimiza sobre el espacio paramétrico para encontrar los estimadores de máxima verosimilitud (MLE). En cambio, en la inferencia bayesiana el objetivo es siempre una distribución para cada elemento desconocido.
+
+La regla de Bayes tiene un gran atractivo heurístico como método para aprender sobre cosas inciertas. En primer lugar, se basa en un "concepto humano" de la probabilidad; es decir, se utiliza formalmente la probabilidad como una medida del conocimiento, de manera similar a como los humanos lo hacemos en el lenguaje cotidiano. En segundo lugar, la regla de Bayes se describe a menudo como $p(\theta \mid y) \propto p(y \mid \theta) , p(\theta)$, es decir, la distribución posterior es proporcional al producto de la verosimilitud y la distribución previa. Y esto es exactamente cómo aprenden los humanos: al enfrentarse a una nueva pieza de información, rara vez se la considera de forma aislada. Más bien, casi siempre se la considera en el contexto de lo que ya se sabe y luego se basa la conclusión o decisión en una combinación tanto de la información nueva como de la anterior. Así, la información nueva actualiza la información antigua, y el resultado es un estado de conocimiento nuevo y (con suerte) mejorado.
+
+La identificación de aves proporciona una buena ilustración de la naturaleza bayesiana del pensamiento humano. Cuando se observa un ave y no se está seguro de su identidad, la conclusión final puede ser "es la especie A" o "es muy probablemente la especie B", o quizás "es más probable que sea la especie C que la especie A". Para llegar a esta conclusión, además de las características observadas en el campo o visibles en una fotografía, siempre se utiliza también conocimiento externo (es decir, previo) sobre la probabilidad de que una especie ocurra en un lugar y momento determinados. Por ejemplo, al ver una gran rapaz planeando en Europa, es extremadamente improbable que sea un cóndor, ya que las dos especies de cóndor son endémicas de América. Del mismo modo, sería muy improbable ver un migrante de larga distancia neotropical en el Ártico canadiense durante el invierno, cuando se espera que esa especie esté en sus cuarteles de invierno en América Latina.
+
+Además, cuando se aprende según la regla de Bayes, queda claro que toda posición científica o toda opinión, tal como está plasmada en la distribución previa, puede ser modificada por la llegada de nueva información. Por lo tanto, en ciencia se deben evitar las previas 0/1, que asignan una probabilidad de 0 (que representa imposibilidad) o 1 (que representa certeza absoluta) a algún evento, o al valor específico de una hipótesis cuantitativa (Lindley, 2006). Eso sería el fin del aprendizaje e iría en contra de la actividad definitoria de la ciencia, que es poner a prueba las teorías (representadas de manera flexible por la distribución previa en la regla de Bayes) con datos empíricos, que de manera igualmente flexible se pueden imaginar como equivalentes a la verosimilitud. El contraste entre las ideas sobre cómo podría ser el mundo y las observaciones sobre cómo es realmente, aumentará o disminuirá la confianza en las teorías y, por lo tanto, les otorgará mayor o menor credibilidad. Así, con el tiempo, este procedimiento permite eliminar las explicaciones menos adecuadas del mundo y conservar las mejores.
+
+Cuando se estiman parámetros, se está acostumbrado a tener un número como estimación puntual (es decir, la mejor conjetura sobre el valor del parámetro) y luego uno o dos números que cuantifican el probable margen de error de esa estimación. ¿Cómo se pueden obtener estos cuando el resultado del análisis es una distribución de probabilidad completa (la posterior)? La respuesta es que simplemente se puede utilizar cualquier medida de posición y de dispersión, como en la estadística descriptiva más básica. Como estimación puntual se puede utilizar la media, la mediana o la moda de la distribución posterior, y como evaluación de la incertidumbre se puede utilizar la desviación estándar o un rango dado por algún percentil, como el 95 o 99... o incluso el 89 si realmente se insiste en ser diferente al resto.
+
+::: panel-tabset
+#### Distribuciones previas
+
+En cualquier análisis bayesiano se deben especificar distribuciones previas para todos los parámetros desconocidos.
+
+Históricamente, el uso de información previa en análisis estadísticos ha sido controvertido. Los argumentos a favor del uso de distribuciones previas se centran en su valor como una forma formal de incorporar información externa al estudio. Se puede pensar en las distribuciones previas casi como una especie de conector con un letrero que dice "si se tiene información externa y se desea utilizarla en la estimación, colóquela aquí". Esto parece algo positivo, porque a menudo se puede tener un conocimiento contextual bastante sólido o incluso cuantitativo sobre un parámetro. La regla de Bayes permite combinar esta información con la información contenida en el conjunto de datos de manera relativamente directa.
+
+Por ejemplo, en los ejemplos de cosas inciertas de los ejemplos de la sección previa, quizás se podría pensar que la proporción de sitios históricos de víbora áspid visitados recientemente en la misma región donde aún se encontró que la víbora sobrevive representa una expectativa razonable también para el sitio en cuestión. En un análisis de supervivencia, las estimaciones disponibles para especies de tamaño similar pueden proporcionar una expectativa razonable para la especie de estudio. En general, los resultados de "estudios similares cercanos en el espacio, el tiempo o la taxonomía" pueden proporcionar información a priori (*es una expresión del latín que significa “antes de la experiencia” o “de manera previa”*) sensata sobre el valor probable de un parámetro. La regla de Bayes permite utilizar esa información siempre que se pueda expresar como una distribución de probabilidad.
+
+Las distribuciones previas que pretenden incorporar cierta cantidad de información externa en la estimación se denominan informativas. Se podría argumentar que su uso tiene mucho sentido, ya que se pueden imaginar como si fueran datos adicionales. En cualquier tarea de estimación, no tendría sentido ignorar parte de los datos disponibles. Por lo tanto, tampoco tiene sentido ignorar la información a priori cuando está disponible. El uso de distribuciones previas informativas puede tener grandes beneficios. Así como los datos adicionales hacen que las distribuciones posteriores sean más estrechas (es decir, aumentan el conocimiento sobre un parámetro), las distribuciones previas informativas también tienden a aumentar el conocimiento sobre un parámetro. Se obtendrán entonces desviaciones estándar posteriores más pequeñas e intervalos de credibilidad bayesianos más estrechos. Además, se pueden llegar a estimar parámetros adicionales que quizás no serían estimables sin el uso de distribuciones previas informativas.
+
+Por otro lado, quienes se resisten al uso formal de la información previa (y, por extensión, a la inferencia bayesiana) se basan en la creencia de que la inferencia bayesiana es subjetiva, ya que las distribuciones previas deben ser elegidas activamente y no son sugeridas por consideraciones aparentemente objetivas. Esto parece contradecir el principio de que la ciencia debe ser objetiva y debe minimizar las influencias personales del experimentador o analista. Si bien probablemente sea cierto que se debe intentar hacer la ciencia lo más objetiva posible, se considera que el tema de la subjetividad de la inferencia bayesiana a menudo se ha exagerado enormemente: la elección de la distribución previa es solo una entre docenas o incluso cientos de elecciones arbitrarias que se realizan al estudiar una cuestión científica. Por ejemplo, cuando se está interesado en los efectos de la densodependencia en la dinámica poblacional, ¿qué especie se debe elegir para trabajar? ¿Una planta o un animal? ¿Se debe estudiar en el campo, en una jaula o en el invernadero? ¿En América del Norte o en Australia? ¿Durante qué conjunto de años? Y así sucesivamente. Cada una de las elecciones subjetivas a estas preguntas influirá en los resultados hasta cierto punto, pero parece que nadie se inquieta por ello. Cuando se utiliza la inferencia bayesiana, simplemente se añade una elección más a ese conjunto. Realmente no se cree que esto ponga en peligro el valor científico del estudio.
+
+Sin embargo, es cierto que en un análisis bayesiano las distribuciones previas siempre afectan las estimaciones al menos en algún pequeño grado; no hay forma de evitarlo. Es cierto que la mayoría de las veces, la influencia de la distribución previa será pequeña a menos que se utilicen distribuciones previas informativas y a menos que la cantidad de información en los datos sea realmente pequeña. Pero esto no siempre es así. Además, tener que especificar distribuciones previas introduce una ambigüedad adicional, ya que una distribución previa puede llevar a un resultado, mientras que otra puede llevar a un resultado ligeramente diferente. Esto, por supuesto, no es incorrecto, pero puede hacer que la presentación de un estudio sea más compleja, porque quizás se deban presentar dos o incluso más conjuntos de resultados diferentes, uno para cada distribución previa.
+
+Para bien o para mal, lo que se hace en la gran mayoría de los análisis bayesianos aplicados es utilizar las llamadas distribuciones previas vagas, que pretenden minimizar su influencia en las distribuciones posteriores. Es decir, se eligen distribuciones previas de baja información que son casi uniformes en el rango de valores paramétricos donde la verosimilitud tiene un soporte no despreciable. Las distribuciones previas vagas asignan un peso a priori similar a un amplio rango de valores paramétricos plausibles. Por ejemplo, se podría especificar una distribución uniforme(0, 1) para la probabilidad de que una ubicación histórica de víbora áspid esté aún ocupada, como se podría hacer también para cualquier parámetro que represente una probabilidad, como la supervivencia o la ocupación. En la práctica, a menudo se utiliza una distribución uniforme dentro de un rango adecuado o una "normal plana", es decir, una distribución normal con una varianza grande elegida nuevamente para que la probabilidad a priori de los valores de los parámetros sea aproximadamente similar en un amplio rango relevante.
+
+Otro aspecto de la inferencia bayesiana que se considera a menudo exagerado es la falta de invariancia frente a transformaciones en la elección de la distribución previa. Por ejemplo, en un modelo lineal generalizado de Poisson, típicamente se modela la media en la escala transformada mediante el logaritmo. En un análisis con distribuciones previas vagas, ¿se debería entonces colocar una uniforme en $\log(\lambda)$ o en $\lambda$? Esta elección tendrá algún efecto en la distribución posterior resultante, aunque la mayoría de las veces será menor y despreciable. Otro ejemplo famoso es la elección de una distribución previa uniforme en la escala logit para el intercepto de una regresión logística. Esto implica una distribución previa muy informativa para el intercepto en la escala de probabilidad, con una masa mucho mayor asignada a valores cercanos a 0 y 1.
+
+Con distribuciones previas vagas, se encontrará que las estimaciones bayesianas (tanto puntuales como de incertidumbre) suelen ser numéricamente extremadamente similares a las mismas estimaciones obtenidas por máxima verosimilitud para un modelo, a menos que los tamaños de muestra sean realmente pequeños. Esto resulta reconfortante y se considera un fuerte argumento a favor de un uso oportunista de la máxima verosimilitud y los métodos bayesianos. Técnicamente, es la moda de la distribución posterior (a veces denominada estimación de máxima a posteriori, o MAP) en un análisis con distribuciones previas vagas la que corresponde al estimador de máxima verosimilitud. Sin embargo, con distribuciones posteriores aproximadamente simétricas, la moda, la mediana y la media coinciden. En la práctica, la media posterior se utiliza con mayor frecuencia como estimación puntual bayesiana, junto con la desviación estándar posterior como análogo bayesiano del error estándar y los percentiles 95% de la distribución posterior que proporcionan un intervalo de credibilidad bayesiano del 95%. A esto se le denomina intervalo de credibilidad, o CRI, para distinguirlo del intervalo de confianza frecuentista. Sin embargo, nótese que para modelos más complejos (específicamente aquellos con parámetros cuyas distribuciones posteriores tienen formas no gaussianas, por ejemplo, distribuciones unilaterales), la mediana suele ser una estimación puntual preferida, ya que representa mejor el centro de la distribución que la media y la moda.
+
+Curiosamente, el uso de información previa en el aprendizaje a partir de datos no es exclusivo de la inferencia bayesiana. Por ejemplo, la verosimilitud penalizada es un método de estimación frecuentista conceptualmente equivalente en el que se asume que algunos valores de un parámetro son a priori menos probables que otros. No obstante, las distribuciones previas son una característica distintiva de la inferencia bayesiana porque no se puede realizar inferencia bayesiana sin ellas. Y como observación final, se señala que a pesar de la preferencia por las distribuciones previas vagas, a menudo se utilizan las que también se denominan distribuciones previas débilmente informativas. Estas distribuciones previas serán un poco más informativas que las muy vagas, pero aun así producen estimaciones que numéricamente se asemejan fuertemente a las obtenidas sin el uso de información previa (por ejemplo, los estimadores de máxima verosimilitud). Pero las distribuciones previas débilmente informativas a menudo producen cadenas de Markov con una convergencia y mezcla mucho mejores.
+
+#### Cadenas de Markov Monte Carlo (MCMC)
+
+Cuando se realiza inferencia bayesiana, el objetivo es siempre obtener la distribución posterior de las incógnitas en los modelos estadísticos, especialmente las distribuciones posteriores de los parámetros, $p(\theta \mid y)$. ¿Cómo se pueden obtener estas distribuciones posteriores? Durante siglos, este fue el talón de Aquiles de la inferencia bayesiana. Matemáticamente, la regla de Bayes solo puede evaluarse en casos excepcionales porque las integrales requeridas sobre cada parámetro en el modelo son generalmente intratables. Por lo tanto, la inferencia bayesiana debía basarse en aproximaciones a menudo restrictivas o (en casos especiales) en el uso de las llamadas distribuciones previas conjugadas. Estas distribuciones previas tienen una "forma" similar a la de la verosimilitud y esta combinación conduce a distribuciones posteriores de una forma conocida. El ejemplo clásico de los libros de texto es la combinación de una verosimilitud binomial con una distribución previa beta al observar $r$ éxitos y $n$ fracasos para una variable aleatoria de Bernoulli, como 'presencia' o 'ausencia' en un contexto de modelado de distribución de especies. El uso de una distribución previa beta($a$, $b$) conduce a una distribución posterior que también es una distribución beta con parámetros $a + r$ y $b + n$. Pero tales "trucos" nunca fueron suficientes para convertir la inferencia bayesiana en una herramienta de inferencia de propósito general para un uso generalizado.
+
+Esto cambió drásticamente a principios de la década de 1990, cuando los estadísticos redescubrieron trabajos realizados por físicos en la década de 1950 (Metropolis & Ulam, 1949; Metropolis et al., 1953). Este trabajo mostró cómo se pueden desarrollar algoritmos de simulación para explorar la forma de distribuciones desconocidas (Geman & Geman, 1984; Tanner & Wong, 1987; Gelfand & Smith, 1990), por ejemplo, de distribuciones posteriores que no podían derivarse analíticamente. El redescubrimiento y el posterior desarrollo de lo que ahora se denominan algoritmos de cadenas de Markov Monte Carlo (MCMC) han causado una revolución estadística desde entonces. Los algoritmos MCMC, junto con el gran aumento de la potencia computacional, han sido los principales responsables de la amplia adopción de la inferencia bayesiana tanto en las ciencias estadísticas como, con la llegada de software amigable como WinBUGS y OpenBUGS, también en la ecología. Al menos conceptualmente, estos innovadores motores de software representan los precursores y la inspiración para los tres motores de inferencia bayesiana: JAGS, NIMBLE y Stan.
+
+Por varias razones, no se recomendaría aprender a programar los propios algoritmos MCMC a todos los ecólogos. En primer lugar, la curva de aprendizaje de estos métodos para modelos complejos puede ser demasiado pronunciada para muchos. En segundo lugar, depurar el software MCMC personalizado llevaría mucho tiempo que quizás se podría emplear mejor en otros aspectos. Y en tercer lugar, los motores de propósito general disponibles como JAGS, NIMBLE y Stan son increíblemente potentes y permiten a un estadístico experto hacer prácticamente todo lo que podría lograr con código MCMC escrito a medida.
+
+Sin embargo, es importante desarrollar una intuición sobre lo que sucede internamente al ejecutar dichos motores, porque puede ayudar a diagnosticar las causas de los problemas, interpretar los resultados de MCMC y, simplemente, ser intelectualmente satisfactorio. Finalmente, algunas personas pueden encontrarse en la situación de tener que usar algún código MCMC personalizado que otra persona escribió. Y una pequeña proporción puede necesitar y querer aprender a escribir sus propios algoritmos MCMC en R o en algún otro lenguaje de programación estadística. Por estas razones, se desea dar una idea de "cómo funciona MCMC". Se mostrará una de las variantes más simples posibles de MCMC: un algoritmo de Metropolis de caminata aleatoria. Se cree que incluso comprender este simple algoritmo MCMC prototípico ayudará a lograr algunos de los objetivos recién formulados.
+
+Para ayudar a comprender qué se hace al usar JAGS, NIMBLE o Stan, se enfocará la atención en dos temas: la integración Monte Carlo y un algoritmo MCMC simple para implementar el modelo de regresión lineal de Poisson. En el primero, se utilizan estadísticos muestrales calculados a partir de números aleatorios extraídos de una distribución para aprender sobre características de esa distribución. Un algoritmo MCMC puede verse como un generador de números aleatorios altamente personalizado para las distribuciones posteriores de los parámetros en los modelos que utilizan inferencia bayesiana.
+
+**Integración Monte Carlo**
+
+Un algoritmo MCMC genera números aleatorios a partir de una distribución posterior. Una vez que se dispone de una gran cantidad de estos números aleatorios, por ejemplo, algunos cientos o miles, se pueden describir para conocer las características de la distribución posterior. Extraer un mayor número de valores proporcionará una mejor aproximación. Por ejemplo, se puede tomar la media muestral como una aproximación de la media de la distribución y la desviación estándar muestral como una aproximación de su desviación estándar. Técnicamente, en estos y otros casos se utiliza la simulación para resolver una integral. Por ejemplo, para la media de la distribución, se utiliza la simulación para resolver la integral $E(x) = \int p(x) , x , dx$.
+
+Para ver cómo se puede utilizar una muestra de números aleatorios de una distribución para conocer la media, la desviación estándar u otras características de esa distribución, considérese el siguiente caso artificial. Se utiliza el generador de números aleatorios gaussianos rnorm() y se extrae un número creciente de valores de una distribución normal con parámetros conocidos para la media y la desviación estándar. Luego se observa qué tan bien se pueden estimar estos dos parámetros a partir de las muestras de valores producidas.
+
+```{r}
+set.seed(2)
+par(mfrow = c(2,2), mar = c(3,5,4,2))
+
+# 10 extracciones de la distribución
+out1 <- rnorm(10, mean = 5, sd = 2)
+hist(out1, breaks = 50, col = "gray", main = "¡No puedo creer que sea normal!")
+mean(out1)
+sd(out1)
+
+# 100 extracciones de la distribución
+out2 <- rnorm(100, mean = 5, sd = 2)
+hist(out2, breaks = 50, col = "gray", main = "Bueno, quizás...")
+mean(out2)
+sd(out2)
+
+# 1000 extracciones de la distribución
+out3 <- rnorm(1000, mean = 5, sd = 2)
+hist(out3, breaks = 50, col = "gray", main = "¡Oh!")
+mean(out3)
+sd(out3)
+
+# 1,000,000 extracciones de la distribución
+out4 <- rnorm(10^6, mean = 5, sd = 2)
+hist(out4, breaks = 100, col = "gray", main = "¡Oh, vaya!")
+mean(out4)
+sd(out4)
+
+```
+
+Con muestras cada vez más grandes, se puede obtener una aproximación esencialmente tan buena como se desee de la distribución de la cual se extrajeron estos números aleatorios. Pero quizás aún más asombroso es lo cerca que pueden estar los resúmenes numéricos de los parámetros verdaderos incluso en muestras pequeñas.
+
+Por lo tanto, con tan solo 100 o 1000 extracciones, se puede obtener una imagen bastante buena de cómo es la distribución de origen, ya sea gráfica o numéricamente. Esto es lo que siempre se hace con la inferencia bayesiana basada en algoritmos de simulación iterativos: se produce un gran número de números aleatorios y luego se resumen de manera adecuada para inferir las distribuciones de las cuales fueron extraídos. Pero esto no es todo, porque con MCMC real se debe asegurar que las distribuciones de las que se extraen los números aleatorios sean, de hecho, las distribuciones posteriores para los parámetros de interés.
+
+**Monte Carlo ejercicio**
+
+Las cadenas de Monte Carlo, o MCMC, son un método que permite explorar una distribución de probabilidad sin necesidad de conocer su forma completa. En lugar de calcular directamente la distribución —lo que a menudo es imposible en problemas complejos—, el algoritmo construye un recorrido aleatorio a través del espacio de los parámetros, donde cada paso depende únicamente del anterior, formando así una cadena de Markov. En cada paso, se propone un nuevo valor y se decide si aceptarlo o rechazarlo basándose en qué tan plausible es respecto al valor actual y a los datos observados. Tras repetir este proceso millones de veces, el conjunto de valores visitados —descartando los primeros pasos donde el recorrido aún no se ha estabilizado— constituye una muestra representativa de la distribución buscada. De este modo, MCMC convierte un problema de integración imposible en un problema de muestreo manejable, permitiendo estimar cualquier característica de interés, como promedios o intervalos de credibilidad, simplemente resumiendo los valores obtenidos a lo largo de la cadena.
+
+Ejemplo: Abundancia de zorzales en el Jardín Botánico de la UNAH
+
+Un biólogo quiere estimar la abundancia promedio de zorzales (*Turdus grayi*) en el Jardín Botánico de la UNAH. Realiza 10 conteos por puntos y obtiene:
+
+$2, 3, 4, 2, 3, 3, 3, 1, 0, 0$
+
+El biólogo asume que los conteos siguen una distribución de Poisson:
+
+$y_i \sim \text{Poisson}(\lambda)$
+
+donde $\lambda$ es la abundancia promedio que quiere estimar.
+
+Usa un prior gamma poco informativo:
+
+$\lambda \sim \text{Gamma}(0.01, 0.01)$
+
+La posterior es proporcional a:
+
+$P(\lambda \mid \mathbf{y}) \propto \lambda^{\sum y_i} e^{-n\lambda} \cdot \lambda^{0.01-1} e^{-0.01\lambda}$
+
+Para obtener muestras de esta posterior sin calcular la integral, usa MCMC:
+
+```{r}
+# Datos
+y <- c(2, 3, 4, 2, 3, 3, 3, 1, 0, 0)
+n <- length(y)
+sum_y <- sum(y)
+
+# Posterior sin normalizar
+posterior <- function(lambda) {
+  lambda^{sum_y} * exp(-n * lambda) * lambda^{0.01-1} * exp(-0.01 * lambda)
+}
+
+# MCMC
+set.seed(123)
+n_iter <- 5000
+lambda <- numeric(n_iter)
+lambda[1] <- 2
+
+for (i in 2:n_iter) {
+  lambda_prop <- rnorm(1, lambda[i-1], 0.5)
+  if (lambda_prop < 0) lambda_prop <- -lambda_prop
+  
+  R <- posterior(lambda_prop) / posterior(lambda[i-1])
+  
+  if (runif(1) < R) {
+    lambda[i] <- lambda_prop
+  } else {
+    lambda[i] <- lambda[i-1]
+  }
+}
+
+# Resultado
+lambda_muestra <- lambda[1001:n_iter]
+mean(lambda_muestra)
+```
+
+El biólogo estima que la abundancia promedio de zorzales en el Jardín Botánico de la UNAH es:
+
+$\lambda \approx 2.09$ aves por punto de conteo.
+
+Las cadenas de Monte Carlo (MCMC) le permitieron llegar a esta estimación muestreando de la distribución posterior $P(\lambda \mid \mathbf{y})$ sin necesidad de calcular la integral de normalización, usando únicamente los datos observados $2, 3, 4, 2, 3, 3, 3, 1, 0, 0$ y el prior $\lambda \sim \text{Gamma}(0.01, 0.01)$.
+
+```{r}
+# Graficar la cadena completa
+plot(lambda, type = "l", 
+     main = "Cadena de Markov para λ",
+     xlab = "Iteración", 
+     ylab = "λ",
+     col = "blue")
+
+# Ver las 3 cadenas (si hicieras múltiples)
+# Pero en este ejercicio solo tenemos una cadena
+```
+
+La cadena es simplemente un paseo que da el biólogo por todos los valores posibles de abundancia de zorzales. Empieza en un valor cualquiera (2 aves) y da pasos al azar, pero con una regla: si el nuevo valor explica mejor los datos que el anterior, lo acepta; si lo explica peor, a veces lo acepta y a veces no. Así, después de muchos pasos, el biólogo ha visitado valores altos y bajos, pero ha pasado más tiempo en los valores que son más probables según los conteos que hizo en el campo. Los primeros pasos (calentamiento) se descartan porque aún no había encontrado la zona de mayor probabilidad. Con los pasos restantes, se calcula el promedio (2.09 aves) y se observa que la cadena oscila entre valores cercanos, mostrando que esa es la abundancia estimada y cuánta incertidumbre hay
+
+Aunque la cadena oscila alrededor de la abundancia real, podemos resumirla con la mediana, que es el valor que divide en dos mitades iguales todos los valores visitados por la cadena, o con la media, que es el promedio. En distribuciones simétricas ambas son similares, pero en distribuciones con colas largas la mediana es más confiable porque no se deja afectar por valores extremos poco probables.
+
+Usar más de una cadena de Markov es una práctica recomendada porque, aunque una sola cadena puede ser suficiente cuando el modelo es simple y se comporta bien, con varias cadenas que arrancan desde puntos iniciales muy distintos puedes verificar si todas convergen a la misma región de la distribución posterior, lo que te da confianza de que el resultado es fiable; además, múltiples cadenas permiten calcular diagnósticos de convergencia como el factor R‑hat, donde valores cercanos a 1 indican que las cadenas se han mezclado adecuadamente y no se quedaron atrapadas en zonas equivocadas. Es como enviar a tres biólogos a contar zorzales desde diferentes puntos del jardín botánico: si todos terminan reportando una abundancia similar alrededor de @2.09\@ aves, puedes confiar en la estimación; si uno encuentra algo muy distinto, sabes que hay que revisar el modelo o dejar que las cadenas recorran más tiempo.
+
+```{r}
+# Datos
+y <- c(2, 3, 4, 2, 3, 3, 3, 1, 0, 0)
+n <- length(y)
+sum_y <- sum(y)
+
+# Posterior sin normalizar
+posterior <- function(lambda) {
+  lambda^{sum_y} * exp(-n * lambda) * lambda^{0.01-1} * exp(-0.01 * lambda)
+}
+
+# Configurar 4 cadenas con puntos iniciales muy distintos
+set.seed(123)
+n_iter <- 5000
+n_cadenas <- 4
+iniciales <- c(0.5, 2, 5, 10)  # valores muy diferentes
+
+# Crear matriz para guardar las 4 cadenas
+cadenas <- matrix(NA, nrow = n_iter, ncol = n_cadenas)
+
+# Ejecutar MCMC para cada cadena
+for (k in 1:n_cadenas) {
+  lambda <- numeric(n_iter)
+  lambda[1] <- iniciales[k]
+  
+  for (i in 2:n_iter) {
+    lambda_prop <- rnorm(1, lambda[i-1], 0.5)
+    if (lambda_prop < 0) lambda_prop <- -lambda_prop
+    
+    R <- posterior(lambda_prop) / posterior(lambda[i-1])
+    
+    if (runif(1) < R) {
+      lambda[i] <- lambda_prop
+    } else {
+      lambda[i] <- lambda[i-1]
+    }
+  }
+  
+  cadenas[, k] <- lambda
+}
+
+# Descartar calentamiento (primeras 1000 iteraciones)
+calentamiento <- 1001:n_iter
+muestras <- cadenas[calentamiento, ]
+
+# Ver resultados por cadena
+for (k in 1:n_cadenas) {
+  cat("Cadena", k, "(inicio =", iniciales[k], "): media =", 
+      round(mean(muestras[, k]), 3), 
+      "mediana =", round(median(muestras[, k]), 3), "\n")
+}
+
+# Media global
+cat("\nMedia global:", round(mean(muestras), 3))
+cat("Mediana global:", round(median(muestras), 3))
+
+# Graficar las 4 cadenas
+par(mfrow = c(2, 2))
+for (k in 1:n_cadenas) {
+  plot(cadenas[, k], type = "l", 
+       main = paste("Cadena", k, "(inicio =", iniciales[k], ")"),
+       xlab = "Iteración", ylab = "λ", 
+       col = "steelblue", ylim = c(0, 15))
+  abline(v = 1000, col = "red", lty = 2)
+  abline(h = mean(muestras[, k]), col = "darkgreen", lwd = 2)
+}
+
+# Graficar todas las cadenas juntas después del calentamiento
+par(mfrow = c(1, 1))
+matplot(muestras, type = "l", lty = 1, 
+        col = c("blue", "red", "green", "purple"),
+        main = "Cuatro cadenas después del calentamiento",
+        xlab = "Iteración (después de burn-in)", 
+        ylab = "λ")
+legend("topright", legend = paste("Cadena", 1:4, "(inicio =", iniciales, ")"),
+       col = c("blue", "red", "green", "purple"), lty = 1, cex = 0.8)
+
+# Histograma con todas las muestras
+hist(muestras, breaks = 50, 
+     main = "Distribución posterior (4 cadenas combinadas)",
+     xlab = "λ", col = "lightblue")
+abline(v = mean(muestras), col = "red", lwd = 2)
+abline(v = median(muestras), col = "darkgreen", lwd = 2, lty = 2)
+legend("topright", legend = c("Media", "Mediana"),
+       col = c("red", "darkgreen"), lwd = 2, lty = c(1, 2))
+```
+
+Todas las cadenas, aunque empezaron desde valores muy distintos ($0.5, 2, 5, 10$), después del calentamiento convergen a la misma región alrededor de $2.09$. Esto te da confianza de que la estimación es robusta y que la cadena no se quedó atrapada en una región equivocada.
+
+La media y mediana globales serán prácticamente iguales ($~2.09$), confirmando la abundancia estimada de zorzales en el Jardín Botánico de la UNAH.
+
+#### Ejercicio
+
+En este ejercicio se utilizará la base de datos de Certhia americana para ilustrar los conceptos fundamentales de la inferencia bayesiana. A diferencia del enfoque de máxima verosimilitud, que produce una estimación puntual de los parámetros, el análisis bayesiano genera distribuciones completas de probabilidad para cada parámetro, permitiendo cuantificar la incertidumbre de manera natural.
+
+```{r}
+y <- CerthiaAmericana$abund
+x <- CerthiaAmericana$conifer
+
+# Crear un data frame para el análisis
+datos <- data.frame(abund = y, conifer = x)
+```
+
+La variable $y$ representa la abundancia observada de Certhia americana, y $x$ corresponde al porcentaje de bosque de coníferas en cada sitio.
+
+**Modelo estadístico y especificación de las distribuciones previas**
+
+Se propone un modelo lineal para describir la relación entre la abundancia y el porcentaje de coníferas:
+
+$$\mu_i = \beta_0 + \beta_1 x_i$$
+
+$$y_i \sim \text{Normal}(\mu_i, \sigma)$$
+
+En el marco bayesiano, se deben especificar distribuciones previas para cada parámetro desconocido: $\beta_0$, $\beta_1$ y $\sigma$. Dado que no se dispone de información externa sustancial, se utilizarán distribuciones previas vagas que permitan que los datos tengan un papel predominante en la estimación:
+
+Para $\beta_0$: distribución normal con media $0$ y desviación estándar $10$, $\beta_0 \sim \text{Normal}(0, 10)$
+
+Para $\beta_1$: distribución normal con media $0$ y desviación estándar $10$, $\beta_1 \sim \text{Normal}(0, 10)$
+
+Para $\sigma$: distribución $t$ de Student con $3$ grados de libertad, media $0$ y desviación estándar $10$, restringida a valores positivos, $\sigma \sim \text{Student-t}(3, 0, 10)$
+
+**Ajuste del modelo bayesiano con brms**
+
+El paquete brms proporciona una interfaz sencilla para ajustar modelos bayesianos utilizando Stan como motor de MCMC:
+
+```{r}
+library(brms)
+
+# Ajustar el modelo lineal bayesiano
+modelo_bayesiano <- brm(
+  abund ~ conifer,                    # Fórmula del modelo
+  data = datos,                       # Data frame con los datos
+  family = gaussian(),                # Distribución normal
+  prior = c(
+    prior(normal(0, 10), class = "Intercept"),   # Previa para $\beta_0$
+    prior(normal(0, 10), class = "b"),           # Previa para $\beta_1$
+    prior(student_t(3, 0, 10), class = "sigma")  # Previa para $\sigma$
+  ),
+  chains = 4,                         # Número de cadenas
+  iter = 2000,                        # Iteraciones por cadena
+  warmup = 1000,                      # Período de adaptación (burn-in)
+  seed = 123,                         # Semilla para reproducibilidad
+  cores = 4                           # Número de núcleos a utilizar
+)
+
+# Ver resumen del modelo
+summary(modelo_bayesiano)
+```
+:::
+
+### Frecuentista o Bayesiano?
+
+La respuesta breve es: ¡deberías ser ambos! Esta es la razón. La máxima verosimilitud y la inferencia posterior bayesiana son métodos muy poderosos y generales para ajustar modelos a datos, es decir, para realizar inferencias estadísticas basadas en un modelo y un conjunto de datos. Existen una serie de ventajas y desventajas tanto para la máxima verosimilitud como para los métodos bayesianos, que se resumen a continuación.
+
+La máxima verosimilitud es un método extremadamente bien comprendido con una larga historia (Fisher, 1922). Es "automático" ya que simplemente se define la densidad conjunta de los datos, que vincula las incógnitas (los parámetros) con los datos conocidos. Luego, se trata esa densidad como una función de verosimilitud y se minimiza el logaritmo negativo de la verosimilitud para obtener los estimadores de máxima verosimilitud (MLE). Existen varios métodos para obtener evaluaciones de incertidumbre, como errores estándar e intervalos de confianza asociados a los MLE. Además, los MLE tienen una serie de propiedades deseables que, en general, los hacen "buenos". Se podría argumentar que la máxima verosimilitud es el método de estimación más ampliamente utilizado.
+
+Pero la máxima verosimilitud también tiene desventajas. Primero, los MLE pueden ser difíciles o imposibles de obtener para modelos complejos, como aquellos con muchos efectos aleatorios, especialmente cuando se modelan correlaciones como en modelos espaciales o de series temporales. Segundo, los errores estándar y los intervalos de confianza solo son válidos asintóticamente, es decir, para muestras "grandes", y rara vez se tienen muestras verdaderamente grandes en ecología. Tercero, a menudo se desea calcular funciones de los parámetros, como transformaciones de un parámetro o razones de dos parámetros. El método delta y el bootstrap pueden usarse para calcular errores estándar para estos casos, pero ambos pueden volverse difíciles o imposibles para funciones y modelos más complicados. Cuarto, la máxima verosimilitud se basa fundamentalmente en una declaración de probabilidad sobre los datos, no sobre los parámetros. Es decir, una probabilidad como el "95%" para un intervalo de confianza no se refiere al parámetro en cuestión, sino a la confiabilidad del método utilizado para calcular el intervalo. Además, no se tiene el derecho de decir cosas como "estoy 95% seguro de que mi población está disminuyendo" si el 0 está fuera de un intervalo de confianza del 95% para un parámetro de tasa de crecimiento poblacional. Y finalmente, la apelación a datos replicados hipotéticos puede parecer ridícula: por ejemplo, ¿qué podría significar "1 millón de poblaciones replicadas de osos panda"?
+
+Existen al menos tres ventajas importantes al utilizar la inferencia bayesiana con herramientas como JAGS, NIMBLE y Stan. Curiosamente, son razones bastante independientes para elegir la inferencia bayesiana.
+
+Primero está el paradigma bayesiano para la inferencia, que interpreta la probabilidad exactamente como la mayoría de los humanos la usan: como una medida del conocimiento sobre cosas inciertas. Además, cuando se desea introducir información externa en el ajuste del modelo, está muy claro cómo hacerlo a través de las distribuciones previas.
+
+La segunda razón para querer optar por los métodos bayesianos tiene que ver con el cálculo bayesiano, que típicamente implica el uso de MCMC y otros algoritmos de simulación. Estos facilitan el ajuste de modelos jerárquicos para incorporar múltiples fuentes de incertidumbre y correlaciones en los datos. Hoy en día, una gran parte de los modelos ajustados en estadística aplicada caen en esta categoría. Además, los algoritmos basados en simulación facilitan enormemente el cálculo de cantidades derivadas o funciones de los parámetros junto con una evaluación completa de su incertidumbre. Así, ya no es necesario preocuparse por la aproximación correcta del método delta para el error estándar de funciones de parámetros.
+
+La tercera buena razón para optar por los métodos bayesianos tiene que ver con el lenguaje de definición de modelos adoptado en JAGS y NIMBLE, y anteriormente en BUGS, WinBUGS y OpenBUGS, y en menor medida también en Stan. El lenguaje BUGS ha demostrado ser sumamente accesible tanto para estadísticos como para no estadísticos a la hora de especificar modelos estadísticos incluso muy complejos. Es el lenguaje BUGS el que pone al alcance de los ecólogos la implementación de modelos realmente complejos y personalizados. Con BUGS se pueden desarrollar modelos que nunca se habrían podido ajustar si se hubiera tenido que usar máxima verosimilitud. Por lo tanto, se puede decir que BUGS libera al modelador que llevas dentro.
+
+Pero la inferencia bayesiana también tiene algunas desventajas. Primero, la distribución previa siempre ejercerá cierta influencia en los resultados, y en situaciones con pocos datos, esta influencia será mayor. Esto se verá en varios capítulos más adelante del libro. Esto puede hacer que la presentación de los resultados sea más compleja, ya que es posible que se necesiten contar múltiples historias. Segundo, para modelos complejos y grandes conjuntos de datos, los métodos basados en simulación como MCMC pueden tardar mucho tiempo en ejecutarse, por ejemplo, días o incluso semanas. Peor aún, a veces nunca se alcanza la convergencia en un tiempo razonable. Tercero, la desventaja final es que los motores BUGS pueden ser tan flexibles y poderosos que puede ser fácil ajustar modelos sin sentido. Con esto se hace referencia especialmente a modelos con parámetros que no son identificables, es decir, para los cuales los datos no contienen información. Es cierto, la identificabilidad de los parámetros es un problema muy importante para cualquier modelo estadístico complejo y puede afectar también a las inferencias por máxima verosimilitud. Sin embargo, la falta de identificabilidad de un parámetro puede ser aún más difícil de diagnosticar cuando se utiliza la inferencia bayesiana que cuando se utiliza la máxima verosimilitud. Existen métodos formales para abordar esto, pero pueden ser difíciles de implementar para modelos complejos y para no estadísticos. En la práctica, el mejor método para juzgar si un parámetro es identificable es la simulación: se simula un gran número de conjuntos de datos con valores variables de todos los parámetros, especialmente del parámetro sospechoso, se ajusta el modelo y se comparan las estimaciones con los valores verdaderos. Para un parámetro identificable, debería haber una clara semejanza numérica entre las estimaciones y los valores verdaderos.
+
+En resumen, los ecólogos necesitan un buen conocimiento práctico tanto de los métodos de máxima verosimilitud como de los métodos bayesianos en el modelado estadístico. De hecho, todo este libro se basa en esta idea. A veces, o para algunos, uno es la mejor opción, mientras que en otro momento o para otros es la otra opción. Además, los dos métodos de inferencia tienen mucho más en común de lo que a veces se cree: la máxima verosimilitud y los métodos bayesianos comparten su base como enfoques de inferencia basados en modelos, con un papel central desempeñado por la función de verosimilitud. Además, la forma más común en que se realizan los análisis bayesianos en la práctica es utilizando la poderosa maquinaria computacional asociada con los métodos MCMC bayesianos para resolver problemas de estimación difíciles, mientras se minimiza la cantidad de información contenida en las distribuciones previas. Es decir, se trabaja con distribuciones previas vagas. Como resultado, al menos numéricamente, casi siempre se regresa a algo que se asemeja mucho a los mismos estimadores de máxima verosimilitud. Esto se demuestra a lo largo del libro.
+
+### Pruebas de hipótesis
+
+::: panel-tabset
+#### Concepto de hipótesis
+
+Referencia: [Shork. M and Remington, R. (1970).](https://www.cabidigitallibrary.org/doi/full/10.5555/19712702614)
+
+En muchos estudios, el investigador busca comparar sus datos con un valor de referencia. Este valor puede corresponder a un parámetro poblacional específico, o bien a la diferencia o proporción entre parámetros de dos poblaciones.
+
+Por ejemplo, en un estudio taxonómico, se podrían comparar las longitudes de larvas provenientes de dos poblaciones de insectos para evaluar si ambas tienen la misma media. En este contexto, el investigador se plantea si la diferencia entre las medias poblacionales podría ser igual a cero. A partir de ello, los datos se analizan para determinar si son compatibles o no con esta idea.
+
+Con base en ese análisis, se toma una decisión: aceptar o rechazar la posibilidad de que no exista diferencia entre las poblaciones. Dependiendo del resultado, esto puede orientar diferentes caminos en la investigación, como ajustar la clasificación de las especies.
+
+Desde la perspectiva estadística, lo fundamental es que el investigador utiliza información muestral para evaluar una afirmación sobre una o más poblaciones. A este proceso se le conoce como prueba de hipótesis.
+
+Dado que las pruebas de hipótesis se basan en muestras y no en la población completa, siempre existe la posibilidad de cometer errores en la inferencia. En este contexto, se distinguen dos tipos principales de error. El error de Tipo I ocurre cuando se rechaza una hipótesis nula que en realidad es verdadera, y su probabilidad está determinada por el nivel de significancia (α). Por otro lado, el error de Tipo II ocurre cuando no se rechaza una hipótesis nula que es falsa. Este error está relacionado con el poder estadístico de la prueba, definido como la probabilidad de detectar un efecto real cuando este existe (1 − $\beta$).
+
+**Definiciones**
+
+*Hipótesis estadística*: Una afirmación sobre la población o poblaciones que se están muestreando, u ocasionalmente una afirmación sobre el procedimiento de muestreo. Por ejemplo, esta moneda cae cara, esta moneda cae cruz, este fármaco es superior al placebo, este fármaco no es diferente al placebo.
+
+*Hipótesis contrastada o nula*: Una hipótesis estadística cuya veracidad se investiga mediante el muestreo; a veces se denomina hipótesis nula o, cuando no hay peligro de ambigüedad, simplemente hipótesis. Por ejemplo, esta moneda cae cara, este fármaco no es diferente al placebo.
+
+*Prueba Estadística*: Una variable aleatoria relacionada con la hipótesis contrastada. Por ejemplo, el número total de caras al lanzar una moneda 10 veces, o la diferencia entre la reducción porcentual media del colesterol sérico para el fármaco en comparación con el placebo.
+
+*Región crítica*: Un conjunto de valores del estadístico de prueba que lleva al rechazo de la hipótesis contrastada; a veces se denomina región de rechazo. Por ejemplo, 0, 1, 9 o 10 caras, o una diferencia porcentual igual a 5.
+
+*Valor significativo de la Prueba Estadística*: Un valor de la Prueba Estadística que cae dentro de la región crítica; generalmente, cuando una muestra produce un valor de la Prueba Estadística en la región crítica, se dice que los resultados son estadísticamente significativos. Por ejemplo, cualquier número total de caras de 1 o menos, o de 9 o más; una reducción porcentual de 5.
+
+*Región de aceptación*: Un conjunto de valores de la Prueba Estadística que lleva a la aceptación de la hipótesis contrastada, es decir, los valores de la Prueba Estadística no incluidos en la región crítica. Por ejemplo, 2, 3, 4, 5, 6, 7 u 8 caras; cualquier porcentaje excepto el 5.
+
+*Prueba de hipótesis*: Un procedimiento mediante el cual se investiga la veracidad o falsedad de la hipótesis contrastada examinando un valor de la Prueba Estadística calculado a partir de una muestra, y luego se decide rechazar o aceptar la hipótesis según si el valor cae en la región crítica o en la región de aceptación, respectivamente.
+
+*Error de tipo I*: El error de rechazar la hipótesis contrastada cuando en realidad es verdadera; a veces se denomina error $\alpha$.
+
+*Error de tipo II*: El error de aceptar la hipótesis contrastada cuando en realidad es falsa; a veces se denomina error $\beta$.
+
+*Nivel de significancia*: La probabilidad de cometer un error de tipo I; se denota como $\alpha$.
+
+*Hipótesis alternativa*: Una hipótesis estadística que discrepa de la hipótesis nula.
+
+*Poder estadistico*: La probabilidad de rechazar la hipótesis contrastada cuando es falsa, es decir, cuando una hipótesis alternativa es verdadera; se denota como 1 – $\beta$, donde beta es la probabilidad de cometer un error de tipo II.
+
+*Valor p*: El nivel de significancia en el cual el valor observado de la Prueba Estadística sería justamente significativo, es decir, caería justo en la región crítica.
+
+[Basic Concept of Hypothesis Testing and Parametric Test](https://doi.org/10.1007/978-981-19-4411-6) In: Concept Building in Fisheries Data Analysis. Springer, Singapore.
+
+[When are hypotheses useful in ecology and evolution?](https://doi.org/10.1002/ece3.7365)
+
+[Null Hypothesis Testing: Problems, Prevalence, and an Alternative](https://doi.org/10.2307/3803199)
+
+#### Valor P
+
+Referencia: [Gale, R. P., Hochhaus, A., & Zhang, M. J. (2016). What is the (p-) value of the P-value?. Leukemia, 30(10), 1965-1967.](https://www.nature.com/articles/leu2016193)
+
+Los procesos inferenciales, incluidas las nociones de causa y efecto, están cada vez más dominados por los análisis estadísticos, un proceso en el que el concepto del valor P se ha vuelto central. Todo investigador científico cree que sabe qué es un valor P. Algunos pueden calcularlo por sí mismos; otros necesitan la ayuda de un estadístico o, a veces, de varios estadísticos para encontrar un valor P aceptable. ¿Por qué buscar entre diferentes opciones (comúnmente denominado P-hacking o «pesca de valor P»)? Porque sin un valor P estadísticamente significativo es difícil o imposible publicar tu investigación en una revista científica con un alto factor de impacto. (Más sobre los factores de impacto en un editorial posterior). Habitualmente, la significación estadística en este contexto se define como un valor P preestablecido \<0,05.
+
+Curiosamente, y para nosotros algo alarmante, los estadísticos están menos seguros que los propios investigadores acerca de qué es exactamente un valor P, qué significa y qué implica sobre la reproducibilidad y replicabilidad de los datos científicos. Esto es completamente comprensible si consideramos la compleja historia del valor P.
+
+El mérito de introducir el valor P en la investigación científica se le atribuye habitualmente al distinguido estadístico Fisher. Fisher definió el valor P como: «la probabilidad del resultado observado, junto con resultados más extremos, si la hipótesis nula fuera cierta». Es importante destacar, para lo que veremos después, que el valor P de Fisher no pretendía utilizarse de forma aislada, sino como una medida de inferencia estadística en el contexto del proceso más complejo de la inferencia científica.
+
+El uso adecuado de la definición de Fisher del valor P requiere varios supuestos, entre ellos: que no exista relación entre el factor causal y el desenlace, que no haya errores sistemáticos —como clasificaciones erróneas o sesgos de confusión— y que se utilice la prueba estadística apropiada. Dados estos supuestos, es fácil entender por qué algunos investigadores piensan que el valor P indica la probabilidad de que la hipótesis nula sea cierta, o que un valor P alto indica que no hay asociación entre una variable y un desenlace. Como veremos, ambas ideas son incorrectas.
+
+El siguiente avance en la interacción entre el pensamiento inferencial y la inferencia estadística llegó con Neyman y Pearson, quienes, a diferencia de Fisher, postularon una hipótesis alternativa formal y mutuamente excluyente respecto a la hipótesis nula, junto con un nivel de significación preelegido para rechazar la hipótesis nula. El enfoque de Neyman–Pearson estaba concebido como un análisis de toma de decisiones, mientras que el de Fisher no lo estaba.
+
+La rigidez inherente al enfoque de Neyman–Pearson conlleva dos errores potenciales inevitables: rechazar la hipótesis nula cuando en realidad es verdadera (error de tipo I) y aceptar la hipótesis nula cuando en realidad es falsa (error de tipo II).
+
+Es importante tener en cuenta que tanto el enfoque de Fisher como el de Neyman–Pearson son frecuentistas; ambos dejan de lado un tercer enfoque: el razonamiento inductivo bayesiano (que veremos más adelante).
+
+Consideremos un ejemplo reciente del uso y abuso del valor P. Cuando los físicos descubrieron el bosón de Higgs, afirmaron que la solidez de los datos que lo respaldaban era de 5 sigma, lo que equivale a un valor P de 3 × 10⁻⁷, es decir, aproximadamente 1 en 3,5 millones. Contrario a lo que podrías pensar, esto no es la probabilidad de que el bosón de Higgs exista. Más bien, es la probabilidad de que, si el bosón de Higgs no existiera (la hipótesis nula), los datos experimentales obtenidos fueran al menos tan extremos como los observados. Dicho de otro modo, estos resultados ocurrirían solo en 1 de cada 3,5 millones de experimentos replicados. Tengamos en cuenta que el primer experimento podría ser el que arrojó ese resultado, y replicar el experimento 3,5 millones de veces más produciría resultados menos extremos. Este tipo de afirmación molesta a la mayoría de las personas interesadas en saber si el bosón de Higgs probablemente existe. Lo siento, pero de eso no trata el valor P. Además, cabe señalar que, a pesar del uso generalizado de P \< 0,05 o incluso P \< 0,01 como evidencia de significación estadística en la investigación biomédica, otras disciplinas científicas como la física de altas energías requieren valores P más bajos, de P \< 0,003 o incluso P \< 0,0000003, dependiendo de la novedad e importancia del hallazgo.
+
+También vale la pena considerar los llamados eventos raros que ocurren cuando se realizan suficientes experimentos. Por ejemplo, si lanzas una moneda justa (con dos caras igualmente probables) 100 veces, es bastante improbable que obtengas 66 caras y 34 cruces. Sin embargo, si 1000 personas lanzan la misma moneda 100 veces cada una, algunas obtendrán más de 60 caras y menos de 40 cruces. Así que, incluso si un observador obtiene este resultado poco probable, se equivocaría al concluir que la moneda no es justa. Esta noción se conoce como el principio de improbabilidad y se aborda en otras publicaciones.
+
+Otro punto a considerar es que el valor P no depende solo de los datos, sino también de cómo se analizaron. Por ejemplo, con exactamente los mismos datos, el valor P reportado será diferente según se hayan realizado 1, 2 o más análisis intermedios. Además, el enfoque del valor P debe considerar no solo los datos observados, sino también datos más extremos; de lo contrario, los valores P serían muy pequeños. Si lanzas una moneda justa 6 veces, la probabilidad de obtener 4 caras y 2 cruces es 0,23. Pero para probar la hipótesis nula (de que la moneda no está sesgada), debes sumar la probabilidad de 5 caras y 1 cruz (0,09) y la probabilidad de 6 caras y ninguna cruz (0,01) a la probabilidad de los datos reales. Por lo tanto, el valor P sería aproximadamente 0,33 y la hipótesis nula no se rechazaría.
+
+Recientemente, la Asociación Estadounidense de Estadística publicó un informe sobre el valor P: «qué es, qué significa y cómo deben interpretarse los valores P». Este es un evento extraordinario, algo que la Asociación —la organización profesional de estadísticos más grande del mundo— nunca había hecho antes, lo que indica la importancia que ha adquirido este tema. La Asociación solicitó la opinión de estadísticos, muchos de ellos muy conocidos para los lectores de LEUKEMIA, como Donald Berry, Sander Greenland, John Ioannidis y Kenneth Rothman. El panel de expertos preparó y publicó un informe. Sería una tergiversación calificarlo como un documento de consenso, ya que a menudo no hay consenso. Nosotros interpretamos esta controversia de manera favorable porque el consenso implicaría un grado de acuerdo que el panel no alcanzó. Después de todo, citando a Michael Crichton: «Históricamente, el consenso ha sido el primer refugio de los sinvergüenzas. Es una forma de evitar el debate afirmando que el asunto está resuelto». ¿Lo dudan? Piensen en el consenso de que la Tierra es plana o de que la Tierra es el centro del universo. Ambos resultaron falsos a pesar del llamado consenso. Aunque la amenaza de excomunión era un buen incentivo para el consenso en el pasado (piensen en Galileo y Cardano), hoy en día es el temor de perder el vuelo del viernes por la tarde desde el aeropuerto de Dulles después de una conferencia de consenso de los Institutos Nacionales de Salud.
+
+El tema que abordó la Asociación es el contexto, el proceso y el propósito del valor P. La cuestión surgió a raíz de una consulta del profesor George Cobb a la Asociación, quien preguntó (retóricamente): «(1) ¿por qué tantos colegios y escuelas de posgrado enseñan P = 0,05?; y (2) ¿por qué tantas personas siguen usando P = 0,05?». Las respuestas parecían ser «porque eso es lo que la comunidad científica y los editores de revistas quieren» y «porque eso es lo que se les enseñó a los estudiantes en la universidad o el posgrado». Estas explicaciones no son muy tranquilizadoras. Tampoco son nuevas estas preocupaciones. Las inquietudes sobre los usos y abusos de P \< 0,05 como base para rechazar la hipótesis nula se han descrito como con más fallos que la política de privacidad de Facebook. El mal uso de los valores P en la contrastación de hipótesis ha llevado a una crisis de reproducibilidad en la ciencia moderna y especialmente en la medicina clínica. Los lectores recordarán el estudio de científicos de Amgen, que no pudieron reproducir los resultados de 47 de 53 artículos emblemáticos sobre cáncer publicados en la literatura científica. Debido a esta controversia, algunas revistas han llegado incluso a prohibir el uso de valores P.
+
+El informe del panel de la Asociación Estadounidense de Estadística señaló la noción de significación estadística que sustenta muchas conclusiones científicas, un concepto en el que la implicación de la significación estadística se deriva o infiere de un índice denominado valor P. Desafortunadamente, este índice se utiliza e interpreta de manera incorrecta con frecuencia. Citando su informe: «La validez de las conclusiones científicas, incluida su reproducibilidad, depende de algo más que los métodos estadísticos en sí mismos. Las técnicas apropiadamente elegidas, los análisis correctamente realizados y la interpretación adecuada de los resultados estadísticos también juegan un papel clave para garantizar que las conclusiones sean sólidas y que la incertidumbre que las rodea se represente correctamente».
+
+Entonces, ¿qué dice el informe? Primero, define el valor P como la probabilidad bajo un modelo estadístico especificado de que un resumen estadístico de los datos sea igual o más extremo que los valores observados. Enfatizamos la noción de bajo un modelo estadístico especificado. Cuando calculamos un valor P, no estamos probando si la diferencia entre grupos o cohortes ocurrió por azar, sino la consistencia de los datos con un modelo estadístico propuesto. A menudo, el modelo estadístico que se prueba en ensayos clínicos es la llamada hipótesis nula. En consecuencia, cuando consideramos el valor P, debemos entender que no aborda si la hipótesis nula es cierta ni si el análisis estadístico de los resultados puede explicarse por el azar. Es decir, no proporciona una explicación de los resultados observados, sino qué tan bien se ajustan al modelo estadístico hipotetizado.
+
+Otra consideración es que el valor P no refleja el tamaño del efecto. El informe afirma: «las conclusiones científicas y las decisiones comerciales o de política no deben basarse únicamente en si un valor P supera un umbral específico». Estamos de acuerdo. Efectos clínicamente poco importantes pueden tener valores P muy bajos cuando el tamaño de la muestra es grande, mientras que efectos clínicamente más importantes pueden tener valores P más altos debido a un tamaño de muestra pequeño. Los efectos clínicamente importantes estimados, con intervalos de confianza y valores P, deben reportarse de manera transparente. Por ejemplo, las razones de riesgo para eventos de tiempo hasta la ocurrencia pueden ser grandes y estadísticamente significativas incluso cuando el tamaño del efecto es pequeño. Por esta razón, también deben reportarse medidas basadas en tiempos de supervivencia media restringida.
+
+Algunos estudios biomédicos seleccionan resultados con valores P \< 0,05 basándose en múltiples análisis de subgrupos, ignorando los pequeños tamaños de muestra en estos subgrupos. Los investigadores deberían reportar todos los análisis estadísticos realizados y todas las hipótesis probadas, para que el lector pueda considerar las tasas de falsos descubrimientos, que pueden ser necesarias cuando se realizan comparaciones múltiples. El informe no aborda la potencia (error tipo II), un aspecto importante al evaluar un valor P no estadísticamente significativo.
+
+El panel enfatiza lo desaconsejable de centrarse en un punto arbitrario como P \< 0,05 para justificar afirmaciones científicas. Hay dos cuestiones aquí. Primero, considerar P = 0,05 como un punto para decidir la significación estadística es arbitrario y carece de una justificación matemática sensata. Segundo, hay otros factores que deben considerarse al evaluar si un resultado es estadísticamente significativo, como el diseño del estudio, la precisión de las mediciones, la evidencia externa al estudio, la exactitud de las mediciones y la validez de los supuestos subyacentes a los análisis de datos. Por ejemplo, un punto final de supervivencia suele ser más válido que un punto final de recaída de leucemia. Los autores afirman correctamente: «El uso generalizado de la significación estadística (generalmente aceptada como P \< 0,05) como licencia para hacer una afirmación de hallazgo científico (o verdad implícita) conduce a una considerable distorsión del proceso científico».
+
+Estas consideraciones permanecen en el ámbito de los estadísticos frecuentistas. Aunque una discusión sobre el uso del razonamiento inductivo bayesiano con un espectro de probabilidades (como los límites de credibilidad) para expresar inferencia causal está fuera del alcance de nuestra discusión, también debería considerarse. Una revisión reciente de Kyriacou analiza el uso y las limitaciones del enfoque de inducción bayesiana. Las inferencias científicas basadas en el uso de métodos frecuentistas y bayesianos no son mutuamente excluyentes y a menudo son complementarias.
+
+Otro problema es que los investigadores a menudo realizan múltiples análisis de sus datos, pero pueden presentar solo aquellos con un valor P estadísticamente significativo. Esto no permite al lector evaluar adecuadamente la validez de las afirmaciones y conclusiones de los investigadores ni considerar los posibles sesgos. Esta p-hacking (pesca de significación) es injusta, inapropiada y debe evitarse. La conclusión final es que el valor P, aisladamente, no puede ser utilizado para determinar si la hipótesis nula es correcta o no. Hay varias otras consideraciones importantes sobre el valor P que no se cubren en el informe de la Asociación, y remitimos a los lectores interesados a otras revisiones.
+
+Aunque no planeamos ningún cambio inmediato en el proceso de revisión estadística para LEUKEMIA, es importante que los investigadores que envían artículos sigan las mejores prácticas estadísticas y reconozcan en sus análisis y discusiones las limitaciones del valor P para establecer inferencia causal.
+
+**Ejemplo en ecología**
+
+Imagina que un equipo de ecólogos quiere evaluar si la presencia de un depredador, el lobo (Canis lupus), afecta la densidad de población de una especie de ciervo en un área de bosque. Para ello, seleccionan 20 parcelas de bosque similares: en 10 parcelas los lobos están presentes, y en las otras 10 están ausentes. Miden la densidad de ciervos (número de individuos por kilómetro cuadrado) en cada parcela.
+
+Hipótesis nula: No hay diferencia en la densidad de ciervos entre las parcelas con lobos y las parcelas sin lobos.
+
+Hipótesis alternativa: Sí hay diferencia.
+
+Supongamos que realizan una prueba estadística apropiada (por ejemplo, una prueba t de Student) y obtienen los siguientes resultados:
+
+Densidad media en parcelas con lobos: 4.2 ciervos/km²
+
+Densidad media en parcelas sin lobos: 7.8 ciervos/km²
+
+Diferencia observada: 3.6 ciervos/km²
+
+Valor P = 0.03
+
+Interpretación correcta
+
+*"Si la hipótesis nula fuera cierta (es decir, si realmente no hubiera diferencia en la densidad de ciervos entre parcelas con y sin lobos), la probabilidad de obtener una diferencia de 3,6 ciervos/km² o más (en valor absoluto) entre los dos grupos sería de 0,03 (3 %)."*
+
+dicho de otra forma:
+
+*Bajo el supuesto de que los lobos no tienen ningún efecto sobre la densidad de ciervos, y asumiendo que el modelo estadístico es correcto (muestreo aleatorio, independencia, distribución adecuada, etc.), una diferencia tan grande como 3,6 ciervos/km² (o mayor) ocurriría solo en el 3 % de las repeticiones hipotéticas del experimento.*
+
+O, dicho de otra forma
+
+*"Si el experimento se repite 100 veces, y si la hipótesis nula fuera cierta (es decir, si realmente no hubiera diferencia en la densidad de ciervos entre parcelas con y sin lobos), una diferencia de 3,6 ciervos/km² o mayor se observaría solo en 3 de esas 100 repeticiones."*
+
+[Applied statistics in ecology: common pitfalls and simple solutions](https://doi.org/10.1890/ES13-00160.1)
+
+[Scientific method: Statistical errors](https://www.nature.com/articles/506150a)
+
+[In defense of P values](https://doi.org/10.1890/13-0590.1)
+
+[In defense of P values: comment on the statistical methods actually used by ecologists](https://www.jstor.org/stable/43495190)
+
+#### Intervalos de confianza
+
+Las dos subcategorías generales de la inferencia estadística son la estimación y el contraste de hipótesis.
+
+Las distribuciones de probabilidad dependen frecuentemente de parámetros. Por ejemplo, si se conocen la media y la varianza de una distribución normal, es posible determinar las probabilidades de distintos eventos. En la práctica, sin embargo, estos parámetros son atributos de la población subyacente y, por lo tanto, son desconocidos. Nos enfrentamos entonces al problema de aprender todo lo posible sobre ellos a partir de la información contenida en una muestra aleatoria; es decir, debemos estimar su valor numérico.
+
+Debido a la variabilidad muestral, no podemos afirmar que el valor del parámetro sea un número específico con certeza absoluta. Pero sí podemos hacer, en cierto sentido, una elección óptima basada en la información de la muestra y, a partir de ella, indicar un rango de valores dentro del cual confiamos que se encuentra el parámetro desconocido. Este tipo de inferencias corresponde a la categoría de estimación.
+
+Un intervalo de confianza es un rango de valores, calculado a partir de los datos de una muestra, dentro del cual se estima que se encuentra el verdadero valor de un parámetro poblacional desconocido, con un cierto nivel de confianza.
+
+Supongamos que en el estudio de los lobos y los ciervos, la diferencia media observada en densidad fue de 3.6 ciervos/km². Construimos un intervalo de confianza del 95 % y obtenemos:
+
+Diferencia = 3.6 ciervos/km² (IC 95 %: 1.2 a 6.0)
+
+Esto se interpreta de la siguiente manera:
+
+*"Con un 95 % de confianza, la verdadera diferencia en densidad de ciervos entre parcelas con y sin lobos se encuentra entre 1,2 y 6,0 ciervos/km²."*
+
+*"Si tomáramos 100 muestras diferentes de la misma población y construyéramos un intervalo de confianza del 95 % para cada una, aproximadamente 95 de esos 100 intervalos contendrían el verdadero valor del parámetro poblacional."*
+
+[A confidence interval approach to data analysis](https://doi.org/10.1016/S0378-1127(03)00331-1)
+
+[Effect size, confidence interval and statistical significance: a practical guide for biologists](https://doi.org/10.1111/j.1469-185X.2007.00027.x)
+
+#### Error tipo I y II
+
+En el contraste de hipótesis, tomamos una decisión (rechazar o no rechazar la hipótesis nula) basándonos en los datos de una muestra. Como trabajamos con muestras, existe la posibilidad de equivocarnos. Los errores tipo I y tipo II son las dos formas posibles de equivocarnos en esta decisión.
+
+[Power, precaution, Type II error and sampling design in assessment of environmental impacts](https://doi.org/10.1016/S0022-0981(03)00304-6)
+
+#### Poder estadístico
+
+El poder estadístico (o potencia) de un contraste de hipótesis es la capacidad que tiene un estudio para detectar un efecto real cuando ese efecto realmente existe.
+
+[A survey of the statistical power of research in behavioral ecology and animal behavior](https://doi.org/10.1093/beheco/14.3.438)
+:::
+::::::
+
+![HN Biology Investigation Academy](HN%20Cursos%20publicidad/HN%20Biology%20Inv%20large.jpg)
