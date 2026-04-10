@@ -128,6 +128,43 @@ summary(ANOVA_status)
 
 ```
 
+Para verificar que el ANOVA se ajusta adecuadamente a los datos, es necesario evaluar la normalidad de los residuales del modelo. Los residuales representan el error del modelo estadístico, es decir, la diferencia entre los valores observados y los valores predichos. Se espera que estos residuales sigan una distribución normal centrada alrededor de cero.
+
+Estos supuestos pueden validarse mediante diferentes paquetes en R; entre las opciones disponibles se encuentran DHARMa y performance, los cuales permiten evaluar de manera integral el comportamiento de los residuales.
+
+```{r}
+library(DHARMa)
+
+modelo <- aov(body_mass ~ status, data= delomys)
+
+sim_res <- simulateResiduals(modelo)
+
+plot(sim_res)
+testResiduals(sim_res)
+```
+
+Luego de verificar que el modelo cumple con los supuestos del ANOVA, se procede a interpretar los resultados y a su representación gráfica. En este contexto, el ANOVA evalúa la hipótesis nula (H₀) de que todas las medias de los grupos son iguales, es decir, que no existen diferencias significativas entre ellos. Por el contrario, la hipótesis alternativa (H₁) plantea que al menos una de las medias difiere de las demás.
+
+```{r}
+summary(modelo)
+```
+
+La interpretación se basa en el estadístico F y su correspondiente valor p. El valor F representa la relación entre la variabilidad entre grupos y la variabilidad dentro de los grupos; valores altos de F indican que la variación entre grupos es mayor que la variación interna, lo que sugiere posibles diferencias entre las medias. Sin embargo, la decisión estadística se fundamenta en el valor p: si este es menor que el nivel de significancia establecido (por ejemplo, $\alpha$ = 0.05), se rechaza la hipótesis nula, concluyendo que existen diferencias significativas entre los grupos. En cambio, si el valor p es mayor que $\alpha$, no se rechaza la hipótesis nula, indicando que no hay evidencia suficiente para afirmar que las medias difieren.
+
+Ahora que hemos intrepretados los resultados, podemos graficar utilizando ggeffects.
+
+
+```{r}
+library(ggeffects)
+
+ggpredict(modelo, terms = "status")
+
+plot(ggpredict(modelo, terms = "status"))
+```
+
+
+
+
 ##### ANOVA de dos vías 
 
 El análisis de varianza (ANOVA) de dos vías es un método estadístico utilizado para comparar las diferencias entre dos o más grupos en una medida de interés. Se llama "ANOVA de dos vías" porque examina dos factores a la vez, cada uno de los cuales puede tener varios niveles o categorías.

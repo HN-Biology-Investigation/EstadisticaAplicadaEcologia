@@ -1,5 +1,5 @@
 ---
-title: ''
+title: 'Modelo Lineal'
 output:
    html_document:
          css: custom.css
@@ -18,14 +18,20 @@ header-includes:
 Los modelos lineales son un tipo de modelo estadístico utilizado para predecir el valor de una variable de interés (la variable dependiente) a partir de uno o más variables predictivas (las variables independientes). Los modelos lineales se basan en la suposición de que la relación entre la variable dependiente y las variables independientes es lineal.
 
 
+Para mayor referencia sobre el enfoque metodológico de esta clase, se recomienda consultar la siguiente lectura:
+
+[A large-scale assessment of eastern whip-poor-will](https://doi.org/10.1016/j.jenvman.2024.121786)
+
+[The effects of agricultural landscape composition and heterogeneity on bird diversity and community structure](https://doi.org/10.1016/j.gecco.2020.e01191)
+
 ### Contenido{.tabset .tabset-pills}
 
 #### Informacion de los datos
 
 
-Para esta clase utilizaremos la base de datos `creeps.txt`, observe que esta base de datos est en formato .txt
+Para esta clase utilizaremos la base de datos creeps.txt. Observe que este archivo se encuentra en formato .txt.
 
-Esta base de datos proviene de la investigación de doctorado del Dr. McGarigal en el noroeste del Pacífico de EEUU [paper](https://doi.org/10.2307/2937059).
+Esta base de datos proviene de la investigación doctoral del Dr. McGarigal, realizada en el noroeste del Pacífico de Estados Unidos [paper](https://doi.org/10.2307/2937059).
 
 ```{r}
 
@@ -33,7 +39,7 @@ creeps <- read.table("data/creeps.txt", header = T)
 
 ```
 
-Visualisemos nuestra base de datos
+Procedamos a visualizar nuestra base de datos.
 
 ```{r}
 head(creeps)
@@ -90,18 +96,17 @@ Un modelo lineal simple es un modelo matemático que se utiliza para predecir un
 
 La forma general de un modelo lineal simple es:
 
-$$y = β0 + β1 * x$$
+$$y = \beta_0 + β1 * x + \epsilon_i$$
 
 donde:
 
-- y es la variable dependiente
-- x es la variable independiente
-- β0 es el intercepto (el valor de y cuando x es igual a cero)
-- β1 es el coeficiente de la variable independiente (la pendiente de la línea)
+- $y$ variable respuesta (dependiente)
+- $x$ variable explicativa (predictora)
+- $\beta_0$ es el intercepto (el valor de $y$ cuando $x$ es igual a cero)
+- $\beta_1$ pendiente (cambio esperado en $y$ por cada unidad de $x$)
+- $\epsilon_i$ error aleatorio del modelo para la observación $i$
 
 **Ejemplo modelo lineal simple**
-
-:::{.notes}
 
 Para realizar nuetro ejemplo utilizaremos la variable `conifer` para predecir nuestra variable respuesta `abund`
 
@@ -114,158 +119,68 @@ Para visualizar nuestro resultado podemos utilizar el comando `summary()`
 ```{r}
 summary(fit1)
 ```
-Podemos observar que el intercepto (β0) es `0.4097`, el coeficiente (β1) es `-0.0003403`. Se puede apreciar que el valor p es mayor de 0.05 (alpha), por lo que no hay una relacion significativa entre `conifer` y `abund`. Asi mismo el R cuadrado es `-0.03` un valor muy bajo por lo que este modelo simple solo explica un 3% de la varianza de `abund`
+
+Podemos observar que el intercepto ($\beta_0$) es `0.4097`, el coeficiente ($\beta_1$) es `-0.0003403`. Se puede apreciar que el valor P es mayor de 0.05 ($\alpha$), por lo que no hay una relacion significativa entre `conifer` y `abund`. Asi mismo el R cuadrado es `-0.03` un valor muy bajo por lo que este modelo simple solo explica ualrededor de un 3% de la varianza de `abund`
 
 `NOTA`: Un modelo lineal puede dar un valor de R cuadrado negativo cuando el modelo es peor que una línea horizontal en la predicción de la variable dependiente (también conocida como la variable objetivo o la variable respuesta). Esto significa que el modelo no es capaz de explicar ninguna de la variabilidad de la variable dependiente.
 
-:::
 
-**Segundo ejemplo modelo lineal simple**
 
-:::{.notes}
+**Estudio de caso**
 
-Para este ejemplo utilizares la variable `saw` para predecir `abund`
+La Universidad de Massachusetts Amherst ha contratado a un asistente de investigación con el objetivo de apoyar al Dr. McGarigal en la comprensión de las variables del paisaje que influyen en la abundancia de Certhia americana. Para ello, el Dr. McGarigal ha recopilado datos en campo y ha organizado una base de datos que permite analizar la relación entre la estructura del paisaje y la distribución de la especie. Las variables incluidas en el análisis son: elevation, que representa la elevación promedio del sitio; road.dens, la densidad de caminos; stream.den, la densidad de quebradas; mps.CS, el tamaño promedio de parche considerando la composición y estructura de la vegetación; mps.S, el tamaño promedio de parche basado únicamente en la estructura de la vegetación; contagion, una medida de conectividad general del mosaico de parches basada en mps.S; conifer, el porcentaje del paisaje compuesto por bosque de coníferas; saw, el porcentaje de bosque en etapa tardía (large sawtimber); pole, el porcentaje de bosque en etapa intermedia (pole timber); y sapling, el porcentaje del paisaje compuesto por bosques en etapa temprana (saplings).
 
-```{r}
-fit2 <- lm(abund ~ saw, data= creeps)
-```
 
-Observermos nuestros resultados
+Asumiendo que hemos comprendido la organización de la base de datos y realizado una exploración inicial de los datos, el primer paso consiste en ajustar un modelo lineal múltiple que incluya todas las variables predictoras de interés. A este modelo, que contiene todas las variables explicativas, lo llamaremos Modelo_completo.
 
 ```{r}
-summary(fit2)
+Modelo_completo <- lm(abund ~ conifer + 
+                        elevation +
+                        road.dens +
+                        stream.den + 
+                        mps.CS +
+                        mps.S +
+                        contagion +
+                        saw +
+                        pole +
+                        sapling, data= creeps)
 ```
-En este caso hay una relacion significativa de nuestras variables (p valor < 0.05), la relacion es positiva porque el `coeficiente (β1)` es `0.0058`. El intercepto nos indica que cuando `saw` tiene el valor de `0`, `abund` tendra el valor de `0.099`. En este caso el R cuadrado es `0.06025` por lo que nuestro modelo explica un 60% de la varianza de `abund`.
 
-:::
+El siguiente paso consiste en verificar que las variables predictoras no presenten correlación entre ellas, es decir, evaluar la posible presencia de colinealidad. Este es un paso fundamental en el análisis, ya que la colinealidad entre variables explicativas puede inflar la varianza de los estimadores, generar inestabilidad en los coeficientes del modelo y dificultar la interpretación de los efectos individuales de cada variable.
 
-**Regression lineal**
+Para determinar la colinealidad entre las variables predictoras, podemos utilizar el Factor de Inflación de la Varianza (VIF, por sus siglas en inglés). El VIF cuantifica cuánto se incrementa la varianza de los coeficientes del modelo debido a la correlación entre predictores, permitiendo así identificar variables altamente colineales.
 
-Ahora que hemos encontrado un "buen" modelo, podemos predicir el valor de `abund` utilizando la variable `saw`, para estos es necesario aplicar la regression lineal que se basa en la ecuacion.
-
-$$y = β0 + β1 * x$$
-
-:::{.notes}
-
-Para aplicar la regresion lineal tenemos que conocer los valores de nuestros elementos, y = es el valor de `abund` a predecir
-β0 = 0.099
-β1 = 0.0058
-x  = es el valor de `saw` que utilizaremos para predecir
-
-Si queremos `abund` cuando tenemos un valor de `75` para `saw`, seria:
+Este diagnóstico puede realizarse en R utilizando la función vif() del paquete car o mediante el paquete performance, el cual ofrece una evaluación más general de los supuestos del modelo, incluyendo la colinealidad.
 
 ```{r}
-
-0.099 + 0.0058 * 75
+car::vif(Modelo_completo)
 ```
-Cuando `saw` vale 75, `abund` sera 0.534, estos de acuerdo a nuestro modelo `fit2`.
 
-Si queremos predecir varios valores a la vez podemos crear una funcion para facilitarnos el trabajo
 
 ```{r}
-pre_saw <- function(saw){
-  0.099 + 0.0058 * saw
-}
+performance::check_collinearity(Modelo_completo)
 ```
 
-probemos nuestra funcion
+En este caso, ambas formas de evaluar la colinealidad indican que las variables saw y pole están inflando el modelo debido a su alta correlación con otras variables predictoras. Por lo tanto, el primer paso consiste en eliminar la variable con el valor de VIF más alto; en este caso, saw (VIF = 59.50).
+
+Posteriormente, se ajusta nuevamente el modelo y se vuelve a evaluar la colinealidad. Este proceso se repite de manera secuencial, eliminando en cada paso la variable con el VIF más elevado, hasta que todas las variables del modelo presenten valores de VIF inferiores a 3, lo que indica niveles aceptables de colinealidad.
 
 ```{r}
-pre_saw(75)
-```
-Ahora con varios valores
-
-```{r}
-pre_saw(1:10)
-```
-:::
-
-#### Modelo lineal multiple
-
-Un modelo lineal múltiple es un modelo matemático que se utiliza para predecir una variable dependiente (también conocida como la variable objetivo o la variable respuesta) a partir de varias variables independientes (también conocidas como las variables predictoras o las variables explicativas). Este tipo de modelo se basa en la hipótesis de que la relación entre la variable dependiente y las variables independientes es lineal y que no hay interacciones significativas entre las variables.
-
-La forma general de un modelo lineal múltiple es:
-
-y = β0 + β1 * x1 + β2 * x2 + ... + βn * xn
-
-donde:
-
-- y es la variable dependiente
-- x1, x2, ..., xn son las variables independientes
-- β0 es el intercepto (el valor de y cuando todas las variables independientes son iguales a cero)
-- β1, β2, ..., βn son los coeficientes de las variables independientes (la pendiente de la línea para cada variable independiente)
-
-**Ejemplo modelo lineal multiple**
-
-:::{.notes}
-
-```{r}
-fit3 <- lm(abund ~ elevation + road.dens + saw, data= creeps)
+Modelo_Final <- lm(abund ~ conifer + 
+                        elevation +
+                        road.dens +
+                        stream.den +
+                        mps.S +
+                        contagion +
+                        pole +
+                        sapling, data= creeps,
+                   na.action = na.fail)
 ```
 
-Revismeos nuestro resultado
+Una vez identificadas las variables que no presentan colinealidad, se procede a evaluar cuál es el mejor conjunto de covariables que explica la abundancia de la especie. Para ello, podemos utilizar el paquete MuMIn, cuya función dredge genera todas las combinaciones posibles de las variables predictoras. En este caso específico, al contar con 8 covariables, el número total de modelos candidatos es $2^8 = 256$, a los cuales se les suma el modelo nulo.
 
-```{r}
-summary(fit3)
-```
-:::
+El modelo nulo es un modelo que no incluye variables explicativas (solo el intercepto) y representa la hipótesis de que la variación en la abundancia puede explicarse únicamente por el azar o por un valor promedio constante. Este modelo se utiliza como referencia para comparar el desempeño de los modelos que sí incluyen covariables, permitiendo evaluar cuánto mejora la capacidad explicativa al incorporar información del paisaje frente a un escenario sin predictores.
 
-**Segundo ejemplo modelo lineal multiple**
-
-:::{.notes}
-
-```{r}
-fit4 <- lm(abund ~ elevation + road.dens + saw + stream.den + sapling, data= creeps)
-```
-
-Revismeos nuestro resultado
-
-```{r}
-summary(fit4)
-```
-
-:::
-
-En estos modelo el `fit3` explica un `0.6263`, mientras el modelo `fit4` explica un `0.7065`.
-
-
-#### Modelo lineal con interaccion
-
-Un modelo de regresión lineal con interacciones es un modelo matemático que se utiliza para predecir una variable dependiente (también conocida como la variable objetivo o la variable respuesta) a partir de varias variables independientes (también conocidas como las variables predictoras o las variables explicativas), considerando interacciones entre ellas. Una interacción entre dos variables se refiere a un efecto de una variable sobre la otra que depende del nivel de la otra variable.
-
-La forma general de un modelo de regresión lineal con interacciones es:
-
-y = β0 + β1 * x1 + β2 * x2 + β3 * x1 * x2 + β4 * x3 + ... + βn * xn
-
-donde:
-
-- y es la variable dependiente
-- x1, x2, x3, ..., xn son las variables independientes
-- β0 es el intercepto (el valor de y cuando todas las variables independ
-
-**Ejemplo modelo lineal con interaccion**
-
-:::{.notes}
-
-```{r}
-fit5 <- lm(abund ~ saw * mps.S, data= creeps)
-```
-
-Revismeos nuestro resultado
-
-```{r}
-summary(fit5)
-```
-
-Ya que el modelo con interaccion es un poco complicado de explicar, realizaremos un grfaico
-
-```{r}
-library(sjPlot)
-
-plot_model(fit5, "int")
-```
-
-:::
 
 #### Seleccion de modelo usando AIC
 
@@ -281,7 +196,6 @@ La selección del modelo más adecuado para un conjunto de datos es un proceso i
 
 - Interpretabilidad: Un modelo más fácil de interpretar es más útil para comprender las relaciones entre las variables y para hacer predicciones basadas en ellas.
 
-:::{.notes}
 
 El AIC (Information Criterion) es una métrica que se utiliza para evaluar la bondad de ajuste de diferentes modelos de regresión y seleccionar el modelo más adecuado. El AIC se basa en la idea de que un modelo más preciso debe tener un menor AIC, pero también debe tener una suficiente capacidad de generalización a datos futuros.
 
@@ -294,62 +208,59 @@ donde:
 - k es el número de parámetros del modelo
 - ln(L) es el logaritmo natural del valor de verosimilitud del modelo
 
-:::
 
 A continuacion utilizares el Criterio de Informacion de Akaike (AIC) para identificar el modelo mas adeacuado
 
-:::{.notes}
+```{r}
+library(MuMIn)
 
-Primero debemos de proponer los modelos candidatos
+Modelos_seleccion <- MuMIn::dredge(Modelo_Final)
+
+head(data.frame(Modelos_seleccion))
+```
+En la tabla resultante se presentan los valores de AICc y ΔAICc (delta) para cada modelo candidato. El criterio de selección se basa principalmente en el valor de ΔAICc, el cual representa la diferencia entre el AICc de cada modelo y el modelo con el menor AICc (modelo “top 1”). Por esta razón, el mejor modelo siempre tendrá un ΔAICc = 0, mientras que los modelos restantes presentarán valores progresivamente mayores a medida que se alejan del mejor ajuste.
+
+El AICc (Akaike Information Criterion corregido) es una medida que evalúa el equilibrio entre la calidad del ajuste del modelo y su complejidad, penalizando la inclusión de un número elevado de parámetros para evitar el sobreajuste, especialmente en muestras pequeñas. En este sentido, valores más bajos de AICc indican modelos con mejor balance entre ajuste y parsimonia.
+
+A partir de ΔAICc se puede realizar la selección de modelos. Un criterio ampliamente utilizado es considerar todos aquellos modelos con ΔAICc < 2, ya que se asume que estos modelos tienen un soporte estadístico similar al del mejor modelo y, por lo tanto, no pueden ser descartados con suficiente evidencia.
+
+
+
+#### Validación del modelo
+
+Los modelos lineales se basan en una serie de supuestos sobre la distribución de los datos y la relación entre la variable respuesta y las variables predictoras. Estos supuestos son fundamentales para garantizar la validez de las inferencias estadísticas:
+
+Linealidad: se asume que existe una relación lineal entre la variable dependiente y las variables independientes, es decir, que los cambios en la respuesta son proporcionales a los cambios en los predictores.
+
+Homoscedasticidad: la varianza de los errores se mantiene constante a lo largo de todos los valores de las variables independientes.
+
+Independencia de los errores: los residuos (diferencias entre los valores observados y los valores predichos) son independientes entre sí.
+
+Normalidad de los errores: los residuos del modelo siguen una distribución aproximadamente normal.
+
+El incumplimiento de estos supuestos puede afectar la precisión, estabilidad e interpretación de los resultados del modelo. Por esta razón, es esencial verificarlos antes de realizar inferencias o interpretar los coeficientes del modelo.
+
+En este caso específico, el modelo se ajusta utilizando el conjunto de variables seleccionadas mediante el proceso de dredge, es decir, aquellas que presentan el mejor equilibrio entre ajuste y complejidad, de acuerdo con los criterios de información (AICc).
 
 ```{r}
-fit1 <- lm(abund ~ elevation, data= creeps)
-fit2 <- lm(abund ~ elevation + road.dens, data= creeps)
-fit3 <- lm(abund ~ road.dens + saw + stream.den, data= creeps)
-fit4 <- lm(abund ~ saw + sapling, data= creeps)
-fit5 <- lm(abund ~ saw + mps.S, data= creeps)
-fit6 <- lm(abund ~ saw * mps.S, data= creeps)
+Modelo_Top1 <- lm(abund ~ contagion +
+                        pole +
+                        sapling +
+                        stream.den, 
+                        data= creeps)
 ```
 
-Ahora utilizaremos el comando `aictab()` del paquete `AICcmodavg` para identificar nuestro modelo mas adecuado.
 
-```{r}
-library(AICcmodavg)
-
-Modelos_Candidatos <- list(fit1, fit2, fit3, fit4, fit5, fit6)
-Nombres <- c("fit1", "fit2", "fit3", "fit4", "fit5", "fit6")
-
-aictab(Modelos_Candidatos, Nombres, sort = TRUE)
-```
-
-:::
-
-#### Validacion de modelo
-
-Los modelos lineales se basan en ciertos supuestos acerca de los datos y la relación entre la variable dependiente y las variables independientes. Estos supuestos son:
-
-Linealidad: La relación entre la variable dependiente y las variables independientes es lineal. Esto significa que el cambio en la variable dependiente es proporcional al cambio en las variables independientes.
-
-Homoscedasticidad: La varianza de la variable dependiente es constante a lo largo de los diferentes valores de las variables independientes.
-
-Independencia de errores: Los errores (la diferencia entre el valor real y el valor predecido) son independientes entre sí.
-
-Normalidad de errores: Los errores siguen una distribución normal.
-
-Es importante tener en cuenta que si estos supuestos no se cumplen, los resultados del modelo lineal pueden ser inexactos o poco fiables. Por lo tanto, es importante verificar que estos supuestos se cumplen antes de utilizar un modelo lineal.
-
-
-
-En R existen diferentes formas de evaluar los supuestos del modelo lineal, por ejemplo podemos utilizar el comando `plot()`.
+En R existen diferentes formas de evaluar los supuestos de un modelo lineal. Una de las más sencillas y utilizadas es mediante la función `plot()`, la cual genera automáticamente gráficos diagnósticos basados en los residuos del modelo.
 
 ```{r, fig.align='center'}
 
 par(mfrow = c(2,2))
 
-plot(fit3)
+plot(Modelo_Top1)
 ```
 
-Pero los graficos resultantes del comando `plot()` pueden ser muy subjetivos, por eso utilizaremos el paquete `DHARMa` el cual contiene comando utiles para validar nuestro modelo.
+Sin embargo, los gráficos generados con el comando `plot()` pueden ser en cierta medida subjetivos, ya que su interpretación depende del criterio del analista. Por esta razón, en este curso utilizaremos el paquete DHARMa, el cual ofrece herramientas más robustas y estandarizadas para la validación de modelos, permitiendo evaluar de manera más formal el comportamiento de los residuos y los supuestos del modelo.
 
 ```{r}
 library(DHARMa)
@@ -357,14 +268,12 @@ library(DHARMa)
 
 **Normalidad y homogeneidad de residuales**
 
-:::{.notes}
 
 ```{r}
-testResiduals(fit3)
+testResiduals(Modelo_Top1)
 ```
 
 
-:::
 
 **colinealidad**
 
@@ -372,41 +281,44 @@ La colinealidad es un problema que puede surgir en el análisis de regresión cu
 
 Para detectar la colinealidad en R, puede utilizar la función vif() del paquete car. Esta función calcula el factor de inflación de la varianza (VIF) para cada variable del modelo de regresión y permite evaluar la colinealidad entre ellas. El VIF de una variable mide cuánto aumenta la varianza de las estimaciones de los coeficientes debido a la colinealidad con otras variables. Valores altos de VIF indican colinealidad y valores bajos indican independencia.
 
-:::{.notes}
 
 ```{r}
 library(car)
-vif(fit3)
+vif(Modelo_Top1)
 ```
 
-:::
+#### Interpteracion Modelo Lineal
+
+```{r}
+summary(Modelo_Top1)
+```
+
+El modelo lineal indica que la abundancia de la especie (abund) está explicada por un conjunto de variables del paisaje, incluyendo contagion, pole, sapling y stream.den. El intercepto del modelo ($\beta_0$ = 0.3129) representa el valor esperado de la abundancia cuando todas las variables predictoras son iguales a cero.
+
+En cuanto a las variables explicativas, contagion presenta un efecto negativo débil sobre la abundancia ($\beta$ = -0.0030), con una significancia marginal (t = -1.738, p = 0.094), lo que indica una tendencia, aunque no concluyente al nivel de $\alpha$ = 0.05. Por su parte, pole muestra un efecto negativo fuerte y altamente significativo ($\beta$ = -0.0052, t = -6.431, p < 0.001), indicando que un aumento en la proporción de bosque en etapa intermedia se asocia con una disminución en la abundancia. De manera similar, sapling también presenta un efecto negativo significativo ($\beta$ = -0.00699, t = -2.301, p = 0.030), sugiriendo que mayores proporciones de bosques en etapa temprana están asociadas con menor abundancia. En contraste, stream.den tiene un efecto positivo significativo ($\beta$ = 0.01557, t = 3.268, p = 0.003), indicando que una mayor densidad de quebradas está asociada con un incremento en la abundancia de la especie.
+
+En conjunto, el modelo presenta un buen ajuste, explicando aproximadamente el 73.8% de la variabilidad en la abundancia ($R^2$ = 0.7377; $R^2$ ajustado = 0.6958). Esto indica que las variables del paisaje incluidas en el modelo tienen una alta capacidad explicativa sobre la variación observada. Adicionalmente, el modelo es globalmente significativo (F = 17.58, p < 0.001), lo que confirma que, en conjunto, las variables explicativas mejoran significativamente la predicción de la abundancia en comparación con un modelo nulo.
+
 
 #### Grafico del modelo
 
-**con SjPlot**
+Existen diversas formas de graficar un modelo lineal en R, como el uso de la función predict(), el paquete sjPlot o la función ggpredict() de distintos paquetes de visualización. En este caso, una alternativa recomendada es el uso del paquete ggeffects, el cual permite generar predicciones a partir del modelo de manera sencilla y consistente.
 
-:::{.notes}
-
-```{r}
-library(sjPlot)
-
-plot_model(fit3, "pre", terms = c("saw","stream.den"),
-           show.data = TRUE,
-           grid = TRUE)
-```
-
-
-:::
-
-**Con ggplot2**
+Para ello, se utiliza la función ggpredict(), que calcula las predicciones del modelo junto con sus intervalos de confianza. Posteriormente, estos resultados pueden visualizarse directamente con plot(). Además, los gráficos obtenidos pueden personalizarse y mejorarse utilizando funciones del paquete ggplot2, lo que permite generar figuras más flexibles y aptas para publicación.
 
 ```{r}
+library(ggeffects)
 library(ggplot2)
 
-ggplot(data= creeps, aes(x = saw, y= abund)) +
-  geom_point()+
-  geom_smooth(method = lm)
+Pre_pole <- ggpredict(Modelo_Top1, terms = "pole[n=100]")
+
+plot(Pre_pole) +
+  geom_point(data = creeps, aes(x= pole, y= abund))+
+  theme_classic()
 ```
+
+
+# ![HN Biology Investigation Academy](HN%20Cursos%20publicidad/HN%20Biology%20Inv%20large.jpg)
 
 
 
