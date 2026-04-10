@@ -25,6 +25,8 @@ Este curso proporciona una introducción práctica a las técnicas estadísticas
 
 [Clase 3: Suplementario - Pruebas no paramétricas](Clase4.html)
 
+[Estimación de parámetros: Inferencia estadística](Inferencia.html)
+
 [Clase 4: Modelos lineales](Clase5.html)
 
 [Clase 5: Modelos lineales generalizados: Poisson](Clase6.html)
