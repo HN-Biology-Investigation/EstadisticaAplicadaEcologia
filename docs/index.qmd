@@ -29,6 +29,8 @@ Este curso proporciona una introducción práctica a las técnicas estadísticas
 
 [Clase 4: Modelos lineales](Clase5.html)
 
+[Modelos lineales generalizados](glm.html)
+
 [Clase 5: Modelos lineales generalizados: Poisson](Clase6.html)
 
 [Clase 6: Modelos lineales generalizados: Bernoulli](Clase7.html)
