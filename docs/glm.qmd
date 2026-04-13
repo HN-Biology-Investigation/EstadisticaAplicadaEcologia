@@ -1,0 +1,21 @@
+---
+title: "Modelos Lineales Generalizados"
+author: "David Murillo"
+format: html
+editor: visual
+---
+
+La unificación de muchos métodos estadísticos para datos con distribución normal —como la regresión, el ANOVA y el ANCOVA— bajo el modelo lineal general fue un gran avance para la estadística aplicada. Pero algo aún más importante ocurrió en 1972, cuando Nelder y Wedderburn lograron unificar un conjunto aún más amplio de métodos dentro del modelo lineal generalizado (GLM). Ellos mostraron que muchas técnicas que antes se veían como análisis separados —por ejemplo, la regresión logística, la regresión multinomial, los modelos log-lineales y el propio modelo lineal general— eran en realidad casos particulares de una versión más general del modelo lineal. Gracias a esto, gran parte de lo que ya se conocía sobre el modelo lineal pudo aplicarse también a esa clase mucho más amplia de modelos.
+
+Las dos ideas principales del GLM son las siguientes: Primero, se aplica una transformación a la media de la variable respuesta $E(y)$, y esa transformación se expresa como una combinación lineal de los efectos de las covariables, en lugar de usar la media de la respuesta directamente. Segundo, para la parte aleatoria del modelo, se pueden elegir distribuciones distintas a la normal, como la Poisson o la binomial.
+
+Formalmente, un GLM se describe mediante tres componentes:
+
+-1 Una distribución estadística que describe la variación aleatoria de la respuesta $y$; esta es la parte estocástica del modelo.
+
+-2 Una función de enlace g, que es la transformación que se aplica a la media de la respuesta $E(y)$.
+
+-3 Un predictor lineal $\eta$ ("eta"), que es una combinación lineal de los efectos de las covariables que forman $g(E(y))$; esta es la parte sistemática o determinista del modelo.
+
+
+![Tabla 1. Muestra el rango de soporte de la variable respuesta, el parámetro $\theta$ que define la función de enlace canónica (o típica) para cada tipo de variable respuesta, las funciones $a(\phi)$, $b(\theta)$ y $c(y, \phi)$, y la función de varianza que relaciona la media y la varianza de la variable respuesta. Cada distribución de probabilidad está parametrizada en términos de su media ($\mu$) y de parámetros adicionales.](imagenes/GLMlikns.jpeg)
