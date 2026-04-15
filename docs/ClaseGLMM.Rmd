@@ -59,14 +59,122 @@ En los modelos mixtos, los efectos cruzados y los efectos anidados describen dis
 
 #### Ejercicio {.tabset .tabset-pills}
 
+Usaremos datos de [Akresh et al. 2009](https://doi.org/10.1525/cond.2009.080059), un estudio basado en un proyecto de captura con redes de niebla en aves en bosques ribereños y de tierras altas del norte de Michigan. En este trabajo se registró la presencia o ausencia de aves juveniles capturadas en redes en tres sitios de estudio, visitados en distintos días, donde cada sitio incluía tanto hábitat ribereño como de tierras altas.
+
+Para nuestro análisis, nos centraremos en la variable respuesta (presencia/ausencia de juveniles capturados en una red en un día específico), considerando como efectos fijos el tipo de hábitat, el año y la fecha, ya que representan factores de interés ecológico directo cuya influencia queremos cuantificar. Al mismo tiempo, incluiremos como efectos aleatorios la red de niebla, el sitio de estudio y la fecha, con el objetivo de capturar la variabilidad no explicada asociada a estas unidades de muestreo y controlar la dependencia entre observaciones. Esta estructura jerárquica permite modelar adecuadamente la no independencia de los datos derivados de muestreos repetidos en los mismos sitios, redes y momentos en el tiempo.
+
 ##### Base de datos
 
-##### Ajustar modelos
+El conjunto de datos contiene 279 observaciones y 6 variables. Las variables se han importado en R como números reales (num), enteros (int) o factores (variables categóricas), dependiendo de su naturaleza. Cada observación representa una red de niebla individual (net) en un día específico dentro de un sitio de estudio, lo que define la unidad observacional del análisis.
+
+A continuación se describen las variables del conjunto de datos:
+
+- net: identificador único para cada red de captura utilizada en el estudio.
+- date: fecha ordinal del muestreo (día del año).
+- Habitat: tipo de hábitat, que puede ser ribereño (riparian) o de tierras altas (upland).
+- Site: factor que identifica los 3 sitios de estudio.
+- Year: año de la observación (2006 o 2007).
+- present: variable respuesta binaria que indica si se capturó al menos un ave paseriforme juvenil en la red ese día (1 = presencia, 0 = ausencia).
+
+```{r}
+birds <- read.csv("data/RiparianMMdata2.csv")
+```
+
+```{r}
+str(birds)
+```
+
+```{r}
+table(birds$present)
+```
+
+Observamos que en los datos hay 179 redes en las que no se capturó ningún juvenil en un día determinado y 100 redes en las que sí hubo captura. Esto nos da una primera idea de la distribución de la variable respuesta (present), la cual es binaria y será modelada posteriormente.
+
+Es importante también revisar el tipo de variables en R, ya que algunas columnas que conceptualmente son categóricas pueden haber sido importadas como números enteros. Por ejemplo, la variable net no debe interpretarse como una variable continua, sino como un conjunto de categorías que identifican redes distintas. Tratarla como numérica implicaría asumir una relación de orden o distancia entre redes, lo cual no tiene sentido biológico ni estadístico.
+
+Por esta razón, es necesario convertir manualmente estas variables a factores utilizando la función as.factor() en R. Esto asegura que el modelo interprete correctamente estas variables como niveles discretos y no como valores numéricos continuos:
+
+```{r}
+birds$net <- as.factor(birds$net)
+birds$Site <- as.factor(birds$Site)
+birds$Habitat <- as.factor(birds$Habitat)
+birds$Year <- as.factor(birds$Year)
+```
+
+
+##### Ajuste del modelo
+
+El primer paso al trabajar con un modelo estadístico es ajustarlo a los datos, es decir, estimar sus parámetros. El paquete lme4 implementa un enfoque de máxima verosimilitud, donde el objetivo es encontrar los valores de los parámetros que hacen que los datos observados sean los más probables bajo el modelo propuesto. En términos simples, esto significa identificar los valores del modelo que mejor explican la variación observada en los datos.
+
+En este caso, ajustaremos un modelo “global” que incluye un intercepto, tres variables explicativas fijas y dos estructuras de efectos aleatorios. Las variables fijas son: date (una variable continua), Habitat (factor con dos niveles: ribereño y tierras altas) y Year (2006 o 2007). Estas variables representan los efectos ecológicos de interés sobre la probabilidad de captura de un ave juvenil en una red en un día específico (present).
+
+Por otro lado, incluimos dos fuentes de variación aleatoria: Site y net. Ambas son variables categóricas que representan unidades de muestreo repetidas a lo largo del tiempo. En este diseño, múltiples observaciones provienen del mismo sitio y de la misma red, lo que genera dependencia entre observaciones. Incluir estos efectos aleatorios permite modelar explícitamente la estructura jerárquica de los datos y evitar problemas de pseudorreplicación, es decir, evitar inflar artificialmente la significancia estadística al ignorar la no independencia entre observaciones.
+
+En este caso, es importante notar que no solo existe variación entre sitios, sino también entre redes dentro de cada sitio. Por ello, se especifica una estructura anidada, donde las redes están contenidas dentro de los sitios, lo cual se representa como (1 | Site/net). Esto permite que cada sitio tenga su propio intercepto y, además, que cada red dentro de cada sitio tenga variación adicional alrededor de ese intercepto.
+
+Antes de ajustar el modelo, es común estandarizar las variables continuas, ya que esto puede mejorar la estabilidad numérica de los algoritmos de estimación. En este caso, estandarizamos la variable date:
+
+```{r}
+birds$dateS <- scale(birds$date)
+```
+
+Finalmente, el modelo se ajusta utilizando la función glmmTMB():
+
+```{r}
+library(glmmTMB)
+
+fit1 <- glmmTMB(present ~ dateS + Year + Habitat + (1 | Site/net),
+              data = birds,
+              family = binomial)
+```
+
+```{r}
+VarCorr(fit1)
+```
+
+Los resultados de los efectos aleatorios del modelo muestran la variabilidad en el intercepto atribuible a la estructura jerárquica de los datos, en este caso asociada a los sitios de estudio y a las redes de captura anidadas dentro de cada sitio. Los valores reportados como desviación estándar reflejan la magnitud de la variación entre estos niveles, es decir, cuánto difiere la probabilidad basal de presencia de juveniles entre sitios, y adicionalmente entre redes dentro de sitios. En conjunto, estos resultados sugieren la existencia de heterogeneidad en la respuesta que no puede ser explicada únicamente por las variables fijas, sino que está estructurada por el diseño de muestreo. Es importante destacar que en los modelos lineales generalizados mixtos no se reporta una varianza residual explícita como en los modelos lineales clásicos, lo que limita la descomposición directa de la variación total del modelo en componentes individuales. Por esta razón, la interpretación de los efectos aleatorios se centra en su magnitud relativa y en su función como fuentes de variación no explicada. En algunos casos, cuando la varianza de un efecto aleatorio es cercana a cero, esto puede indicar que dicho factor aporta poca variabilidad al modelo o que no hay suficiente información para estimarlo adecuadamente, lo cual puede manifestarse en estimaciones inestables o problemas de convergencia.
 
 ##### Validar modelo
 
+Una vez que hemos ajustado un modelo, es importante evaluarlo para asegurarnos de que cualquier inferencia que hagamos sea válida. La evaluación de modelos es un término bastante amplio que puede incluir prácticamente todo lo que se hace después del ajuste del modelo, pero para nuestros fines, limitaremos la evaluación de modelos a verificar los supuestos del modelo y examinar las observaciones influyentes
+
+```{r}
+library(DHARMa)
+
+
+testResiduals(fit1)
+```
+
+**Pseudo R cuadrado** 
+
+Aunque los modelos mixtos no generan un valor verdadero de $R^2$, podemos obtener algunas medidas de pseudo $R^2$ para examinar el poder explicativo de los efectos fijos y aleatorios en el modelo. Usemos la función r.squaredGLMM del paquete MuMIn:
+
+```{r}
+library(MuMIn)
+r.squaredGLMM(fit1)
+
+performance::r2_nakagawa(fit1)
+```
+
+
+Aquí obtenemos varios valores. Como se indica en el archivo de ayuda, el valor $R^2_m$ es el pseudo $R^2$ marginal, que representa la varianza explicada por los efectos fijos del modelo. Este valor suele ser el que más interesa a los investigadores (qué tan bien las variables predictoras fijas explican lo que ocurre con la variable de respuesta).
+
+El valor $R^2_c$ es el pseudo $R^2$ condicional, y corresponde a la varianza explicada por el modelo completo (los efectos aleatorios y los efectos fijos).
+
 ##### Interpretar modelo
+
+```{r}
+summary(fit1)
+```
+
 
 ##### Graficar modelo
 
+```{r}
+library(ggeffects)
+
+plot(ggpredict(fit1, terms= "dateS"))
+plot(ggpredict(fit1, terms= "Year"))
+plot(ggpredict(fit1, terms= "Habitat"))
+```
 
