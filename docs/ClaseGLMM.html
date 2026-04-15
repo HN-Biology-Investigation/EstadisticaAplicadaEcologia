@@ -493,6 +493,39 @@ Equivalente a <code>(1 + X | S) + (1 + X | S:T)</code>.</td>
 </tr>
 </tbody>
 </table>
+<p>En modelos mixtos, un intercepto aleatorio y una pendiente aleatoria
+representan dos formas distintas en que los grupos pueden diferir entre
+sí. Cuando usamos un modelo como (1 | Sitio), estamos permitiendo que
+cada sitio tenga su propio valor base de la variable respuesta, es
+decir, cada grupo comienza desde un nivel distinto, pero la relación con
+la variable explicativa (por ejemplo, el efecto de bosque sobre
+abundancia) se mantiene igual en todos los sitios; gráficamente, esto se
+vería como líneas paralelas con diferente altura. En cambio, cuando
+usamos una estructura como (Bosque | Sitio), estamos permitiendo que
+cada sitio tenga no solo su propio intercepto, sino también su propia
+pendiente, lo que implica que la relación entre la variable explicativa
+y la respuesta cambia entre sitios; en este caso, las líneas ya no son
+paralelas, sino que tienen distintas inclinaciones. En términos simples,
+el intercepto aleatorio cambia el punto de partida entre grupos,
+mientras que la pendiente aleatoria permite que cambie la intensidad o
+dirección del efecto de una variable entre esos grupos.</p>
+<p>En los modelos mixtos, los efectos cruzados y los efectos anidados
+describen distintas formas en que se organizan los datos. Los efectos
+cruzados ocurren cuando dos factores (por ejemplo, sitio y año) se
+combinan de manera independiente, es decir, cada nivel de uno puede
+aparecer con varios niveles del otro (por ejemplo, los mismos sitios
+muestreados en múltiples años). En cambio, los efectos anidados se dan
+cuando los niveles de un factor están contenidos dentro de otro (por
+ejemplo, parcelas dentro de fincas), de modo que cada nivel del factor
+inferior pertenece únicamente a un nivel del factor superior. Por otro
+lado, la diferencia entre intercepto aleatorio y pendiente aleatoria
+radica en qué aspecto de la relación se permite variar entre grupos: un
+intercepto aleatorio implica que cada grupo tiene su propio valor base
+(su propia línea de partida), manteniendo la misma relación con la
+variable explicativa; mientras que una pendiente aleatoria permite que
+la relación entre la variable explicativa y la respuesta cambie entre
+grupos, es decir, que cada grupo tenga su propia pendiente o intensidad
+de efecto.</p>
 </div>
 </div>
 
