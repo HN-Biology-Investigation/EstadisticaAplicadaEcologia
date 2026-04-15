@@ -21,12 +21,32 @@ header-includes:
 
 Literatura recomendada para compreder los modelos mixtos, [Harrison *et al*. 2018](https://doi.org/10.7717/peerj.4794)
 
+### Introduccion {.tabset .tabset-pills}
+
 En estudios ecológicos y de conservación, es común que los datos presenten una estructura jerárquica o dependiente. Por ejemplo, se pueden tomar múltiples mediciones en los mismos sitios de muestreo, en diferentes momentos, o bien registrar varias observaciones dentro de unidades mayores como fincas, parcelas o paisajes. Este tipo de datos se conoce como diseños de medidas repetidas o estudios longitudinales, y viola el supuesto de independencia entre observaciones requerido por muchos modelos estadísticos tradicionales.
 
 Los modelos mixtos surgen como una herramienta fundamental para abordar este problema, ya que permiten incorporar explícitamente esta estructura jerárquica mediante la inclusión de efectos fijos (variables de interés, como características del hábitat) y efectos aleatorios (fuentes de variación asociadas a unidades de muestreo, como sitio, finca o año). De esta forma, es posible modelar adecuadamente la dependencia en los datos y obtener inferencias más robustas y realistas.
 
-**Los objetivos del estudio fueron evaluar la relación de la abundancia de aves con la estructura de la vegetación y el paisaje.:**
+#### Efectos fijos y efectos aleatorios
+
+En estadística frecuentista existe una distinción fundamental al momento de modelar variables categóricas, basada en la diferencia entre efectos fijos y efectos aleatorios, propuesta originalmente por Churchill Eisenhart (1947).
+
+Los efectos fijos son aquellas variables explicativas cuyo efecto queremos estimar directamente y que representan relaciones a nivel poblacional. Estos pueden ser tanto categóricos (por ejemplo, tipo de hábitat o tratamiento) como numéricos (por ejemplo, área basal, elevación o porcentaje de bosque). Cuando una variable se incluye como efecto fijo, lo que estamos estimando es un valor promedio que describe cómo cambia la variable respuesta en función de esa variable explicativa. En el caso de variables categóricas, esto implica comparar niveles específicos; mientras que, para variables numéricas, implica estimar una relación continua (por ejemplo, una pendiente). Un aspecto fundamental es que los efectos fijos representan relaciones que son de interés directo para el estudio, y sobre las cuales queremos hacer inferencia. Sin embargo, en el caso de variables categóricas, las conclusiones se limitan a los niveles incluidos en el análisis, ya que estos fueron definidos de manera intencional.
+
+Por otro lado, tenemos los efectos aleatorios. Estos corresponden generalmente a variables categóricas cuyos niveles pueden considerarse como una muestra tomada al azar de una población mucho más grande de posibles niveles. Los efectos aleatorios representan la variabilidad entre grupos. Es decir, capturan cuánto se desvía cada grupo (por ejemplo, sitios, individuos o años) del promedio general de la variable respuesta, el cual está descrito por los efectos fijos. Para entenderlo con un ejemplo sencillo, supongamos que queremos evaluar si un medicamento tiene un efecto curativo sobre una enfermedad. Definimos una variable categórica con dos niveles: “medicamento” y “placebo”, la cual modelamos como un efecto fijo, ya que es el factor de interés principal. Sin embargo, sabemos que la genética de los individuos también puede influir tanto en la enfermedad como en la respuesta al tratamiento. Entonces, tomamos una muestra de individuos que pertenecen a distintos genotipos (por ejemplo, 17 genotipos diferentes, con varios individuos en cada uno). En este caso, comparar directamente los 17 genotipos no es el objetivo del estudio. Más bien, sabemos de antemano que el genotipo introduce variabilidad en la respuesta que queremos medir (el efecto del medicamento). Por eso, lo incluimos en el modelo como un efecto aleatorio. De esta forma, el genotipo actúa como una fuente de variación que necesitamos controlar, pero no interpretar directamente. En otras palabras, es una variable que influye en la respuesta, pero que no es el foco principal de la investigación.
+
+#### Sintaxis en R para efectos aleatorios en modelos mixtos
+
+Supongamos que S y T son variables categóricas incluidas como efectos aleatorios (por ejemplo, sitio o año), mientras que X y W son variables explicativas (numéricas o categóricas) incluidas como efectos fijos en el modelo. Las siguientes son algunas de las formas más comunes de especificar efectos aleatorios en R. Esta lista no es exhaustiva; existen otras combinaciones posibles como (1 | S) + (X | T) o (1 | S) + (0 + X | T).
 
 
-### Introduccion {.tabset .tabset-pills}
-
+| Notación            | Significado de los efectos aleatorios |
+|--------------------|--------------------------------------|
+| `(1 | S)`          | Interceptos aleatorios para cada nivel de **S**. |
+| `(0 + X | S)`      | Pendientes aleatorias para **X** en cada nivel de **S**, sin intercepto aleatorio. Equivalente a `(-1 + X | S)`. |
+| `(1 + X | S)`      | Interceptos y pendientes aleatorias para **X** en cada nivel de **S**, permitiendo correlación entre ambos. |
+| `(1 | S) + (0 + X | S)` | Interceptos y pendientes aleatorias para **X** en cada nivel de **S**, sin correlación entre ellos. |
+| `(X || S)`         | Igual que `(1 + X | S)`, pero forzando independencia (sin correlación) entre intercepto y pendiente. |
+| `(X*W | S)`        | Interceptos y pendientes aleatorias para la interacción **X** * **W** dentro de cada nivel de **S**. |
+| `(1 | S) + (1 | T)`| Interceptos aleatorios independientes (efectos cruzados) para **S** y **T**. |
+| `(1 + X | S/T)`    | Efectos anidados: **T** dentro de **S**. Equivalente a `(1 + X | S) + (1 + X | S:T)`. |

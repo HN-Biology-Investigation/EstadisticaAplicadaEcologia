@@ -366,6 +366,8 @@ Mixed-Effects Models Using lme4</a></p>
 Fitting Large Multivariate Random Effects in glmmTMB</a></p>
 <p>Literatura recomendada para compreder los modelos mixtos, <a href="https://doi.org/10.7717/peerj.4794">Harrison <em>et al</em>.
 2018</a></p>
+<div id="introduccion" class="section level3 tabset tabset-pills">
+<h3 class="tabset tabset-pills">Introduccion</h3>
 <p>En estudios ecológicos y de conservación, es común que los datos
 presenten una estructura jerárquica o dependiente. Por ejemplo, se
 pueden tomar múltiples mediciones en los mismos sitios de muestreo, en
@@ -382,11 +384,116 @@ de interés, como características del hábitat) y efectos aleatorios
 finca o año). De esta forma, es posible modelar adecuadamente la
 dependencia en los datos y obtener inferencias más robustas y
 realistas.</p>
-<p><strong>Los objetivos del estudio fueron evaluar la relación de la
-abundancia de aves con la estructura de la vegetación y el
-paisaje.:</strong></p>
-<div id="introduccion" class="section level3 tabset tabset-pills">
-<h3 class="tabset tabset-pills">Introduccion</h3>
+<div id="efectos-fijos-y-efectos-aleatorios" class="section level4">
+<h4>Efectos fijos y efectos aleatorios</h4>
+<p>En estadística frecuentista existe una distinción fundamental al
+momento de modelar variables categóricas, basada en la diferencia entre
+efectos fijos y efectos aleatorios, propuesta originalmente por
+Churchill Eisenhart (1947).</p>
+<p>Los efectos fijos son aquellas variables explicativas cuyo efecto
+queremos estimar directamente y que representan relaciones a nivel
+poblacional. Estos pueden ser tanto categóricos (por ejemplo, tipo de
+hábitat o tratamiento) como numéricos (por ejemplo, área basal,
+elevación o porcentaje de bosque). Cuando una variable se incluye como
+efecto fijo, lo que estamos estimando es un valor promedio que describe
+cómo cambia la variable respuesta en función de esa variable
+explicativa. En el caso de variables categóricas, esto implica comparar
+niveles específicos; mientras que, para variables numéricas, implica
+estimar una relación continua (por ejemplo, una pendiente). Un aspecto
+fundamental es que los efectos fijos representan relaciones que son de
+interés directo para el estudio, y sobre las cuales queremos hacer
+inferencia. Sin embargo, en el caso de variables categóricas, las
+conclusiones se limitan a los niveles incluidos en el análisis, ya que
+estos fueron definidos de manera intencional.</p>
+<p>Por otro lado, tenemos los efectos aleatorios. Estos corresponden
+generalmente a variables categóricas cuyos niveles pueden considerarse
+como una muestra tomada al azar de una población mucho más grande de
+posibles niveles. Los efectos aleatorios representan la variabilidad
+entre grupos. Es decir, capturan cuánto se desvía cada grupo (por
+ejemplo, sitios, individuos o años) del promedio general de la variable
+respuesta, el cual está descrito por los efectos fijos. Para entenderlo
+con un ejemplo sencillo, supongamos que queremos evaluar si un
+medicamento tiene un efecto curativo sobre una enfermedad. Definimos una
+variable categórica con dos niveles: “medicamento” y “placebo”, la cual
+modelamos como un efecto fijo, ya que es el factor de interés principal.
+Sin embargo, sabemos que la genética de los individuos también puede
+influir tanto en la enfermedad como en la respuesta al tratamiento.
+Entonces, tomamos una muestra de individuos que pertenecen a distintos
+genotipos (por ejemplo, 17 genotipos diferentes, con varios individuos
+en cada uno). En este caso, comparar directamente los 17 genotipos no es
+el objetivo del estudio. Más bien, sabemos de antemano que el genotipo
+introduce variabilidad en la respuesta que queremos medir (el efecto del
+medicamento). Por eso, lo incluimos en el modelo como un efecto
+aleatorio. De esta forma, el genotipo actúa como una fuente de variación
+que necesitamos controlar, pero no interpretar directamente. En otras
+palabras, es una variable que influye en la respuesta, pero que no es el
+foco principal de la investigación.</p>
+</div>
+<div id="sintaxis-en-r-para-efectos-aleatorios-en-modelos-mixtos" class="section level4">
+<h4>Sintaxis en R para efectos aleatorios en modelos mixtos</h4>
+<p>Supongamos que S y T son variables categóricas incluidas como efectos
+aleatorios (por ejemplo, sitio o año), mientras que X y W son variables
+explicativas (numéricas o categóricas) incluidas como efectos fijos en
+el modelo. Las siguientes son algunas de las formas más comunes de
+especificar efectos aleatorios en R. Esta lista no es exhaustiva;
+existen otras combinaciones posibles como (1 | S) + (X | T) o (1 | S) +
+(0 + X | T).</p>
+<table>
+<colgroup>
+<col width="34%" />
+<col width="65%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Notación</th>
+<th>Significado de los efectos aleatorios</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>(1 | S)</code></td>
+<td>Interceptos aleatorios para cada nivel de <strong>S</strong>.</td>
+</tr>
+<tr class="even">
+<td><code>(0 + X | S)</code></td>
+<td>Pendientes aleatorias para <strong>X</strong> en cada nivel de
+<strong>S</strong>, sin intercepto aleatorio. Equivalente a
+<code>(-1 + X | S)</code>.</td>
+</tr>
+<tr class="odd">
+<td><code>(1 + X | S)</code></td>
+<td>Interceptos y pendientes aleatorias para <strong>X</strong> en cada
+nivel de <strong>S</strong>, permitiendo correlación entre ambos.</td>
+</tr>
+<tr class="even">
+<td><code>(1 | S) + (0 + X | S)</code></td>
+<td>Interceptos y pendientes aleatorias para <strong>X</strong> en cada
+nivel de <strong>S</strong>, sin correlación entre ellos.</td>
+</tr>
+<tr class="odd">
+<td><code>(X || S)</code></td>
+<td>Igual que <code>(1 + X | S)</code>, pero forzando independencia (sin
+correlación) entre intercepto y pendiente.</td>
+</tr>
+<tr class="even">
+<td><code>(X*W | S)</code></td>
+<td>Interceptos y pendientes aleatorias para la interacción
+<strong>X</strong> * <strong>W</strong> dentro de cada nivel de
+<strong>S</strong>.</td>
+</tr>
+<tr class="odd">
+<td><code>(1 | S) + (1 | T)</code></td>
+<td>Interceptos aleatorios independientes (efectos cruzados) para
+<strong>S</strong> y <strong>T</strong>.</td>
+</tr>
+<tr class="even">
+<td><code>(1 + X | S/T)</code></td>
+<td>Efectos anidados: <strong>T</strong> dentro de <strong>S</strong>.
+Equivalente a <code>(1 + X | S) + (1 + X | S:T)</code>.</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
